@@ -72,17 +72,17 @@ public class Tun extends SubsystemBase {
         servoBanda.setPower(0);
     }
 
-    public double getTunPower()
+    public static double getTunPower()
     {
         return TUN_POWER;
     }
 
-    public double getBandPower()
+    public static double getBandPower()
     {
         return BAND_POWER;
     }
 
-    public tunState getCurrentTunState()
+    public static tunState getCurrentTunState()
     {
         return currentTunState;
     }
