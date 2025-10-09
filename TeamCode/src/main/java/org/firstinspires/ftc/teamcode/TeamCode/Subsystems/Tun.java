@@ -12,7 +12,7 @@ public class Tun extends SubsystemBase {
         STOP
     };
 
-    private tunState currentTunState;
+    private static tunState currentTunState;
 
     private DcMotor motorStanga;
     private DcMotor motorDreapta;
