@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOpTests;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
@@ -27,9 +28,11 @@ public class TestTun extends CommandOpMode {
                 new InstantCommand(() -> tun.setTunState(Tun.tunState.REVERSE))
         );
         gamepad.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> tun.setTunState(Tun.tunState.STOP))
+                new InstantCommand(() -> tun.setTunState(Tun.tunState.IDLE))
         );
 
+        Trigger leftTrigger = new Trigger(() -> gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.2);
+        leftTrigger.whenActive(() -> tun.setBandPower(0.3));
 
         tun.init();
     }

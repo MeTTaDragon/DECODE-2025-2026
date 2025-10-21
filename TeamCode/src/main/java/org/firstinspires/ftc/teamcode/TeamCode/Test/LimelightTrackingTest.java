@@ -27,9 +27,9 @@ public class LimelightTrackingTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-       limelight = hardwareMap.get(Limelight3A.class, "limelight");
-       servo =  hardwareMap.get(CRServo.class, "servo");
-       //servo.setDirection(CRServo.Direction.REVERSE);
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        servo = hardwareMap.get(CRServo.class, "servo");
+        //servo.setDirection(CRServo.Direction.REVERSE);
 
         limelight.start();
         limelight.pipelineSwitch(0);
@@ -48,10 +48,9 @@ public class LimelightTrackingTest extends LinearOpMode {
             controller.setTolerance(tolerance);
 
             LLResult result = limelight.getLatestResult();
-            if (result != null && result.isValid())  {
-                 tx = result.getTx();
-            }
-            else {
+            if (result != null && result.isValid()) {
+                tx = result.getTx();
+            } else {
                 tx = 0.0;
             }
             double power = controller.calculate(tx, 0);
@@ -60,8 +59,13 @@ public class LimelightTrackingTest extends LinearOpMode {
             telemetry.addData("tx", tx);
             telemetry.addData("PID power", power);
             telemetry.addData("servo power", servo.getPower());
+            telemetry.addData("MT2", result.getBotpose_MT2());
+            telemetry.addData("Position", result.getBotpose()); //cel mai probabil cel bun
+            telemetry.addData("Average Distance", result.getBotposeAvgDist());
+            telemetry.addData("Average area", result.getBotposeAvgArea());
+            telemetry.addData("Pose span", result.getBotposeSpan());
+            telemetry.addData("Tag count", result.getBotposeTagCount());
             telemetry.update();
         }
     }
-
 }
