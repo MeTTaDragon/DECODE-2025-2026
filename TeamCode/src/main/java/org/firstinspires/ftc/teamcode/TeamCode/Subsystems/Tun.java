@@ -12,9 +12,9 @@ public class Tun extends SubsystemBase {
      * Defines the possible operational states for the Tun subsystem.
      */
     public enum tunState {
-        /** The intake motors and conveyor belt run forward to collect items. */
+        /** The motors and conveyor belt run forward to collect items. */
         FORWARD,
-        /** The intake motors and conveyor belt run in reverse to eject items. */
+        /** The motors and conveyor belt run in reverse to eject items. */
         REVERSE,
         /** All motors in the subsystem are stopped. */
         IDLE
@@ -54,7 +54,7 @@ public class Tun extends SubsystemBase {
     }
 
     /**
-     * Sets the power level for the main intake motors.
+     * Sets the power level for the main motors.
      *
      * @param power The power level to apply, from -1.0 to 1.0.
      */

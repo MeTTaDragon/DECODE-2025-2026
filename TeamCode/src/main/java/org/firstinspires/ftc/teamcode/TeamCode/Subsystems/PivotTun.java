@@ -10,21 +10,25 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 public class PivotTun extends SubsystemBase {
     //TODO: If the motor doesnt move, add "motorPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);" to periodic's else
 
-    DcMotorEx motorPivot;
+    static DcMotorEx motorPivot;
 
-    double PIVOT_POWER = 0.5;
-    int TARGET_POSITION = 0;
-    int tolerance = 5;
+    //TODO: adauga public daca nu apar in dashboard
+    static double PIVOT_POWER = 0.5;
+    static int TARGET_POSITION = 0;
+    static int tolerance = 5;
 
     //GETTERS
-    public double getPIVOT_POWER() {
+    public static double getPIVOT_POWER() {
         return PIVOT_POWER;
     }
-    public int getTARGET_POSITION() {
+    public static int getTARGET_POSITION() {
         return TARGET_POSITION;
     }
-    public int getTolerance() {
+    public static int getTolerance() {
         return tolerance;
+    }
+    public static double getCurrentPosition(){
+        return motorPivot.getCurrentPosition();
     }
 
     /**
@@ -75,11 +79,16 @@ public class PivotTun extends SubsystemBase {
         TARGET_POSITION = position;
         motorPivot.setTargetPosition(TARGET_POSITION);
     }
+    //just a method overload for easier tests
+    public void setPivotPosition() {
+        motorPivot.setTargetPosition(TARGET_POSITION);
+    }
 
     /**
      * This method should be called repeatedly in a loop to drive the motor to its target.
      * It applies a constant power until the motor reaches its target position, at which point it stops the motor.
      */
+    @Override
     public void periodic() {
         if (motorPivot.getCurrentPosition() == motorPivot.getTargetPosition())
             motorPivot.setPower(0);
