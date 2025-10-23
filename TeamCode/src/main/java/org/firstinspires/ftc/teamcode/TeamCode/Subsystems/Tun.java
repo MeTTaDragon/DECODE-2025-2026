@@ -8,55 +8,74 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 @Config
 public class Tun extends SubsystemBase {
+    /**
+     * Defines the possible operational states for the Tun subsystem.
+     */
     public enum tunState {
+        /** The intake motors and conveyor belt run forward to collect items. */
         FORWARD,
+        /** The intake motors and conveyor belt run in reverse to eject items. */
         REVERSE,
+        /** All motors in the subsystem are stopped. */
         IDLE
     };
 
-    public enum pivotState{
-        FORWARD, //it corresponds to the tunState direction.
-        REVERSE, //if the pivotState = FORWARD, the tunState should also = FORWARD
-        IDLE
-    }
 
     private static tunState currentTunState;
-    private static pivotState currentPivotState;
 
     private DcMotor motorStanga;
     private DcMotor motorDreapta;
-    private DcMotor motorPivot;
-
     private CRServo servoBanda;
 
     public static double TUN_POWER = 0.5;
     public static double BAND_POWER = 0.5;
-    public static double PIVOT_POWER = 0.5;
 
-    public Tun(HardwareMap hwMap)
-    {
+
+    /**
+     * Constructs a new Tun subsystem.
+     * This constructor initializes the motors and servos by mapping them to the hardware
+     * configuration defined on the Robot Controller.
+     *
+     * @param hwMap The hardware map from the OpMode, used to access physical devices.
+     */
+    public Tun(HardwareMap hwMap) {
         this.motorDreapta = hwMap.get(DcMotor.class, "motorDreapta");
         this.motorStanga = hwMap.get(DcMotor.class, "motorStanga");
         this.servoBanda = hwMap.get(CRServo.class, "servoBanda");
-        //this.motorPivot = hwMap.get(DcMotor.class, "motorPivot");
     }
 
+
+    /**
+     * Initializes the Tun subsystem by setting its default state to IDLE.
+     */
     public void init()
     {
         currentTunState = tunState.IDLE;
-        currentPivotState = pivotState.IDLE;
     }
 
+    /**
+     * Sets the power level for the main intake motors.
+     *
+     * @param power The power level to apply, from -1.0 to 1.0.
+     */
     public void setTunPower(double power) {
         TUN_POWER = power;
     }
+
+    /**
+     * Sets the power level for the conveyor band servo.
+     *
+     * @param power The power level to apply, from -1.0 to 1.0.
+     */
     public void setBandPower(double power) {
         BAND_POWER = power;
     }
-    public void setPivotower(double power) {
-        PIVOT_POWER = power;
-    }
 
+    /**
+     * Sets the operational state of the Tun subsystem and applies power to the motors accordingly.
+     *
+     * @param state The desired state (FORWARD, REVERSE, or IDLE).
+     */
     public void setTunState(tunState state)
     {
         currentTunState = state;
@@ -81,7 +100,6 @@ public class Tun extends SubsystemBase {
     }
 
 
-
     public static double getTunPower()
     {
         return TUN_POWER;
@@ -90,11 +108,8 @@ public class Tun extends SubsystemBase {
     {
         return BAND_POWER;
     }
-
     public static tunState getCurrentTunState()
     {
         return currentTunState;
     }
-
-
 }
