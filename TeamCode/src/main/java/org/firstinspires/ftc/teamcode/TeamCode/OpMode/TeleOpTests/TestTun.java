@@ -35,12 +35,18 @@ public class TestTun extends CommandOpMode {
         leftTrigger.whenActive(() -> tun.setBandPower(0.3));
 
         tun.init();
+        super.run();
     }
 
     public void run(){
+
+        super.run();
+        Tun tun = new Tun(hardwareMap);
+        tun.setTunState(Tun.tunState.FORWARD);
         telemetry.addData("Motor Power", Tun.getTunPower());
         telemetry.addData("Band Power", Tun.getBandPower());
         telemetry.addData("Current state", Tun.getCurrentTunState());
+        telemetry.addData("cross", gamepad1.crossWasPressed());
         telemetry.update();
     }
 }

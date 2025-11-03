@@ -64,11 +64,11 @@ public class Tun extends SubsystemBase {
         {
             case FORWARD:
                 motorDreapta.setPower(TUN_POWER);
-                motorStanga.setPower(-TUN_POWER);
+                motorStanga.setPower(TUN_POWER);
                 servoBanda.setPower(BAND_POWER);
                 break;
             case REVERSE:
-                motorDreapta.setPower(-TUN_POWER);
+                motorDreapta.setPower(TUN_POWER);
                 motorStanga.setPower(TUN_POWER);
                 servoBanda.setPower(-BAND_POWER);
                 break;
