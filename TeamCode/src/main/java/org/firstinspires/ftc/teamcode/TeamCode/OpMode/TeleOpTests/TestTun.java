@@ -9,7 +9,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 
-@TeleOp(name = "Test Tun")
+@TeleOp(name = "Test Tun", group = "TeleOp Tests")
 public class TestTun extends CommandOpMode {
 
     public GamepadEx gamepad;
@@ -39,8 +39,8 @@ public class TestTun extends CommandOpMode {
     }
 
     public void run(){
-
         super.run();
+
         Tun tun = new Tun(hardwareMap);
         tun.setTunState(Tun.tunState.FORWARD);
         telemetry.addData("Motor Power", Tun.getTunPower());

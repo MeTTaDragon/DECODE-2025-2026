@@ -50,7 +50,7 @@ public class Tun extends SubsystemBase {
      */
     public void init()
     {
-        currentTunState = tunState.IDLE;
+        setTunState(tunState.IDLE);
     }
 
     /**
