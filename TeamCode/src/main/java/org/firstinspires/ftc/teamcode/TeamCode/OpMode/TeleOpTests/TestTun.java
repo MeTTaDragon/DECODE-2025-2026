@@ -41,6 +41,8 @@ public class TestTun extends CommandOpMode {
     public void run(){
         super.run();
 
+
+
         Tun tun = new Tun(hardwareMap);
         tun.setTunState(Tun.tunState.FORWARD);
         telemetry.addData("Motor Power", Tun.getTunPower());

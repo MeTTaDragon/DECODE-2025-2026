@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeamCode.Test;
+package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOpTests;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
