@@ -37,7 +37,8 @@ public class setTunDirectionCommand extends CommandBase {
         tun.setTunState(tunState);
         pivotTun.setPivotPosition(pivotTargetPosition);
 
-        if (tunState.equals(Tun.tunState.FORWARD)) ll.setLLServoState(LimelightSubsystem.LLServoState.BACK);
-        else if (tunState.equals(Tun.tunState.REVERSE)) ll.setLLServoState(LimelightSubsystem.LLServoState.FRONT);
+        //TODO: verifica direstia motorului sa fie pe directii opuse pivotu cu camera
+        if (pivotTargetPosition > 0) ll.setLLServoState(LimelightSubsystem.LLServoState.BACK);
+        else ll.setLLServoState(LimelightSubsystem.LLServoState.FRONT);
     }
 }
