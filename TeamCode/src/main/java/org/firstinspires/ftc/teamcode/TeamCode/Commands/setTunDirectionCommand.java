@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode.TeamCode.Commands;
 
 import com.seattlesolvers.solverslib.command.CommandBase;
 
+import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 
 public class setTunDirectionCommand extends CommandBase {
     Tun tun;
     PivotTun pivotTun;
+    LimelightSubsystem ll;
     int pivotTargetPosition;
     Tun.tunState tunState;
 
@@ -20,12 +22,13 @@ public class setTunDirectionCommand extends CommandBase {
      * @param pivotTargetPosition The target encoder position for the pivot motor.
      * @param tunState            The desired state for the intake (e.g., FORWARD, REVERSE, IDLE).
      */
-    public setTunDirectionCommand(Tun tun, PivotTun pivotTun, int pivotTargetPosition, Tun.tunState tunState) {
+    public setTunDirectionCommand(Tun tun, PivotTun pivotTun, LimelightSubsystem ll, int pivotTargetPosition, Tun.tunState tunState) {
         this.tun = tun;
         this.pivotTun = pivotTun;
+        this.ll = ll;
         this.pivotTargetPosition = pivotTargetPosition;
         this.tunState = tunState;
-        addRequirements(tun, pivotTun);
+        addRequirements(tun, pivotTun, ll);
     }
 
 
@@ -33,5 +36,9 @@ public class setTunDirectionCommand extends CommandBase {
     public void initialize() {
         tun.setTunState(tunState);
         pivotTun.setPivotPosition(pivotTargetPosition);
+
+        //TODO: verifica direstia motorului sa fie pe directii opuse pivotu cu camera
+        if (pivotTargetPosition > 0) ll.setLLServoState(LimelightSubsystem.LLServoState.BACK);
+        else ll.setLLServoState(LimelightSubsystem.LLServoState.FRONT);
     }
 }

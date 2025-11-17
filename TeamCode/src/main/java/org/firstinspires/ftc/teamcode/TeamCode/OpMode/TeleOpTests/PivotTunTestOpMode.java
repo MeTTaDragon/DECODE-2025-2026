@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOpTests;
+package org.firstinspires.ftc.teamcode.TeamCode.Test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -21,8 +21,6 @@ import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun; // Importam 
 public class PivotTunTestOpMode extends LinearOpMode {
 
     private PivotTun pivotTun;
-
-
 
     @Override
     public void runOpMode() throws InterruptedException {

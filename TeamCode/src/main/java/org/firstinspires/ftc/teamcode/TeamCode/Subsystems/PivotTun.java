@@ -13,9 +13,9 @@ public class PivotTun extends SubsystemBase {
     static DcMotorEx motorPivot;
 
     //TODO: adauga public daca nu apar in dashboard
-    static double PIVOT_POWER = 0.5;
-    static int TARGET_POSITION = 0;
-    static int tolerance = 5;
+    public static double PIVOT_POWER = 0.5;
+    public static int TARGET_POSITION = 0;
+    public static int tolerance = 0;
 
     //GETTERS
     public static double getPIVOT_POWER() {
@@ -40,7 +40,6 @@ public class PivotTun extends SubsystemBase {
      */
     public PivotTun(HardwareMap hwMap) {
         this.motorPivot = hwMap.get(DcMotorEx.class, "motorPivot");
-        motorPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorPivot.setTargetPositionTolerance(tolerance);
     }
