@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOpTests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -8,15 +11,17 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.TeamCode.Globals;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.LimelightSubsystem;
-
+@Config
 @TeleOp(name = "Test Limelight", group = "TeleOp Tests")
 public class TestLimelight extends CommandOpMode {
+    LimelightSubsystem limelight;
 
     public GamepadEx gamepad;
-
+    public static LimelightSubsystem.LimelightMode llmode = null;
+    public static LimelightSubsystem.LLServoState servostate=null;
     @Override
     public void initialize() {
-        LimelightSubsystem limelight = new LimelightSubsystem(hardwareMap);
+        limelight = new LimelightSubsystem(hardwareMap);
 
         super.reset();
 
@@ -51,6 +56,10 @@ public class TestLimelight extends CommandOpMode {
     @Override
     public void run() {
         super.run();
+        limelight.setLLServoState(servostate);
+        limelight.setMode(llmode);
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.addData("tx", LimelightSubsystem.getTx());
         telemetry.addData("ty", LimelightSubsystem.getTy());

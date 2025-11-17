@@ -6,6 +6,7 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -30,6 +31,9 @@ public class LimelightSubsystem extends SubsystemBase {
     static double robotCoordsZ;
     static int id;
 
+    Servo llservo = null;
+
+
 
     /**
      * Defines the different operational modes for the Limelight,
@@ -46,6 +50,12 @@ public class LimelightSubsystem extends SubsystemBase {
         PAUSE
     }
 
+    public enum LLServoState {
+        FRONT,
+        BACK
+    }
+
+    private static LLServoState currentLLServoState;
     private static LimelightMode currentMode;
 
     /**
@@ -68,6 +78,7 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public void init() {
         setMode(LimelightMode.PAUSE);
+        setLLServoState(LLServoState.FRONT);
     }
 
     /**
@@ -101,7 +112,18 @@ public class LimelightSubsystem extends SubsystemBase {
                 break;
         }
     }
+    public void setLLServoState(LLServoState state) {
+        currentLLServoState = state;
 
+        switch (currentLLServoState) {
+            case FRONT:
+                llservo.setPosition(0.0); // Adjust the position value as needed
+                break;
+            case BACK:
+                llservo.setPosition(1.0); // Adjust the position value as needed
+                break;
+        }
+    }
     /**
      * Updates the basic target variables (tx, ty, ta) from the latest result.
      * This method should be called after a new result has been fetched.

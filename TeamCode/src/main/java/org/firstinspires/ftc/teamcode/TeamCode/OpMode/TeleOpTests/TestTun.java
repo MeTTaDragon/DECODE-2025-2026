@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOpTests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -44,6 +46,7 @@ public class TestTun extends CommandOpMode {
 
     public void run(){
         super.run();
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         tun.setTunState(testState);
 
