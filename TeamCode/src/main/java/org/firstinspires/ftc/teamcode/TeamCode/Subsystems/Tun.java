@@ -30,6 +30,10 @@ public class Tun extends SubsystemBase {
     public static double TUN_POWER = 0.5;
     public static double BAND_POWER = 0.5;
 
+    static double currentSpeedDreapta;
+
+    static double currentSpeedStanga;
+
 
     /**
      * Constructs a new Tun subsystem.
@@ -111,5 +115,15 @@ public class Tun extends SubsystemBase {
     public static tunState getCurrentTunState()
     {
         return currentTunState;
+    }
+
+    public static double getCurrentSpeedDreapta() {return currentSpeedDreapta;}
+
+    public static double getCurrentSpeedStanga() {return currentSpeedStanga;}
+
+    @Override
+    public void periodic() {
+        currentSpeedDreapta = motorDreapta.getPower();
+        currentSpeedDreapta = motorStanga.getPower();
     }
 }
