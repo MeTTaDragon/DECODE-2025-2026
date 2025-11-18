@@ -67,7 +67,7 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public LimelightSubsystem(HardwareMap hwMap) {
         limelight = hwMap.get(Limelight3A.class, "limelight");
-        imu = hwMap.get(IMU.class, "imu"); //TODO: change to pedro + imu when implemented
+        //imu = hwMap.get(IMU.class, "imu"); //TODO: change to pedro + imu when implemented
         limelight.setPollRateHz(10);
     }
 
@@ -78,7 +78,7 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public void init() {
         setMode(LimelightMode.PAUSE);
-        setLLServoState(LLServoState.FRONT);
+        //setLLServoState(LLServoState.FRONT);
     }
 
     /**
@@ -112,7 +112,7 @@ public class LimelightSubsystem extends SubsystemBase {
                 break;
         }
     }
-    public void setLLServoState(LLServoState state) {
+    /*public void set ServoState(LLServoState state) {
         currentLLServoState = state;
 
         switch (currentLLServoState) {
@@ -123,7 +123,7 @@ public class LimelightSubsystem extends SubsystemBase {
                 llservo.setPosition(1.0); // Adjust the position value as needed
                 break;
         }
-    }
+    } */
     /**
      * Updates the basic target variables (tx, ty, ta) from the latest result.
      * This method should be called after a new result has been fetched.
