@@ -21,7 +21,6 @@ public class TeleOpPrezentare extends CommandOpMode {
     GamepadEx gamepad;
     Tun tun;
     PivotTun pivotTun;
-    LimelightSubsystem limelight;
     Drivetrain drive;
 
     public static Tun.tunState testState = Tun.tunState.IDLE;
@@ -36,28 +35,25 @@ public class TeleOpPrezentare extends CommandOpMode {
 
         super.reset();
 
-        limelight = new LimelightSubsystem(hardwareMap);
-
         tun = new Tun(hardwareMap);
         pivotTun = new PivotTun(hardwareMap);
 
-        register(tun, pivotTun, limelight, drive);
+        register(tun, pivotTun, drive);
         tun.init();
         pivotTun.init();
-        limelight.init();
         drive.init();
 
         drive.setDefaultCommand(new RobotCentricDriveCommand(drive, gamepad));
 
 
         gamepad.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, limelight, 50, Tun.tunState.FORWARD)
+                new setTunDirectionCommand(tun, pivotTun, 50, Tun.tunState.FORWARD)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, limelight, 100, Tun.tunState.REVERSE)
+                new setTunDirectionCommand(tun, pivotTun, 100, Tun.tunState.REVERSE)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, limelight, 0, Tun.tunState.IDLE)
+                new setTunDirectionCommand(tun, pivotTun, 0, Tun.tunState.IDLE)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
                 new InstantCommand(() -> pivotTun.setPivotPosition(1000))

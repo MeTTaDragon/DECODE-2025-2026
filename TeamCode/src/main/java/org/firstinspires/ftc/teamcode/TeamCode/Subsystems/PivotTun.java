@@ -14,8 +14,6 @@ public class PivotTun extends SubsystemBase {
     public static DcMotorEx motorPivot;
     static TouchSensor buton;
     public static boolean failsafe = false;
-
-    //TODO: adauga public daca nu apar in dashboard
     public static double PIVOT_POWER = 0.5;
     public static int TARGET_POSITION = 0;
     public static int tolerance = 0;
@@ -101,7 +99,7 @@ public class PivotTun extends SubsystemBase {
     }
 
     //TODO put function findmaxpos in init
-    public void findMaxPozition(){
+    public void findMaxPosition(){
         failsafe = false;
         while (!buton.isPressed() && failsafe == false) {
             motorPivot.setPower(0.5);

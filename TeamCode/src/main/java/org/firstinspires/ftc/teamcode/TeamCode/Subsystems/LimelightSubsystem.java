@@ -78,7 +78,7 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public void init() {
         setMode(LimelightMode.PAUSE);
-        //setLLServoState(LLServoState.FRONT);
+        setLLServoState(LLServoState.FRONT);
     }
 
     /**

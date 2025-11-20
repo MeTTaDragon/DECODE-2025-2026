@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOpTests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -9,13 +12,16 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 
+@Config
 @TeleOp(name = "Test Tun", group = "TeleOp Tests")
 public class TestTun extends CommandOpMode {
+    private Tun tun;
 
+    public static Tun.tunState testState = Tun.tunState.IDLE;
     public GamepadEx gamepad;
     public void initialize() {
-        Tun tun = new Tun(hardwareMap);
-        
+        tun = new Tun(hardwareMap);
+
         super.reset();
 
         register(tun);
@@ -40,9 +46,10 @@ public class TestTun extends CommandOpMode {
 
     public void run(){
         super.run();
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        Tun tun = new Tun(hardwareMap);
-        tun.setTunState(Tun.tunState.FORWARD);
+        tun.setTunState(testState);
+
         telemetry.addData("Motor Power", Tun.getTunPower());
         telemetry.addData("Band Power", Tun.getBandPower());
         telemetry.addData("Current state", Tun.getCurrentTunState());
@@ -50,3 +57,4 @@ public class TestTun extends CommandOpMode {
         telemetry.update();
     }
 }
+

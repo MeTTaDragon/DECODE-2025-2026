@@ -20,40 +20,34 @@ import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 public class TestTunDirectionCommand extends CommandOpMode {
     GamepadEx gamepad;
     Tun tun;
+    PivotTun pivotTun;
+
     public static Tun.tunState testState = Tun.tunState.IDLE;
     public static int TARGET_POSITION = 0;
 
-    LimelightSubsystem limelight;
-
-    PivotTun pivotTun;
     @Override
     public void initialize() {
-
-
         gamepad = new GamepadEx(gamepad1);
 
         super.reset();
 
-        limelight = new LimelightSubsystem(hardwareMap);
-
         tun = new Tun(hardwareMap);
         pivotTun = new PivotTun(hardwareMap);
 
-        register(tun, pivotTun, limelight);
+        register(tun, pivotTun);
         tun.init();
         pivotTun.init();
-        limelight.init();
 
 
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, limelight, 50, Tun.tunState.FORWARD)
+                new setTunDirectionCommand(tun, pivotTun, 50, Tun.tunState.FORWARD)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, limelight, 100, Tun.tunState.REVERSE)
+                new setTunDirectionCommand(tun, pivotTun, 100, Tun.tunState.REVERSE)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, limelight, 0, Tun.tunState.IDLE)
+                new setTunDirectionCommand(tun, pivotTun, 0, Tun.tunState.IDLE)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
                new InstantCommand(() -> PivotTun.motorPivot.setPower(0))
@@ -63,7 +57,7 @@ public class TestTunDirectionCommand extends CommandOpMode {
                 new InstantCommand(() -> PivotTun.failsafe=true)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> pivotTun.findMaxPozition())
+                new InstantCommand(() -> pivotTun.findMaxPosition())
 
         );
 
