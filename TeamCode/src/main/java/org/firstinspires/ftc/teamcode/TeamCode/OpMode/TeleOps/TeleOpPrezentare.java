@@ -1,7 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeamCode.OpMode;
-
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOps;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -13,7 +10,6 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.TeamCode.Commands.RobotCentricDriveCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Commands.setTunDirectionCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 
@@ -76,15 +72,16 @@ public class TeleOpPrezentare extends CommandOpMode {
         pivotTun.setPivotPosition(TARGET_POSITION);
 
 
-        telemetry.addData("Motor Power", Tun.getTunPower());
-        telemetry.addData("Band Power", Tun.getBandPower());
-        telemetry.addData("Current state", Tun.getCurrentTunState());
-        telemetry.addData("pivot power", PivotTun.getPIVOT_POWER());
-        telemetry.addData("target position", PivotTun.getTARGET_POSITION());
-        telemetry.addData("current position" , PivotTun.getCurrentPosition());
-        telemetry.addData("tolerance", PivotTun.getTolerance());
-        telemetry.addData("tun current power dreapta", Tun.getCurrentSpeedDreapta());
-        telemetry.addData("tun current power stanga", Tun.getCurrentSpeedStanga());
+        telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());
+        telemetry.addData("Motor Dreapta Power", tun.motorDreapta.getPower());
+        telemetry.addData("Band Power", tun.getBandPower());
+        telemetry.addData("Current state", tun.getCurrentTunState());
+        telemetry.addData("pivot power", pivotTun.getPIVOT_POWER());
+        telemetry.addData("target position", pivotTun.getTARGET_POSITION());
+        telemetry.addData("current position" , pivotTun.getCurrentPosition());
+        telemetry.addData("tolerance", pivotTun.getTolerance());
+        telemetry.addData("tun current power dreapta", tun.getCurrentSpeedDreapta());
+        telemetry.addData("tun current power stanga", tun.getCurrentSpeedStanga());
         telemetry.update();
 
         super.run();

@@ -9,6 +9,7 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.teamcode.TeamCode.Commands.FindMaxPosPivotCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Commands.RobotCentricDriveCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Commands.setTunDirectionCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Drivetrain;
@@ -50,15 +51,14 @@ public class TestTunDirectionCommand extends CommandOpMode {
                 new setTunDirectionCommand(tun, pivotTun, 0, Tun.tunState.IDLE)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-               new InstantCommand(() -> PivotTun.motorPivot.setPower(0))
+               new InstantCommand(() -> pivotTun.motorPivot.setPower(0))
 
         );
+
         gamepad.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new InstantCommand(() -> PivotTun.failsafe=true)
-        );
-        gamepad.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> pivotTun.findMaxPosition())
-
+                new FindMaxPosPivotCommand(pivotTun).interruptOn(
+                        () -> { return gamepad1.square; }
+                )
         );
 
         super.run();
@@ -70,21 +70,22 @@ public class TestTunDirectionCommand extends CommandOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         tun.setTunState(testState);
-        pivotTun.setPivotPosition(TARGET_POSITION);
+        //pivotTun.setPivotPosition(TARGET_POSITION);
 
 
-        telemetry.addData("Motor Stanga Power", Tun.motorStanga.getPower());
-        telemetry.addData("Motor Dreapta Power", Tun.motorDreapta.getPower());
-        telemetry.addData("Band Power", Tun.getBandPower());
-        telemetry.addData("Current state", Tun.getCurrentTunState());
-        telemetry.addData("pivot power", PivotTun.getPIVOT_POWER());
-        telemetry.addData("target position", PivotTun.getTARGET_POSITION());
-        telemetry.addData("current position" , PivotTun.getCurrentPosition());
-        telemetry.addData("tolerance", PivotTun.getTolerance());
-        telemetry.addData("tun current power dreapta", Tun.getCurrentSpeedDreapta());
-        telemetry.addData("tun current power stanga", Tun.getCurrentSpeedStanga());
-        telemetry.addData("---failsafe:", PivotTun.failsafe);
-        telemetry.addData("---Switch pressed", PivotTun.getSwitchState());
+        telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());
+        telemetry.addData("Motor Dreapta Power", tun.motorDreapta.getPower());
+        telemetry.addData("Band Power", tun.getBandPower());
+        telemetry.addData("Current state", tun.getCurrentTunState());
+        telemetry.addData("pivot power", pivotTun.getPIVOT_POWER());
+        telemetry.addData("target position", pivotTun.getTARGET_POSITION());
+        telemetry.addData("current position" , pivotTun.getCurrentPosition());
+        telemetry.addData("tolerance", pivotTun.getTolerance());
+        telemetry.addData("tun current power dreapta", tun.getCurrentSpeedDreapta());
+        telemetry.addData("tun current power stanga", tun.getCurrentSpeedStanga());
+        telemetry.addData("---Switch pressed", pivotTun.getSwitchState());
+
+        telemetry.addData("cross", gamepad1.cross);
         telemetry.update();
 
         super.run();

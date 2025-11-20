@@ -50,9 +50,9 @@ public class TestTun extends CommandOpMode {
 
         tun.setTunState(testState);
 
-        telemetry.addData("Motor Power", Tun.getTunPower());
-        telemetry.addData("Band Power", Tun.getBandPower());
-        telemetry.addData("Current state", Tun.getCurrentTunState());
+        telemetry.addData("Motor Power", tun.getTunPower());
+        telemetry.addData("Band Power", tun.getBandPower());
+        telemetry.addData("Current state", tun.getCurrentTunState());
         telemetry.addData("cross", gamepad1.crossWasPressed());
         telemetry.update();
     }

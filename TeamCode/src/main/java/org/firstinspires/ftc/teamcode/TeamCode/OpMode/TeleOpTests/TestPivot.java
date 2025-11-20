@@ -42,10 +42,10 @@ public class TestPivot extends CommandOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         pivotTun.setPivotPosition(TARGET_POSITION);
 
-        telemetry.addData("pivot power", PivotTun.getPIVOT_POWER());
-        telemetry.addData("target position", PivotTun.getTARGET_POSITION());
-        telemetry.addData("current position" , PivotTun.getCurrentPosition());
-        telemetry.addData("tolerance", PivotTun.getTolerance());
+        telemetry.addData("pivot power", pivotTun.getPIVOT_POWER());
+        telemetry.addData("target position", pivotTun.getTARGET_POSITION());
+        telemetry.addData("current position" , pivotTun.getCurrentPosition());
+        telemetry.addData("tolerance", pivotTun.getTolerance());
         telemetry.update();
 
 

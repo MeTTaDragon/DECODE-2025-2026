@@ -11,8 +11,8 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 public class PivotTun extends SubsystemBase {
     //TODO: If the motor doesnt move, add "motorPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);" to periodic's else
 
-    public static DcMotorEx motorPivot;
-    static TouchSensor buton;
+    public DcMotorEx motorPivot;
+     static TouchSensor buton;
     public static boolean failsafe = false;
     public static double PIVOT_POWER = 0.5;
     public static int TARGET_POSITION = 0;
@@ -21,16 +21,16 @@ public class PivotTun extends SubsystemBase {
     public static int MAX_PIVOT;
 
     //GETTERS
-    public static double getPIVOT_POWER() {
+    public  double getPIVOT_POWER() {
         return PIVOT_POWER;
     }
-    public static int getTARGET_POSITION() {
+    public  int getTARGET_POSITION() {
         return TARGET_POSITION;
     }
-    public static int getTolerance() {
+    public  int getTolerance() {
         return tolerance;
     }
-    public static double getCurrentPosition(){
+    public  double getCurrentPosition(){
         return motorPivot.getCurrentPosition();
     }
 
@@ -56,12 +56,7 @@ public class PivotTun extends SubsystemBase {
      * It is an overloaded version of {@link #init(int)}.
      */
     public void init() {
-
-//        while (!buton.isPressed() && failsafe == false) {
-//            motorPivot.setPower(0.5);
-//        }
-//        motorPivot.setPower(0);
-//        MAX_PIVOT = motorPivot.getCurrentPosition();
+        motorPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setPivotPosition(0);
         motorPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
@@ -93,20 +88,36 @@ public class PivotTun extends SubsystemBase {
         motorPivot.setTargetPosition(TARGET_POSITION);
     }
 
-    //TODO maybe remove idk kinda usless getSwitchstate
-    public static boolean getSwitchState(){
+
+
+    public boolean getSwitchState(){
         return buton.isPressed();
     }
 
     //TODO put function findmaxpos in init
     public void findMaxPosition(){
-        failsafe = false;
-        while (!buton.isPressed() && failsafe == false) {
+        motorPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //failsafe = false;
+        while (!buton.isPressed()) {
             motorPivot.setPower(0.5);
         }
         motorPivot.setPower(0);
         MAX_PIVOT = motorPivot.getCurrentPosition();
+
+        motorPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setPivotPosition(-2350);
+        motorPivot.setPower(0.5);
+
+        if(motorPivot.getCurrentPosition() == motorPivot.getTargetPosition())
+        {
+            motorPivot.setPower(0);
+            motorPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
     }
+
+
+
 
     /**
      * This method should be called repeatedly in a loop to drive the motor to its target.
