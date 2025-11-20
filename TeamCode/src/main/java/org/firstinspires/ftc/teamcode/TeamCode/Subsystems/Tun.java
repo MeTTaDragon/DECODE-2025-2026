@@ -23,8 +23,8 @@ public class Tun extends SubsystemBase {
 
     private static tunState currentTunState;
 
-    private DcMotor motorStanga;
-    private DcMotor motorDreapta;
+    public static DcMotor motorStanga;
+    public static DcMotor motorDreapta;
     private CRServo servoBanda;
 
     public static double TUN_POWER = 0.5;
@@ -86,13 +86,13 @@ public class Tun extends SubsystemBase {
         switch(currentTunState)
         {
             case FORWARD:
-                motorDreapta.setPower(TUN_POWER);
-                motorStanga.setPower(-TUN_POWER);
-                servoBanda.setPower(BAND_POWER);
-                break;
-            case REVERSE:
                 motorDreapta.setPower(-TUN_POWER);
                 motorStanga.setPower(TUN_POWER);
+                servoBanda.setPower(-BAND_POWER);
+                break;
+            case REVERSE:
+                motorDreapta.setPower(TUN_POWER);
+                motorStanga.setPower(-TUN_POWER);
                 servoBanda.setPower(-BAND_POWER);
                 break;
             case IDLE:
