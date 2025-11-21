@@ -42,13 +42,13 @@ public class TestTunDirectionCommand extends CommandOpMode {
 
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, 50, Tun.tunState.FORWARD)
+                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.FORWARD)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, 100, Tun.tunState.REVERSE)
+                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.REVERSE)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, 0, Tun.tunState.IDLE)
+                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.IDLE)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
                new InstantCommand(() -> pivotTun.motorPivot.setPower(0))

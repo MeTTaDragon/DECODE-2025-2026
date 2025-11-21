@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOps;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
@@ -13,8 +14,11 @@ import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 
-public class TeleOpPrezentare extends CommandOpMode {
-    GamepadEx gamepad;
+@TeleOp(name = "TeleOp Structure", group = "TeleOpStructures")
+public class TeleOpStruct extends CommandOpMode {
+
+    GamepadEx chassis;
+    GamepadEx cannon;
     Tun tun;
     PivotTun pivotTun;
     Drivetrain drive;
@@ -27,38 +31,40 @@ public class TeleOpPrezentare extends CommandOpMode {
     public void initialize() {
 
 
-        gamepad = new GamepadEx(gamepad1);
+        chassis = new GamepadEx(gamepad1);
+        cannon = new GamepadEx(gamepad2);
 
         super.reset();
 
         tun = new Tun(hardwareMap);
         pivotTun = new PivotTun(hardwareMap);
+        drive = new Drivetrain(hardwareMap);
 
         register(tun, pivotTun, drive);
         tun.init();
         pivotTun.init();
         drive.init();
 
-        drive.setDefaultCommand(new RobotCentricDriveCommand(drive, gamepad));
+        drive.setDefaultCommand(new RobotCentricDriveCommand(drive, chassis));
 
 
-        gamepad.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+        cannon.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun, Tun.tunState.FORWARD)
         );
-        gamepad.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.REVERSE)
+        cannon.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                new setTunDirectionCommand(tun, pivotTun,  Tun.tunState.REVERSE)
         );
-        gamepad.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+        cannon.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun, Tun.tunState.IDLE)
         );
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
-                new InstantCommand(() -> pivotTun.setPivotPosition(1000))
+        cannon.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+                new InstantCommand(() -> pivotTun.setPivotPosition(1500))
         );
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+        cannon.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new InstantCommand(() -> pivotTun.setPivotPosition(0))
         );
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new InstantCommand(() -> pivotTun.setPivotPosition(-1000))
+        cannon.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new InstantCommand(() -> pivotTun.setPivotPosition(-1500))
         );
 
         super.run();
