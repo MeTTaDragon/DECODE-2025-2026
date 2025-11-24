@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeamCode.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
@@ -23,8 +24,8 @@ public class Tun extends SubsystemBase {
 
     private static tunState currentTunState;
 
-    public static DcMotor motorStanga;
-    public static DcMotor motorDreapta;
+    public static DcMotorEx motorStanga;
+    public static DcMotorEx motorDreapta;
     private CRServo servoBanda;
 
     public static double TUN_POWER = 0.5;
@@ -43,8 +44,8 @@ public class Tun extends SubsystemBase {
      * @param hwMap The hardware map from the OpMode, used to access physical devices.
      */
     public Tun(HardwareMap hwMap) {
-        this.motorDreapta = hwMap.get(DcMotor.class, "motorDreapta");
-        this.motorStanga = hwMap.get(DcMotor.class, "motorStanga");
+        this.motorDreapta = hwMap.get(DcMotorEx.class, "motorDreapta");
+        this.motorStanga = hwMap.get(DcMotorEx.class, "motorStanga");
         this.servoBanda = hwMap.get(CRServo.class, "servoBanda");
     }
 
@@ -88,12 +89,18 @@ public class Tun extends SubsystemBase {
             case FORWARD:
                 motorDreapta.setPower(-TUN_POWER);
                 motorStanga.setPower(TUN_POWER);
-                servoBanda.setPower(-BAND_POWER);
+                servoBanda.setPower(BAND_POWER);
+
+                currentSpeedDreapta = motorDreapta.getVelocity();
+                currentSpeedDreapta = motorStanga.getVelocity();
                 break;
             case REVERSE:
                 motorDreapta.setPower(TUN_POWER);
                 motorStanga.setPower(-TUN_POWER);
                 servoBanda.setPower(-BAND_POWER);
+
+                currentSpeedDreapta = motorDreapta.getVelocity();
+                currentSpeedDreapta = motorStanga.getVelocity();
                 break;
             case IDLE:
                 motorDreapta.setPower(0);
@@ -121,9 +128,4 @@ public class Tun extends SubsystemBase {
 
     public static double getCurrentSpeedStanga() {return currentSpeedStanga;}
 
-    @Override
-    public void periodic() {
-        currentSpeedDreapta = motorDreapta.getPower();
-        currentSpeedDreapta = motorStanga.getPower();
-    }
 }

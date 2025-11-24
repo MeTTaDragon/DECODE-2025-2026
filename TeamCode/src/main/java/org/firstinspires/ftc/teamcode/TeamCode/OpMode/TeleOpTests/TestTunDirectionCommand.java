@@ -70,7 +70,7 @@ public class TestTunDirectionCommand extends CommandOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         tun.setTunState(testState);
-        //pivotTun.setPivotPosition(TARGET_POSITION);
+        pivotTun.setPivotPosition(TARGET_POSITION);
 
 
         telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());
