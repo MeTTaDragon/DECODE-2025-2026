@@ -20,10 +20,9 @@ public class setTunDirectionCommand extends CommandBase {
      *
      * @param tun                 The Tun subsystem that this command will control.
      * @param pivotTun            The PivotTun subsystem that this command will control.
-     * @param pivotTargetPosition The target encoder position for the pivot motor.
      * @param tunState            The desired state for the intake (e.g., FORWARD, REVERSE, IDLE).
      */
-    public setTunDirectionCommand(Tun tun, PivotTun pivotTun,  int pivotTargetPosition, Tun.tunState tunState) {
+    public setTunDirectionCommand(Tun tun, PivotTun pivotTun, Tun.tunState tunState) {
         this.tun = tun;
         this.pivotTun = pivotTun;
         this.pivotTargetPosition = pivotTargetPosition;

@@ -43,13 +43,13 @@ public class TeleOpPrezentare extends CommandOpMode {
 
 
         gamepad.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, 50, Tun.tunState.FORWARD)
+                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.FORWARD)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, 100, Tun.tunState.REVERSE)
+                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.REVERSE)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, 0, Tun.tunState.IDLE)
+                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.IDLE)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
                 new InstantCommand(() -> pivotTun.setPivotPosition(1000))

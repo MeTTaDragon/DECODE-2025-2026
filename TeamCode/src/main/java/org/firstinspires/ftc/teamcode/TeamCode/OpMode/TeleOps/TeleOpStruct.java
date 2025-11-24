@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOpTests;
+package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOps;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -9,56 +8,63 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.TeamCode.Commands.FindMaxPosPivotCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Commands.RobotCentricDriveCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Commands.setTunDirectionCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
-@Config
-@TeleOp(name = "test Tun Direction Command", group = "TeleOp Tests")
-public class TestTunDirectionCommand extends CommandOpMode {
-    GamepadEx gamepad;
+
+@TeleOp(name = "TeleOp Structure", group = "TeleOpStructures")
+public class TeleOpStruct extends CommandOpMode {
+
+    GamepadEx chassis;
+    GamepadEx cannon;
     Tun tun;
     PivotTun pivotTun;
+    Drivetrain drive;
 
     public static Tun.tunState testState = Tun.tunState.IDLE;
     public static int TARGET_POSITION = 0;
 
+
     @Override
     public void initialize() {
-        gamepad = new GamepadEx(gamepad1);
+
+
+        chassis = new GamepadEx(gamepad1);
+        cannon = new GamepadEx(gamepad2);
 
         super.reset();
 
         tun = new Tun(hardwareMap);
         pivotTun = new PivotTun(hardwareMap);
+        drive = new Drivetrain(hardwareMap);
 
-        register(tun, pivotTun);
+        register(tun, pivotTun, drive);
         tun.init();
         pivotTun.init();
+        drive.init();
+
+        drive.setDefaultCommand(new RobotCentricDriveCommand(drive, chassis));
 
 
-
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+        cannon.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun, Tun.tunState.FORWARD)
         );
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.REVERSE)
+        cannon.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                new setTunDirectionCommand(tun, pivotTun,  Tun.tunState.REVERSE)
         );
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+        cannon.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun, Tun.tunState.IDLE)
         );
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-               new InstantCommand(() -> pivotTun.motorPivot.setPower(0))
-
+        cannon.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+                new InstantCommand(() -> pivotTun.setPivotPosition(1500))
         );
-
-        gamepad.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new FindMaxPosPivotCommand(pivotTun).interruptOn(
-                        () -> { return gamepad1.square; }
-                )
+        cannon.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new InstantCommand(() -> pivotTun.setPivotPosition(0))
+        );
+        cannon.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new InstantCommand(() -> pivotTun.setPivotPosition(-1500))
         );
 
         super.run();
@@ -66,7 +72,6 @@ public class TestTunDirectionCommand extends CommandOpMode {
 
     @Override
     public void run() {
-
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         tun.setTunState(testState);
@@ -83,9 +88,6 @@ public class TestTunDirectionCommand extends CommandOpMode {
         telemetry.addData("tolerance", pivotTun.getTolerance());
         telemetry.addData("tun current power dreapta", tun.getCurrentSpeedDreapta());
         telemetry.addData("tun current power stanga", tun.getCurrentSpeedStanga());
-        telemetry.addData("---Switch pressed", pivotTun.getSwitchState());
-
-        telemetry.addData("cross", gamepad1.cross);
         telemetry.update();
 
         super.run();
