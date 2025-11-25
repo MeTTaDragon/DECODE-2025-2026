@@ -28,8 +28,9 @@ public class Tun extends SubsystemBase {
     public static DcMotorEx motorDreapta;
     private CRServo servoBanda;
 
-    public static double TUN_POWER = 0.5;
-    public static double BAND_POWER = 0.5;
+    public static double TUN_POWER = 0.9;
+    public static double BAND_POWER = 0.9;
+    public double CURRENT_BAND_POWER = 0.0;
 
     static double currentSpeedDreapta;
 
@@ -89,23 +90,16 @@ public class Tun extends SubsystemBase {
             case FORWARD:
                 motorDreapta.setPower(-TUN_POWER);
                 motorStanga.setPower(TUN_POWER);
-                servoBanda.setPower(BAND_POWER);
 
-                currentSpeedDreapta = motorDreapta.getVelocity();
-                currentSpeedDreapta = motorStanga.getVelocity();
                 break;
             case REVERSE:
                 motorDreapta.setPower(TUN_POWER);
                 motorStanga.setPower(-TUN_POWER);
-                servoBanda.setPower(-BAND_POWER);
 
-                currentSpeedDreapta = motorDreapta.getVelocity();
-                currentSpeedDreapta = motorStanga.getVelocity();
                 break;
             case IDLE:
                 motorDreapta.setPower(0);
                 motorStanga.setPower(0);
-                servoBanda.setPower(0);
                 break;
         }
     }
@@ -115,9 +109,9 @@ public class Tun extends SubsystemBase {
     {
         return TUN_POWER;
     }
-    public static double getBandPower()
+    public double getBandPower()
     {
-        return BAND_POWER;
+        return CURRENT_BAND_POWER;
     }
     public static tunState getCurrentTunState()
     {
@@ -127,5 +121,24 @@ public class Tun extends SubsystemBase {
     public static double getCurrentSpeedDreapta() {return currentSpeedDreapta;}
 
     public static double getCurrentSpeedStanga() {return currentSpeedStanga;}
+
+    public void periodic() {
+        currentSpeedDreapta = motorDreapta.getVelocity();
+        currentSpeedStanga = motorStanga.getVelocity();
+
+        if(Math.abs(getCurrentSpeedStanga()) > TUN_POWER * 1000 && getCurrentTunState() == tunState.FORWARD)  {
+            servoBanda.setPower(BAND_POWER);
+            CURRENT_BAND_POWER = servoBanda.getPower();
+        }
+        else if(Math.abs(getCurrentSpeedStanga()) > TUN_POWER * 1000 && getCurrentTunState() == tunState.REVERSE) {
+            servoBanda.setPower(-BAND_POWER);
+            CURRENT_BAND_POWER = servoBanda.getPower();
+        }
+        else {
+            servoBanda.setPower(0);
+            CURRENT_BAND_POWER = servoBanda.getPower();
+        }
+
+    }
 
 }
