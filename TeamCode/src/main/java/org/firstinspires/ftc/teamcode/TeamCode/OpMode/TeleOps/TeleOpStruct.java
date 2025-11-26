@@ -48,22 +48,22 @@ public class TeleOpStruct extends CommandOpMode {
         drive.setDefaultCommand(new RobotCentricDriveCommand(drive, chassis));
 
 
-        cannon.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+        chassis.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun, Tun.tunState.FORWARD)
         );
-        cannon.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+        chassis.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun,  Tun.tunState.REVERSE)
         );
-        cannon.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+        chassis.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun, Tun.tunState.IDLE)
         );
-        cannon.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+        chassis.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
                 new InstantCommand(() -> pivotTun.setPivotPosition(1500))
         );
-        cannon.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+        chassis.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new InstantCommand(() -> pivotTun.setPivotPosition(0))
         );
-        cannon.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+        chassis.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
                 new InstantCommand(() -> pivotTun.setPivotPosition(-1500))
         );
 
