@@ -17,45 +17,35 @@ public class Constants {
             .mass(10.2)
             .forwardZeroPowerAcceleration(-33.35)
             .lateralZeroPowerAcceleration(-62)
+            .useSecondaryDrivePIDF(false)
+            .useSecondaryHeadingPIDF(fasle)
+            .useSecondaryTranslationalPIDF(false)
             .translationalPIDFCoefficients(new PIDFCoefficients(
-                    0.03,
-                    0,
-                    0,
-                    0.015
+                    0.072,
+                    0.00001,
+                    0.015,
+                    0.035
             ))
             .translationalPIDFSwitch(4)
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(
-                    0.4,
-                    0,
-                    0.005,
-                    0.0006
-            ))
             .headingPIDFCoefficients(new PIDFCoefficients(
-                    0.8,
-                    0,
-                    0,
-                    0.01
+                    0.05,
+                    0.0001,
+                    0.03,
+                    0.02
             ))
             .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(
-                    2.5,
                     0,
-                    0.1,
-                    0.0005
-            ))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(
-                    0.1,
                     0,
-                    0.00035,
-                    0.6,
-                    0.015
-            ))
-            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(
-                    0.02,
                     0,
-                    0.000005,
-                    0.6,
-                    0.01
+                    0
             ))
+           .drivePIDFCoefficients(new FilteredPIDFCoefficients(
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+           ))
             .drivePIDFSwitch(15)
             .centripetalScaling(0.0005);
 
