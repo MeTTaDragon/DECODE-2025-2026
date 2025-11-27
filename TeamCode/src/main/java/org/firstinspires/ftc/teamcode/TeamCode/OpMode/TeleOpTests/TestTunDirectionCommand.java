@@ -42,13 +42,13 @@ public class TestTunDirectionCommand extends CommandOpMode {
 
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.FORWARD)
+                new setTunDirectionCommand(tun, pivotTun, 1800)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.REVERSE)
+                new setTunDirectionCommand(tun, pivotTun, -1800)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.IDLE)
+                new setTunDirectionCommand(tun, pivotTun, 0)
         );
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
                new InstantCommand(() -> pivotTun.motorPivot.setPower(0))
@@ -69,8 +69,8 @@ public class TestTunDirectionCommand extends CommandOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        tun.setTunState(testState);
-        pivotTun.setPivotPosition(TARGET_POSITION);
+//        tun.setTunState(testState);
+//        pivotTun.setPivotPosition(TARGET_POSITION);
 
 
         telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());

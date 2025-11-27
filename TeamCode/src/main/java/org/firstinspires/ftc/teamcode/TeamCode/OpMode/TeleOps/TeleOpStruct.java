@@ -49,22 +49,22 @@ public class TeleOpStruct extends CommandOpMode {
 
 
         chassis.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.FORWARD)
+                new setTunDirectionCommand(tun, pivotTun, 1800)
         );
         chassis.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun,  Tun.tunState.REVERSE)
+                new setTunDirectionCommand(tun, pivotTun, -1800)
         );
         chassis.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, Tun.tunState.IDLE)
+                new setTunDirectionCommand(tun, pivotTun, 0)
         );
         chassis.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
-                new InstantCommand(() -> pivotTun.setPivotPosition(1500))
+                new InstantCommand(() -> pivotTun.setPivotPosition(1800))
         );
         chassis.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new InstantCommand(() -> pivotTun.setPivotPosition(0))
         );
         chassis.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new InstantCommand(() -> pivotTun.setPivotPosition(-1500))
+                new InstantCommand(() -> pivotTun.setPivotPosition(-1800))
         );
 
         super.run();
@@ -73,9 +73,6 @@ public class TeleOpStruct extends CommandOpMode {
     @Override
     public void run() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
-        tun.setTunState(testState);
-        pivotTun.setPivotPosition(TARGET_POSITION);
 
 
         telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());

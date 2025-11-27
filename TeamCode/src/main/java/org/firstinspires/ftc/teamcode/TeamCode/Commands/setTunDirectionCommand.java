@@ -20,13 +20,12 @@ public class setTunDirectionCommand extends CommandBase {
      *
      * @param tun                 The Tun subsystem that this command will control.
      * @param pivotTun            The PivotTun subsystem that this command will control.
-     * @param tunState            The desired state for the intake (e.g., FORWARD, REVERSE, IDLE).
+     * @param pivotTarget         The target encoder position for the pivot motor.
      */
-    public setTunDirectionCommand(Tun tun, PivotTun pivotTun, Tun.tunState tunState) {
+    public setTunDirectionCommand(Tun tun, PivotTun pivotTun, int pivotTarget) {
         this.tun = tun;
         this.pivotTun = pivotTun;
-        this.pivotTargetPosition = pivotTargetPosition;
-        this.tunState = tunState;
+        this.pivotTargetPosition = pivotTarget;
         addRequirements(tun, pivotTun);
     }
 
@@ -38,14 +37,12 @@ public class setTunDirectionCommand extends CommandBase {
      * @param pivotTun            The PivotTun subsystem that this command will control.
      * @param ll                  The LimelightSubsystem to adjust the servo position based on pivot direction.
      * @param pivotTargetPosition The target encoder position for the pivot motor.
-     * @param tunState            The desired state for the intake (e.g., FORWARD, REVERSE, IDLE).
      */
-    public setTunDirectionCommand(Tun tun, PivotTun pivotTun, LimelightSubsystem ll, int pivotTargetPosition, Tun.tunState tunState) {
+    public setTunDirectionCommand(Tun tun, PivotTun pivotTun, LimelightSubsystem ll, int pivotTargetPosition) {
         this.tun = tun;
         this.pivotTun = pivotTun;
         this.pivotTargetPosition = pivotTargetPosition;
         this.ll = ll;
-        this.tunState = tunState;
         addRequirements(tun, pivotTun, ll);
 
         llConnected = true;
@@ -54,8 +51,16 @@ public class setTunDirectionCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        tun.setTunState(tunState);
         pivotTun.setPivotPosition(pivotTargetPosition);
+
+        if(pivotTargetPosition > 0) {
+            tun.setTunState(Tun.tunState.FORWARD);
+        } else if (pivotTargetPosition < 0) {
+            tun.setTunState(Tun.tunState.REVERSE);
+        } else {
+            tun.setTunState(Tun.tunState.IDLE);
+        }
+
 
         //TODO: verifica directia motorului sa fie pe directii opuse pivotu cu camera
         if(llConnected) {
