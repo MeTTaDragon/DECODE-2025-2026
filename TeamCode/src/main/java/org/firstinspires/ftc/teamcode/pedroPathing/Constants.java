@@ -15,23 +15,23 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(10.2)
-            .forwardZeroPowerAcceleration(-33.35)
-            .lateralZeroPowerAcceleration(-62)
+            .forwardZeroPowerAcceleration(-30)
+            .lateralZeroPowerAcceleration(-60)
             .useSecondaryDrivePIDF(false)
-            .useSecondaryHeadingPIDF(fasle)
+            .useSecondaryHeadingPIDF(false)
             .useSecondaryTranslationalPIDF(false)
             .translationalPIDFCoefficients(new PIDFCoefficients(
-                    0.072,
-                    0.00001,
-                    0.015,
-                    0.035
+                    0.08,
+                    0,
+                    0.004,
+                    0.023
             ))
             .translationalPIDFSwitch(4)
             .headingPIDFCoefficients(new PIDFCoefficients(
-                    0.05,
-                    0.0001,
-                    0.03,
-                    0.02
+                    1,
+                    0,
+                    0.1,
+                    0.03
             ))
             .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(
                     0,
@@ -40,11 +40,11 @@ public class Constants {
                     0
             ))
            .drivePIDFCoefficients(new FilteredPIDFCoefficients(
+                    0.01,
                     0,
-                    0,
-                    0,
-                    0,
-                    0
+                    0.0001,
+                    0.5,
+                    0.035
            ))
             .drivePIDFSwitch(15)
             .centripetalScaling(0.0005);
@@ -54,18 +54,18 @@ public class Constants {
             .leftRearMotorName("backLeft")
             .rightFrontMotorName("frontRight")
             .rightRearMotorName("backRight")
-            .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .xVelocity(85)
-            .yVelocity(71.65);
+            .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .xVelocity(80.5)
+            .yVelocity(67.5);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(0)
-            .strafePodX(-16.5)
-            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
-            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
+            .forwardPodY(6.49)
+            .strafePodX(0)
+            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
+            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
     /**
      These are the PathConstraints in order:
@@ -81,9 +81,9 @@ public class Constants {
             0.1,
             0.009,
             50,
-            1.25,
+            1.1,
             10,
-            1
+            0.9
     );
 
     //Add custom localizers or drivetrains here

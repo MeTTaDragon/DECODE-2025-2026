@@ -56,7 +56,7 @@ public class PivotTun extends SubsystemBase {
      * It is an overloaded version of {@link #init(int)}.
      */
     public void init() {
-        motorPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        motorPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setPivotPosition(0);
         motorPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
