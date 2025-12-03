@@ -10,13 +10,18 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
+import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.teamcode.TeamCode.Commands.setTunDirectionCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Auto Red", group = "Auto")
-public class AutoRed extends OpMode {
+@Autonomous(name = "Auto Red command", group = "Auto")
+public class CommandAuto extends CommandOpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -24,8 +29,8 @@ public class AutoRed extends OpMode {
     private int pathState;
     private boolean actionStarted = false;
     private ElapsedTime elapsedTime = new ElapsedTime();
-     Tun tun;
-     PivotTun pivotTun;
+    Tun tun;
+    PivotTun pivotTun;
 
     private final Pose startPose = new Pose(123, 123, Math.toRadians(-145)); // Start Pose of our robot.
     private final Pose scorePose = new Pose(73, 87, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
@@ -105,6 +110,7 @@ public class AutoRed extends OpMode {
                     /* Score Preload */
                     if(!actionStarted) {
                         tun.setTunState(Tun.tunState.FORWARD);
+                        pivotTun.setPivotPosition(1800);
 
                         elapsedTime.reset();
                         actionStarted = true;
@@ -188,12 +194,58 @@ public class AutoRed extends OpMode {
     }
 
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
+
+
+    /** This method is called once at the init of the OpMode. **/
     @Override
-    public void loop() {
+    public void initialize() {
+        super.reset();
+        tun = new Tun(hardwareMap);
+        pivotTun = new PivotTun(hardwareMap);
+        register(tun,pivotTun);
+        tun.init();
+        pivotTun.init();
+
+
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(startPose);
+        buildPaths();
+
+
+        SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
+                // Score preload
+                new FollowPathCommand(follower, scorePreload),
+                new setTunDirectionCommand(tun, pivotTun, 1800),
+                new WaitCommand(4000),
+                new setTunDirectionCommand(tun, pivotTun, 0),
+
+                // First pickup cycle
+                new FollowPathCommand(follower, grabPickup1), // Sets globalMaxPower to 50% for all future paths
+
+                new FollowPathCommand(follower, scorePickup1),
+
+                // Second pickup cycle
+                new FollowPathCommand(follower, grabPickup2),
+
+                new FollowPathCommand(follower, scorePickup2), // Overrides maxPower to 100% for this path only
+
+                // Third pickup cycle
+                new FollowPathCommand(follower, grabPickup3),
+
+                new FollowPathCommand(follower, scorePickup3)
+
+
+
+        );
+        schedule(autonomousSequence);
+
+    }
+
+    @Override
+    public void run() {
+        super.run();
 
         // These loop the movements of the robot, these must be called continuously in order to work
-        follower.update();
-        autonomousPathUpdate();
 
         // Feedback to Driver Hub for debugging
         telemetry.addData("path state", pathState);
@@ -208,39 +260,10 @@ public class AutoRed extends OpMode {
 
     }
 
-    /** This method is called once at the init of the OpMode. **/
-    @Override
-    public void init() {
-        pathTimer = new Timer();
-        opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
-        tun = new Tun(hardwareMap);
-        pivotTun = new PivotTun(hardwareMap);
-        tun.init();
-        pivotTun.init();
-
-
-        follower = Constants.createFollower(hardwareMap);
-        buildPaths();
-        follower.setStartingPose(startPose);
-
-    }
-
     /** This method is called continuously after Init while waiting for "play". **/
-    @Override
-    public void init_loop() {}
 
     /** This method is called once at the start of the OpMode.
      * It runs all the setup actions, including building paths and starting the path system **/
-    @Override
-    public void start() {
-        opmodeTimer.resetTimer();
-        setPathState(0);
-    }
-
-    /** We do not use this because everything should automatically disable **/
-    @Override
-    public void stop() {}
 
 
 }

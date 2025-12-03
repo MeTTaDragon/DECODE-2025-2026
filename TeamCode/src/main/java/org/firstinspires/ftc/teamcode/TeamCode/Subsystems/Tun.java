@@ -15,10 +15,13 @@ public class Tun extends SubsystemBase {
     public enum tunState {
         /** The motors and conveyor belt run forward to collect items. */
         FORWARD,
+        FORWARD_WITH_PIVOT,
         /** The motors and conveyor belt run in reverse to eject items. */
         REVERSE,
+        REVERSE_WITH_PIVOT,
         /** All motors in the subsystem are stopped. */
-        IDLE
+        IDLE,
+        IDLE_WITH_PIVOT
     };
 
 
@@ -35,6 +38,7 @@ public class Tun extends SubsystemBase {
     static double currentSpeedDreapta;
 
     static double currentSpeedStanga;
+    PivotTun pivotTun;
 
 
     /**
@@ -92,14 +96,33 @@ public class Tun extends SubsystemBase {
                 motorStanga.setPower(TUN_POWER);
 
                 break;
+            case FORWARD_WITH_PIVOT:
+                motorDreapta.setPower(-TUN_POWER);
+                motorStanga.setPower(TUN_POWER);
+                pivotTun.setPivotPosition(1800);
+
+
+                break;
             case REVERSE:
                 motorDreapta.setPower(TUN_POWER);
                 motorStanga.setPower(-TUN_POWER);
 
                 break;
+            case REVERSE_WITH_PIVOT:
+                motorDreapta.setPower(TUN_POWER);
+                motorStanga.setPower(-TUN_POWER);
+                pivotTun.setPivotPosition(-1800);
+
+                break;
             case IDLE:
                 motorDreapta.setPower(0);
                 motorStanga.setPower(0);
+                break;
+            case IDLE_WITH_PIVOT:
+                motorDreapta.setPower(0);
+                motorStanga.setPower(0);
+                pivotTun.setPivotPosition(0);
+
                 break;
         }
     }
