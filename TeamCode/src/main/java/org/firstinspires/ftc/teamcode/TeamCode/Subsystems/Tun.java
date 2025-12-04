@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 @Config
@@ -15,13 +16,10 @@ public class Tun extends SubsystemBase {
     public enum tunState {
         /** The motors and conveyor belt run forward to collect items. */
         FORWARD,
-        FORWARD_WITH_PIVOT,
         /** The motors and conveyor belt run in reverse to eject items. */
         REVERSE,
-        REVERSE_WITH_PIVOT,
         /** All motors in the subsystem are stopped. */
         IDLE,
-        IDLE_WITH_PIVOT
     };
 
 
@@ -30,10 +28,15 @@ public class Tun extends SubsystemBase {
     public static DcMotorEx motorStanga;
     public static DcMotorEx motorDreapta;
     private CRServo servoBanda;
+    private Servo gateFront;
+    private Servo gateBack;
 
     public static double TUN_POWER = 0.9;
     public static double BAND_POWER = 0.9;
     public double CURRENT_BAND_POWER = 0.0;
+
+    public static double gateCloseFront = 0.15;
+    public static double gateCloseBack = 0.2;
 
     static double currentSpeedDreapta;
 
@@ -52,6 +55,12 @@ public class Tun extends SubsystemBase {
         this.motorDreapta = hwMap.get(DcMotorEx.class, "motorDreapta");
         this.motorStanga = hwMap.get(DcMotorEx.class, "motorStanga");
         this.servoBanda = hwMap.get(CRServo.class, "servoBanda");
+        this.gateFront = hwMap.get(Servo.class, "gateFront");
+        this.gateBack = hwMap.get(Servo.class, "gateBack");
+
+        gateFront.setDirection(Servo.Direction.REVERSE );
+        gateBack.setDirection(Servo.Direction.REVERSE );
+
     }
 
 
@@ -61,6 +70,8 @@ public class Tun extends SubsystemBase {
     public void init()
     {
         setTunState(tunState.IDLE);
+        gateFront.setPosition(0);
+        gateBack.setPosition(0);
     }
 
     /**
@@ -94,36 +105,22 @@ public class Tun extends SubsystemBase {
             case FORWARD:
                 motorDreapta.setPower(-TUN_POWER);
                 motorStanga.setPower(TUN_POWER);
-
+                servoBanda.setPower(BAND_POWER);
                 break;
-            case FORWARD_WITH_PIVOT:
-                motorDreapta.setPower(-TUN_POWER);
-                motorStanga.setPower(TUN_POWER);
-                pivotTun.setPivotPosition(1800);
 
-
-                break;
             case REVERSE:
                 motorDreapta.setPower(TUN_POWER);
                 motorStanga.setPower(-TUN_POWER);
+                servoBanda.setPower(-BAND_POWER);
 
                 break;
-            case REVERSE_WITH_PIVOT:
-                motorDreapta.setPower(TUN_POWER);
-                motorStanga.setPower(-TUN_POWER);
-                pivotTun.setPivotPosition(-1800);
 
-                break;
             case IDLE:
                 motorDreapta.setPower(0);
                 motorStanga.setPower(0);
+                servoBanda.setPower(0);
                 break;
-            case IDLE_WITH_PIVOT:
-                motorDreapta.setPower(0);
-                motorStanga.setPower(0);
-                pivotTun.setPivotPosition(0);
 
-                break;
         }
     }
 
@@ -149,17 +146,17 @@ public class Tun extends SubsystemBase {
         currentSpeedDreapta = motorDreapta.getVelocity();
         currentSpeedStanga = motorStanga.getVelocity();
 
-        if(Math.abs(getCurrentSpeedStanga()) > TUN_POWER * 1000 && getCurrentTunState() == tunState.FORWARD)  {
-            servoBanda.setPower(BAND_POWER);
-            CURRENT_BAND_POWER = servoBanda.getPower();
+        if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 1000 && getCurrentTunState() == tunState.FORWARD)  {
+            gateFront.setPosition(gateCloseFront);
+            gateBack.setPosition(0);
         }
-        else if(Math.abs(getCurrentSpeedStanga()) > TUN_POWER * 1000 && getCurrentTunState() == tunState.REVERSE) {
-            servoBanda.setPower(-BAND_POWER);
-            CURRENT_BAND_POWER = servoBanda.getPower();
+        else if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 900 && getCurrentTunState() == tunState.REVERSE) {
+            gateFront.setPosition(0);
+            gateBack.setPosition(gateCloseBack);
         }
         else {
-            servoBanda.setPower(0);
-            CURRENT_BAND_POWER = servoBanda.getPower();
+            gateFront.setPosition(0);
+            gateBack.setPosition(0);
         }
 
     }

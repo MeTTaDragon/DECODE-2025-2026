@@ -68,4 +68,9 @@ public class setTunDirectionCommand extends CommandBase {
             else ll.setLLServoState(LimelightSubsystem.LLServoState.FRONT);
         }
     }
+
+    @Override
+    public boolean isFinished(){
+        return true;
+    }
 }

@@ -14,7 +14,7 @@ public class PivotTun extends SubsystemBase {
     public DcMotorEx motorPivot;
      static TouchSensor buton;
     public static boolean failsafe = false;
-    public static double PIVOT_POWER = 0.5;
+    public static double PIVOT_POWER = 0.9;
     public static int TARGET_POSITION = 0;
     public static int tolerance = 0;
 
