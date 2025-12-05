@@ -18,7 +18,7 @@ public class TestLimelight extends CommandOpMode {
 
     public GamepadEx gamepad;
     public static LimelightSubsystem.LimelightMode llmode = null;
-    public static LimelightSubsystem.LLServoState servostate=null;
+    public static LimelightSubsystem.LLServoState servostate = null;
     @Override
     public void initialize() {
         limelight = new LimelightSubsystem(hardwareMap);

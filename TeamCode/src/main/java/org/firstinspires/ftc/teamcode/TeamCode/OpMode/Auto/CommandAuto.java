@@ -38,9 +38,9 @@ public class CommandAuto extends CommandOpMode {
     Tun tun;
     PivotTun pivotTun;
 
-    private final Pose startPose = new Pose(123, 123, Math.toRadians(-135)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(86, 84, Math.toRadians(-135)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    private final Pose setPickupPose1 = new Pose(100, 84, Math.toRadians(0));
+    private final Pose startPose = new Pose(123, 123, Math.toRadians(-130)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(85.5, 83, Math.toRadians(-130)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose setPickupPose1 = new Pose(100, 83, Math.toRadians(0));
     private final Pose pickup1Pose = new Pose(130, 84, Math.toRadians(0));
     private final Pose inter1Pose = new Pose(74, 84, Math.toRadians(0));
     private final Pose inter2Pose = new Pose(73, 60);
@@ -104,7 +104,18 @@ public class CommandAuto extends CommandOpMode {
                 .build();
     }
 
-
+    private InstantCommand setPivotPos(int targetPosition) {
+        return new InstantCommand(
+                () -> pivotTun.setPivotPosition(targetPosition), // Acțiunea (Lambda)
+                pivotTun // Requirement-ul (spune scheduler-ului că folosim pivotTun)
+        );
+    }
+    private InstantCommand setTunState(Tun.tunState state) {
+        return new InstantCommand(
+                () -> tun.setTunState(state),
+                tun // Requirement
+        );
+    }
 
     /** This method is called once at the init of the OpMode. **/
     @Override
@@ -115,7 +126,6 @@ public class CommandAuto extends CommandOpMode {
         register(tun,pivotTun);
         tun.init();
         pivotTun.init();
-
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         buildPaths();
@@ -124,9 +134,9 @@ public class CommandAuto extends CommandOpMode {
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
                 // Score preload
                 new FollowPathCommand(follower, scorePreload),
-
-                new setTunDirectionCommand(tun, pivotTun, -1800),
-                new WaitCommand(5000),
+                setPivotPos(-1800),
+                new WaitCommand(1000),
+                setTunState(Tun.tunState.REVERSE),
 
                 // First pickup cycle
                 new FollowPathCommand(follower, setPickup1).setGlobalMaxPower(0.5),

@@ -95,15 +95,15 @@ public class LimelightSubsystem extends SubsystemBase {
                 limelight.start();
                 break;
             case TRACK_ARTIFACT:
-                limelight.pipelineSwitch(1);
+                limelight.pipelineSwitch(3);
                 limelight.start();
                 break;
             case BASKET:
                 if (Globals.team_color == Globals.TEAM.RED) {
-                    limelight.pipelineSwitch(2);
+                    limelight.pipelineSwitch(1);
                     limelight.start();
                 } else {
-                    limelight.pipelineSwitch(3);
+                    limelight.pipelineSwitch(2);
                     limelight.start();
                 }
                 break;
@@ -121,7 +121,7 @@ public class LimelightSubsystem extends SubsystemBase {
                 llservo.setPosition(0.0); // Adjust the position value as needed
                 break;
             case BACK:
-                llservo.setPosition(1.0); // Adjust the position value as needed
+                llservo.setPosition(0.6); // Adjust the position value as needed
                 break;
         }
     }
