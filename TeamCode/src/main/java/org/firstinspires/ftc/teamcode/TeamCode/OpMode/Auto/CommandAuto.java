@@ -155,11 +155,11 @@ public class CommandAuto extends CommandOpMode {
                         setBackGate(tun.gateCloseBack)
                 ),
 
-                setTunPower(0.9),
+                setTunPower(0.86),
                 setTunState(Tun.tunState.REVERSE),
                 new WaitCommand(300),
                 setBackGate(0),
-                new WaitCommand(6000),
+                new WaitCommand(8000),
 
                 // First pickup cycle
                 new FollowPathCommand(follower, setPickup1),
@@ -174,6 +174,7 @@ public class CommandAuto extends CommandOpMode {
                 ),
                 new WaitCommand(300),
                 setBackGate(0)
+
 
 
 //                new WaitCommand(1000),

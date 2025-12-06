@@ -32,7 +32,7 @@ public class Tun extends SubsystemBase {
     private Servo gateBack;
 
     public static double TUN_POWER = 0.9;
-    public static double BAND_POWER =1;
+    public static double BAND_POWER =-git 1;
     public double CURRENT_BAND_POWER = 0.0;
 
     public static double gateCloseFront = 0.15;
