@@ -39,7 +39,9 @@ public class CommandAuto extends CommandOpMode {
     PivotTun pivotTun;
 
     private final Pose startPose = new Pose(123, 123, Math.toRadians(-130)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(85.5, 83, Math.toRadians(-130)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose scorePose = new Pose(85.5, 83, Math.toRadians(-130));
+    private final Pose scorePose1 = new Pose(85.5, 83, Math.toRadians(-125)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
     private final Pose setPickupPose1 = new Pose(100, 83, Math.toRadians(0));
     private final Pose pickup1Pose = new Pose(130, 84, Math.toRadians(0));
     private final Pose inter1Pose = new Pose(74, 84, Math.toRadians(0));
@@ -72,8 +74,8 @@ public class CommandAuto extends CommandOpMode {
 
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(pickup1Pose,scorePose))
-                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading())
+                .addPath(new BezierLine(pickup1Pose,scorePose1))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose1.getHeading())
                 .build();
 
         /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
@@ -116,6 +118,18 @@ public class CommandAuto extends CommandOpMode {
                 tun // Requirement
         );
     }
+    private InstantCommand setTunPower(double targetPower) {
+        return new InstantCommand(
+                () -> tun.setTunPower(targetPower),
+                tun // Requirement
+        );
+    }
+    private InstantCommand setBackGate(double pos){
+        return new InstantCommand(() ->
+                tun.setBackGatePos(pos),
+                tun
+        );
+    }
 
     /** This method is called once at the init of the OpMode. **/
     @Override
@@ -133,18 +147,32 @@ public class CommandAuto extends CommandOpMode {
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
                 // Score preload
-                new FollowPathCommand(follower, scorePreload),
-                setPivotPos(-1800),
-                new WaitCommand(1000),
+                new ParallelCommandGroup(
+                        new FollowPathCommand(follower, scorePreload),
+                        setPivotPos(-1800),
+                        setBackGate(0.2)
+                ),
+
+                setTunPower(0.75),
                 setTunState(Tun.tunState.REVERSE),
+                new WaitCommand(300),
+                setBackGate(0),
+                new WaitCommand(4000),
 
                 // First pickup cycle
-                new FollowPathCommand(follower, setPickup1).setGlobalMaxPower(0.5),
-                new WaitCommand(1000),
+                new FollowPathCommand(follower, setPickup1),
 
-                new FollowPathCommand(follower, grabPickup1),
 
-                new FollowPathCommand(follower, scorePickup1)
+                new FollowPathCommand(follower, grabPickup1).setGlobalMaxPower(0.5),
+                setTunState(Tun.tunState.IDLE),
+                setBackGate(0.2),
+                new ParallelCommandGroup(
+                    new FollowPathCommand(follower, scorePickup1).setGlobalMaxPower(1),
+                    setTunState(Tun.tunState.REVERSE)
+                ),
+                setBackGate(0)
+
+
 //                new WaitCommand(1000),
 //                new setTunDirectionCommand(tun, pivotTun, 1800),
 //

@@ -31,7 +31,7 @@ public class Tun extends SubsystemBase {
     private Servo gateFront;
     private Servo gateBack;
 
-    public static double TUN_POWER = 0.81;
+    public static double TUN_POWER = 0.9;
     public static double BAND_POWER =1;
     public double CURRENT_BAND_POWER = 0.0;
 
@@ -92,6 +92,8 @@ public class Tun extends SubsystemBase {
         BAND_POWER = power;
     }
 
+    public void setBackGatePos(double pos) {gateBack.setPosition(pos);}
+
     /**
      * Sets the operational state of the Tun subsystem and applies power to the motors accordingly.
      *
@@ -145,7 +147,7 @@ public class Tun extends SubsystemBase {
     public void periodic() {
         currentSpeedDreapta = motorDreapta.getVelocity();
         currentSpeedStanga = motorStanga.getVelocity();
-
+    /*
         if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 1000 && getCurrentTunState() == tunState.FORWARD)  {
             gateFront.setPosition(gateCloseFront);
             gateBack.setPosition(0);
@@ -158,7 +160,7 @@ public class Tun extends SubsystemBase {
             gateFront.setPosition(0);
             gateBack.setPosition(0);
         }
-
+*/
     }
 
 }

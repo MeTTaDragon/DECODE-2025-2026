@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.TeamCode.OpMode.TeleOps;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -13,6 +15,7 @@ import org.firstinspires.ftc.teamcode.TeamCode.Commands.setTunDirectionCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @TeleOp(name = "TeleOp Structure", group = "TeleOpStructures")
 public class TeleOpStruct extends CommandOpMode {
@@ -22,14 +25,19 @@ public class TeleOpStruct extends CommandOpMode {
     Tun tun;
     PivotTun pivotTun;
     Drivetrain drive;
+    Follower follower;
 
     public static Tun.tunState testState = Tun.tunState.IDLE;
     public static int TARGET_POSITION = 0;
 
+    boolean robotCentric = true;
+
 
     @Override
     public void initialize() {
-
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(new Pose());
+        follower.update();
 
         chassis = new GamepadEx(gamepad1);
         cannon = new GamepadEx(gamepad2);
@@ -68,12 +76,24 @@ public class TeleOpStruct extends CommandOpMode {
         );
 
         super.run();
+        follower.startTeleOpDrive();
     }
 
     @Override
     public void run() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        follower.update();
+        follower.setTeleOpDrive(
+                -gamepad1.left_stick_y,
+                -gamepad1.left_stick_x,
+                -gamepad1.right_stick_x,
+                robotCentric // Robot Centric
+        );
+
+        if(gamepad1.options){
+            robotCentric = !robotCentric;
+        }
 
         telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());
         telemetry.addData("Motor Dreapta Power", tun.motorDreapta.getPower());
@@ -85,6 +105,7 @@ public class TeleOpStruct extends CommandOpMode {
         telemetry.addData("tolerance", pivotTun.getTolerance());
         telemetry.addData("tun current power dreapta", tun.getCurrentSpeedDreapta());
         telemetry.addData("tun current power stanga", tun.getCurrentSpeedStanga());
+        telemetry.addData("robot centric?", robotCentric);
         telemetry.update();
 
         super.run();
