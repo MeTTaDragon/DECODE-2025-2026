@@ -152,13 +152,13 @@ public class CommandAuto extends CommandOpMode {
                 new ParallelCommandGroup(
                         new FollowPathCommand(follower, scorePreload),
                         setPivotPos(-1600),
-                        setBackGate(0)
+                        setBackGate(tun.gateCloseBack)
                 ),
 
                 setTunPower(0.9),
                 setTunState(Tun.tunState.REVERSE),
                 new WaitCommand(300),
-                //setBackGate(0),
+                setBackGate(0),
                 new WaitCommand(6000),
 
                 // First pickup cycle
@@ -167,12 +167,13 @@ public class CommandAuto extends CommandOpMode {
 
                 new FollowPathCommand(follower, grabPickup1).setGlobalMaxPower(0.5),
                 setTunState(Tun.tunState.IDLE),
-                //setBackGate(0.2),
+                setBackGate(tun.gateCloseBack),
                 new ParallelCommandGroup(
                     new FollowPathCommand(follower, scorePickup1).setGlobalMaxPower(1),
                     setTunState(Tun.tunState.REVERSE)
-                )
-                //setBackGate(0)
+                ),
+                new WaitCommand(300),
+                setBackGate(0)
 
 
 //                new WaitCommand(1000),

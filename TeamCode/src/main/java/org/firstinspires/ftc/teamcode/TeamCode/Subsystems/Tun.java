@@ -93,6 +93,8 @@ public class Tun extends SubsystemBase {
     }
 
     public void setBackGatePos(double pos) {gateBack.setPosition(pos);}
+    public void setFrontGatePos(double pos) {gateFront.setPosition(pos);}
+
 
     /**
      * Sets the operational state of the Tun subsystem and applies power to the motors accordingly.
@@ -126,7 +128,8 @@ public class Tun extends SubsystemBase {
         }
     }
 
-
+    public double getGateBackPos(){return gateBack.getPosition();}
+    public double getGateFrontPos(){return gateFront.getPosition();}
     public static double getTunPower()
     {
         return TUN_POWER;
@@ -148,18 +151,19 @@ public class Tun extends SubsystemBase {
         currentSpeedDreapta = motorDreapta.getVelocity();
         currentSpeedStanga = motorStanga.getVelocity();
 
-        if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 800 && getCurrentTunState() == tunState.FORWARD)  {
-            gateFront.setPosition(gateCloseFront);
-            gateBack.setPosition(0);
-        }
-        else if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 800 && getCurrentTunState() == tunState.REVERSE) {
-            gateFront.setPosition(0);
-            gateBack.setPosition(gateCloseBack);
-        }
-        else {
-            gateFront.setPosition(0);
-            gateBack.setPosition(0);
-        }
+
+//        if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 800 && getCurrentTunState() == tunState.FORWARD)  {
+//            gateFront.setPosition(gateCloseFront);
+//            gateBack.setPosition(0);
+//        }
+//        else if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 800 && getCurrentTunState() == tunState.REVERSE) {
+//            gateFront.setPosition(0);
+//            gateBack.setPosition(gateCloseBack);
+//        }
+//        else {
+//            gateFront.setPosition(0);
+//            gateBack.setPosition(0);
+//        }
 
     }
 

@@ -35,10 +35,6 @@ public class TeleOpStruct extends CommandOpMode {
 
     @Override
     public void initialize() {
-        follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose());
-        follower.update();
-
         chassis = new GamepadEx(gamepad1);
         cannon = new GamepadEx(gamepad2);
 
@@ -65,15 +61,18 @@ public class TeleOpStruct extends CommandOpMode {
         chassis.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun, 0)
         );
-        chassis.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
-                new InstantCommand(() -> pivotTun.setPivotPosition(1800))
+
+        chassis.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new InstantCommand(() -> tun.setBackGatePos(tun.getGateBackPos() == 0 ? tun.gateCloseBack : 0))
         );
         chassis.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new InstantCommand(() -> pivotTun.setPivotPosition(0))
+                new InstantCommand(() -> tun.setFrontGatePos(tun.getGateFrontPos() == 0 ? tun.gateCloseFront : 0))
         );
-        chassis.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new InstantCommand(() -> pivotTun.setPivotPosition(-1800))
+
+        chassis.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> tun.setTunPower(tun.getTunPower() == 0.9 ? 1 : 0.9))
         );
+
 
         super.run();
     }
