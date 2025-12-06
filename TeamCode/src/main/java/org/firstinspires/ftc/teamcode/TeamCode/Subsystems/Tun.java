@@ -36,7 +36,7 @@ public class Tun extends SubsystemBase {
     public double CURRENT_BAND_POWER = 0.0;
 
     public static double gateCloseFront = 0.15;
-    public static double gateCloseBack = 0.2;
+    public static double gateCloseBack = 0.1;
 
     static double currentSpeedDreapta;
 
@@ -147,12 +147,12 @@ public class Tun extends SubsystemBase {
     public void periodic() {
         currentSpeedDreapta = motorDreapta.getVelocity();
         currentSpeedStanga = motorStanga.getVelocity();
-    /*
-        if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 1000 && getCurrentTunState() == tunState.FORWARD)  {
+
+        if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 800 && getCurrentTunState() == tunState.FORWARD)  {
             gateFront.setPosition(gateCloseFront);
             gateBack.setPosition(0);
         }
-        else if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 900 && getCurrentTunState() == tunState.REVERSE) {
+        else if(Math.abs(getCurrentSpeedStanga()) < TUN_POWER * 800 && getCurrentTunState() == tunState.REVERSE) {
             gateFront.setPosition(0);
             gateBack.setPosition(gateCloseBack);
         }
@@ -160,7 +160,7 @@ public class Tun extends SubsystemBase {
             gateFront.setPosition(0);
             gateBack.setPosition(0);
         }
-*/
+
     }
 
 }

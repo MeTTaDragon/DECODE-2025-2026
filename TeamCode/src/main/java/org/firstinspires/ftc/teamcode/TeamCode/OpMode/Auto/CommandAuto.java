@@ -39,7 +39,7 @@ public class CommandAuto extends CommandOpMode {
     PivotTun pivotTun;
 
     private final Pose startPose = new Pose(123, 123, Math.toRadians(-130)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(85.5, 83, Math.toRadians(-130));
+    private final Pose scorePose = new Pose(87.5, 86, Math.toRadians(-130));
     private final Pose scorePose1 = new Pose(85.5, 83, Math.toRadians(-125)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
     // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
     private final Pose setPickupPose1 = new Pose(100, 83, Math.toRadians(0));
@@ -131,6 +131,8 @@ public class CommandAuto extends CommandOpMode {
         );
     }
 
+
+
     /** This method is called once at the init of the OpMode. **/
     @Override
     public void initialize() {
@@ -149,15 +151,15 @@ public class CommandAuto extends CommandOpMode {
                 // Score preload
                 new ParallelCommandGroup(
                         new FollowPathCommand(follower, scorePreload),
-                        setPivotPos(-1800),
-                        setBackGate(0.2)
+                        setPivotPos(-1600),
+                        setBackGate(0)
                 ),
 
-                setTunPower(0.75),
+                setTunPower(0.9),
                 setTunState(Tun.tunState.REVERSE),
                 new WaitCommand(300),
-                setBackGate(0),
-                new WaitCommand(4000),
+                //setBackGate(0),
+                new WaitCommand(6000),
 
                 // First pickup cycle
                 new FollowPathCommand(follower, setPickup1),
@@ -165,12 +167,12 @@ public class CommandAuto extends CommandOpMode {
 
                 new FollowPathCommand(follower, grabPickup1).setGlobalMaxPower(0.5),
                 setTunState(Tun.tunState.IDLE),
-                setBackGate(0.2),
+                //setBackGate(0.2),
                 new ParallelCommandGroup(
                     new FollowPathCommand(follower, scorePickup1).setGlobalMaxPower(1),
                     setTunState(Tun.tunState.REVERSE)
-                ),
-                setBackGate(0)
+                )
+                //setBackGate(0)
 
 
 //                new WaitCommand(1000),

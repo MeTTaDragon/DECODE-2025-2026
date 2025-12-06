@@ -76,24 +76,12 @@ public class TeleOpStruct extends CommandOpMode {
         );
 
         super.run();
-        follower.startTeleOpDrive();
     }
 
     @Override
     public void run() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        follower.update();
-        follower.setTeleOpDrive(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x,
-                robotCentric // Robot Centric
-        );
-
-        if(gamepad1.options){
-            robotCentric = !robotCentric;
-        }
 
         telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());
         telemetry.addData("Motor Dreapta Power", tun.motorDreapta.getPower());
