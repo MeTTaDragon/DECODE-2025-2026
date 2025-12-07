@@ -38,18 +38,22 @@ public class TeleOpStruct extends CommandOpMode {
         chassis = new GamepadEx(gamepad1);
         cannon = new GamepadEx(gamepad2);
 
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(new Pose());
+
         super.reset();
 
         tun = new Tun(hardwareMap);
         pivotTun = new PivotTun(hardwareMap);
-        drive = new Drivetrain(hardwareMap);
+        //drive = new Drivetrain(hardwareMap);
 
-        register(tun, pivotTun, drive);
+        //register(tun, pivotTun, drive);
+        register(tun, pivotTun);
         tun.init();
         pivotTun.init();
-        drive.init();
+        //drive.init();
 
-        drive.setDefaultCommand(new RobotCentricDriveCommand(drive, chassis));
+        //drive.setDefaultCommand(new RobotCentricDriveCommand(drive, chassis));
 
 
         chassis.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
@@ -73,7 +77,28 @@ public class TeleOpStruct extends CommandOpMode {
                 new InstantCommand(() -> tun.setTunPower(tun.getTunPower() == 0.9 ? 1 : 0.9))
         );
 
+        cannon.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                new setTunDirectionCommand(tun, pivotTun, 1700)
+        );
+        cannon.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                new setTunDirectionCommand(tun, pivotTun, -1700)
+        );
+        cannon.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new setTunDirectionCommand(tun, pivotTun, 0)
+        );
 
+        cannon.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new InstantCommand(() -> tun.setBackGatePos(tun.getGateBackPos() == 0 ? tun.gateCloseBack : 0))
+        );
+        cannon.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new InstantCommand(() -> tun.setFrontGatePos(tun.getGateFrontPos() == 0 ? tun.gateCloseFront : 0))
+        );
+
+        cannon.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> tun.setTunPower(tun.getTunPower() == 0.9 ? 1 : 0.9))
+        );
+
+        follower.startTeleopDrive();
         super.run();
     }
 
@@ -81,6 +106,8 @@ public class TeleOpStruct extends CommandOpMode {
     public void run() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        follower.update();
 
         telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());
         telemetry.addData("Motor Dreapta Power", tun.motorDreapta.getPower());

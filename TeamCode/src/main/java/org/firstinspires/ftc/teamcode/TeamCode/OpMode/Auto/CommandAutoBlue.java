@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Auto Red command", group = "Auto")
-public class CommandAuto extends CommandOpMode {
+@Autonomous(name = "Auto Blue command", group = "Auto")
+public class CommandAutoBlue extends CommandOpMode {
 
     //TODO: scazut power tun, sa se deschida mai tarziu gateul
 
@@ -38,12 +38,12 @@ public class CommandAuto extends CommandOpMode {
     Tun tun;
     PivotTun pivotTun;
 
-    private final Pose startPose = new Pose(123, 123, Math.toRadians(-130)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(87.5, 86, Math.toRadians(-130));
+    private final Pose startPose = new Pose(23, 123, Math.toRadians(-50)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(56, 91, Math.toRadians(-50));
     private final Pose scorePose1 = new Pose(85.5, 83, Math.toRadians(-125)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
     // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    private final Pose setPickupPose1 = new Pose(100, 83, Math.toRadians(0));
-    private final Pose pickup1Pose = new Pose(130, 84, Math.toRadians(0));
+    private final Pose setPickupPose1 = new Pose(45, 83, Math.toRadians(-180));
+    private final Pose pickup1Pose = new Pose(15, 84, Math.toRadians(-180));
     private final Pose inter1Pose = new Pose(74, 84, Math.toRadians(0));
     private final Pose inter2Pose = new Pose(73, 60);
     private final Pose inter3Pose = new Pose(73, 35);
@@ -156,7 +156,7 @@ public class CommandAuto extends CommandOpMode {
 
                 ),
 
-                setTunPower(0.81),
+                setTunPower(0.79),
                 setTunState(Tun.tunState.REVERSE),
 
                 new WaitCommand(300),
@@ -171,8 +171,8 @@ public class CommandAuto extends CommandOpMode {
                 setTunState(Tun.tunState.IDLE),
                 setBackGate(tun.gateCloseBack),
                 new ParallelCommandGroup(
-                    new FollowPathCommand(follower, scorePreload),
-                    setTunState(Tun.tunState.REVERSE)
+                        new FollowPathCommand(follower, scorePreload),
+                        setTunState(Tun.tunState.REVERSE)
                 ),
                 new WaitCommand(300),
                 setBackGate(0),
