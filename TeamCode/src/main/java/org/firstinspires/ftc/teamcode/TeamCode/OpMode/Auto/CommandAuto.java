@@ -151,11 +151,11 @@ public class CommandAuto extends CommandOpMode {
                 // Score preload
                 new ParallelCommandGroup(
                         new FollowPathCommand(follower, scorePreload),
-                        setPivotPos(-1600),
+                        setPivotPos(-1700),
                         setBackGate(tun.gateCloseBack)
                 ),
 
-                setTunPower(0.86),
+                setTunPower(0.81),
                 setTunState(Tun.tunState.REVERSE),
                 new WaitCommand(300),
                 setBackGate(0),

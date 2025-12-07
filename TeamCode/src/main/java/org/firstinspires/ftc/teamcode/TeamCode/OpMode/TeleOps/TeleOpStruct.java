@@ -53,10 +53,10 @@ public class TeleOpStruct extends CommandOpMode {
 
 
         chassis.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, 1800)
+                new setTunDirectionCommand(tun, pivotTun, 1700)
         );
         chassis.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new setTunDirectionCommand(tun, pivotTun, -1800)
+                new setTunDirectionCommand(tun, pivotTun, -1700)
         );
         chassis.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun, 0)
