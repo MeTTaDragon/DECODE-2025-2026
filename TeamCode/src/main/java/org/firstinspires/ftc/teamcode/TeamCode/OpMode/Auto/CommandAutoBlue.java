@@ -49,9 +49,9 @@ public class CommandAutoBlue extends CommandOpMode {
     private final Pose inter3Pose = new Pose(73, 35);
     private final Pose pickup2Pose = new Pose(110, 60, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose pickup3Pose = new Pose(110, 35, Math.toRadians(0)); // Lowest (Third Set) of Artifacts from the Spike Mark.
-
+    private  final Pose leavePose = new Pose (45, 86, Math.toRadians(-50));
     private Path scorePreload;
-    private PathChain grabPickup1, setPickup1, scorePickup1, grabPickup2, scorePickup2,interPickup3, grabPickup3, scorePickup3;
+    private PathChain leave, grabPickup1, setPickup1, scorePickup1, grabPickup2, scorePickup2,interPickup3, grabPickup3, scorePickup3;
 
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
@@ -104,6 +104,9 @@ public class CommandAutoBlue extends CommandOpMode {
                 .addPath(new BezierLine(pickup3Pose, scorePose))
                 .setLinearHeadingInterpolation(pickup3Pose.getHeading(), scorePose.getHeading())
                 .build();
+
+        leave = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, leavePose)).build();
     }
 
     private InstantCommand setPivotPos(int targetPosition) {
@@ -176,9 +179,9 @@ public class CommandAutoBlue extends CommandOpMode {
                 ),
                 new WaitCommand(300),
                 setBackGate(0),
-                new WaitCommand(8000),
-                setTunState(Tun.tunState.IDLE)
-
+                new WaitCommand(9000),
+                setTunState(Tun.tunState.IDLE),
+                new FollowPathCommand(follower, leave)
 
 //                new WaitCommand(1000),
 //                new setTunDirectionCommand(tun, pivotTun, 1800),

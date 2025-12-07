@@ -63,6 +63,12 @@ public class TeleOpStruct extends CommandOpMode {
                 new setTunDirectionCommand(tun, pivotTun, -1700)
         );
         chassis.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new InstantCommand(() -> {
+                    tun.setTunState(Tun.tunState.IDLE);
+                })
+        );
+
+        chassis.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun, 0)
         );
 
@@ -84,6 +90,12 @@ public class TeleOpStruct extends CommandOpMode {
                 new setTunDirectionCommand(tun, pivotTun, -1700)
         );
         cannon.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new InstantCommand(() -> {
+                    tun.setTunState(Tun.tunState.IDLE);
+                })
+        );
+
+        cannon.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new setTunDirectionCommand(tun, pivotTun, 0)
         );
 
@@ -109,17 +121,17 @@ public class TeleOpStruct extends CommandOpMode {
         follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         follower.update();
 
-        telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());
-        telemetry.addData("Motor Dreapta Power", tun.motorDreapta.getPower());
-        telemetry.addData("Band Power", tun.getBandPower());
-        telemetry.addData("Current state", tun.getCurrentTunState());
-        telemetry.addData("pivot power", pivotTun.getPIVOT_POWER());
-        telemetry.addData("target position", pivotTun.getTARGET_POSITION());
-        telemetry.addData("current position" , pivotTun.getCurrentPosition());
-        telemetry.addData("tolerance", pivotTun.getTolerance());
-        telemetry.addData("tun current power dreapta", tun.getCurrentSpeedDreapta());
-        telemetry.addData("tun current power stanga", tun.getCurrentSpeedStanga());
-        telemetry.addData("robot centric?", robotCentric);
+//        telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());
+//        telemetry.addData("Motor Dreapta Power", tun.motorDreapta.getPower());
+//        telemetry.addData("Band Power", tun.getBandPower());
+//        telemetry.addData("Current state", tun.getCurrentTunState());
+//        telemetry.addData("pivot power", pivotTun.getPIVOT_POWER());
+//        telemetry.addData("target position", pivotTun.getTARGET_POSITION());
+//        telemetry.addData("current position" , pivotTun.getCurrentPosition());
+//        telemetry.addData("tolerance", pivotTun.getTolerance());
+//        telemetry.addData("tun current power dreapta", tun.getCurrentSpeedDreapta());
+//        telemetry.addData("tun current power stanga", tun.getCurrentSpeedStanga());
+//        telemetry.addData("robot centric?", robotCentric);
         telemetry.update();
 
         super.run();
