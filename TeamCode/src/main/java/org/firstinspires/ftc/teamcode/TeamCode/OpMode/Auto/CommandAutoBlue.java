@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Auto Red command", group = "Auto")
-public class CommandAuto extends CommandOpMode {
+@Autonomous(name = "Auto Blue command", group = "Auto")
+public class CommandAutoBlue extends CommandOpMode {
 
     //TODO: scazut power tun, sa se deschida mai tarziu gateul
 
@@ -38,18 +38,18 @@ public class CommandAuto extends CommandOpMode {
     Tun tun;
     PivotTun pivotTun;
 
-    private final Pose startPose = new Pose(123, 123, Math.toRadians(-130)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(87.5, 86, Math.toRadians(-130));
+    private final Pose startPose = new Pose(23, 123, Math.toRadians(-50)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(56, 91, Math.toRadians(-50));
     private final Pose scorePose1 = new Pose(85.5, 83, Math.toRadians(-125)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
     // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    private final Pose setPickupPose1 = new Pose(100, 83, Math.toRadians(0));
-    private final Pose pickup1Pose = new Pose(130, 84, Math.toRadians(0));
+    private final Pose setPickupPose1 = new Pose(45, 83, Math.toRadians(-180));
+    private final Pose pickup1Pose = new Pose(15, 84, Math.toRadians(-180));
     private final Pose inter1Pose = new Pose(74, 84, Math.toRadians(0));
     private final Pose inter2Pose = new Pose(73, 60);
     private final Pose inter3Pose = new Pose(73, 35);
     private final Pose pickup2Pose = new Pose(110, 60, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose pickup3Pose = new Pose(110, 35, Math.toRadians(0)); // Lowest (Third Set) of Artifacts from the Spike Mark.
-    private  final Pose leavePose = new Pose (115, 86, Math.toRadians(-130));
+    private  final Pose leavePose = new Pose (45, 86, Math.toRadians(-50));
     private Path scorePreload;
     private PathChain leave, grabPickup1, setPickup1, scorePickup1, grabPickup2, scorePickup2,interPickup3, grabPickup3, scorePickup3;
 
@@ -71,9 +71,6 @@ public class CommandAuto extends CommandOpMode {
                 .addPath(new BezierLine(scorePose, setPickupPose1))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), setPickupPose1.getHeading())
                 .build();
-
-        leave = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, leavePose)).build();
 
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup1 = follower.pathBuilder()
@@ -107,6 +104,9 @@ public class CommandAuto extends CommandOpMode {
                 .addPath(new BezierLine(pickup3Pose, scorePose))
                 .setLinearHeadingInterpolation(pickup3Pose.getHeading(), scorePose.getHeading())
                 .build();
+
+        leave = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, leavePose)).build();
     }
 
     private InstantCommand setPivotPos(int targetPosition) {
@@ -159,7 +159,7 @@ public class CommandAuto extends CommandOpMode {
 
                 ),
 
-                setTunPower(0.80),
+                setTunPower(0.79),
                 setTunState(Tun.tunState.REVERSE),
 
                 new WaitCommand(300),
@@ -174,8 +174,8 @@ public class CommandAuto extends CommandOpMode {
                 setTunState(Tun.tunState.IDLE),
                 setBackGate(tun.gateCloseBack),
                 new ParallelCommandGroup(
-                    new FollowPathCommand(follower, scorePreload),
-                    setTunState(Tun.tunState.REVERSE)
+                        new FollowPathCommand(follower, scorePreload),
+                        setTunState(Tun.tunState.REVERSE)
                 ),
                 new WaitCommand(300),
                 setBackGate(0),

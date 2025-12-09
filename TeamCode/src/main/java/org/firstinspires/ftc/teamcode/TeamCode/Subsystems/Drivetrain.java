@@ -63,10 +63,10 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void setDrivePower(double fl, double bl, double fr, double br) {
-        frontLeft.setPower(Range.clip(fl, -0.5, 0.5));
-        backLeft.setPower(Range.clip(bl, -0.5, 0.5));
-        frontRight.setPower(Range.clip(fr, -0.5, 0.5));
-        backRight.setPower(Range.clip(br, -0.5, 0.5));
+        frontLeft.setPower(Range.clip(fl, -1, 1));
+        backLeft.setPower(Range.clip(bl, -1, 1));
+        frontRight.setPower(Range.clip(fr, -1, 1));
+        backRight.setPower(Range.clip(br, -1, 1));
     }
 
 
