@@ -45,8 +45,10 @@ public class LeaveFarZone extends CommandOpMode {
     private PathChain leavepath;
 
     public void buildPaths() {
-        leavepath = follower.pathBuilder(new BezierLine(startPose, leave)).build();
-
+        leavepath = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, leave))
+                .setConstantHeadingInterpolation(startPose.getHeading())
+                .build();
     }
 
     private InstantCommand setPivotPos(int targetPosition) {

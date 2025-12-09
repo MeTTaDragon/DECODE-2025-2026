@@ -9,11 +9,7 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.TeamCode.Commands.FindMaxPosPivotCommand;
-import org.firstinspires.ftc.teamcode.TeamCode.Commands.RobotCentricDriveCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Commands.setTunDirectionCommand;
-import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 @Config
@@ -55,11 +51,7 @@ public class TestTunDirectionCommand extends CommandOpMode {
 
         );
 
-        gamepad.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new FindMaxPosPivotCommand(pivotTun).interruptOn(
-                        () -> { return gamepad1.square; }
-                )
-        );
+
 
         super.run();
     }
