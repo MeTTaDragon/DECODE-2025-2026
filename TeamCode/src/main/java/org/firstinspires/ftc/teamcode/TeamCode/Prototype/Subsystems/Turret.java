@@ -29,8 +29,8 @@ public class Turret extends SubsystemBase {
 
         launcherMotor2.setDirection(DcMotorEx.Direction.REVERSE);
 
-        launcherMotor1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        launcherMotor2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        launcherMotor1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        launcherMotor2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
     }
 
     public void setPower(double power) {

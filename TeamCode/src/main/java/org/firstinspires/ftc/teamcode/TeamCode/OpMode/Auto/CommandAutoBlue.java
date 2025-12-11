@@ -182,26 +182,6 @@ public class CommandAutoBlue extends CommandOpMode {
                 new WaitCommand(9000),
                 setTunState(Tun.tunState.IDLE),
                 new FollowPathCommand(follower, leave)
-
-//                new WaitCommand(1000),
-//                new setTunDirectionCommand(tun, pivotTun, 1800),
-//
-//                new FollowPathCommand(follower, scorePickup1),
-//
-//                new WaitCommand(5000),
-//                new setTunDirectionCommand(tun, pivotTun, -1800),
-//                // Second pickup cycle
-//                new FollowPathCommand(follower, grabPickup2),
-//
-//                new FollowPathCommand(follower, scorePickup2), // Overrides maxPower to 100% for this path only
-//
-//                // Third pickup cycle
-//                new FollowPathCommand(follower, grabPickup3),
-//
-//                new FollowPathCommand(follower, scorePickup3)
-
-
-
         );
         schedule(autonomousSequence);
 

@@ -25,7 +25,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Autonomous(name = "Auto Red command", group = "Auto")
 public class CommandAutoRed extends CommandOpMode {
 
-    //TODO: scazut power tun, sa se deschida mai tarziu gateul
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -34,7 +33,6 @@ public class CommandAutoRed extends CommandOpMode {
     private boolean actionStarted = false;
     private ElapsedTime elapsedTime = new ElapsedTime();
     Tun tun;
-    PivotTun pivotTun;
 
     private final Pose startPose = new Pose(123, 123, Math.toRadians(-130)); // Start Pose of our robot.
     private final Pose scorePose = new Pose(87.5, 86, Math.toRadians(-130));
@@ -107,12 +105,6 @@ public class CommandAutoRed extends CommandOpMode {
                 .build();
     }
 
-    private InstantCommand setPivotPos(int targetPosition) {
-        return new InstantCommand(
-                () -> pivotTun.setPivotPosition(targetPosition), // Acțiunea (Lambda)
-                pivotTun // Requirement-ul (spune scheduler-ului că folosim pivotTun)
-        );
-    }
     private InstantCommand setTunState(Tun.tunState state) {
         return new InstantCommand(
                 () -> tun.setTunState(state),
@@ -139,10 +131,8 @@ public class CommandAutoRed extends CommandOpMode {
     public void initialize() {
         super.reset();
         tun = new Tun(hardwareMap);
-        pivotTun = new PivotTun(hardwareMap);
-        register(tun,pivotTun);
+        register(tun);
         tun.init();
-        pivotTun.init();
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         buildPaths();
@@ -152,7 +142,6 @@ public class CommandAutoRed extends CommandOpMode {
                 // Score preload
                 new ParallelCommandGroup(
                         new FollowPathCommand(follower, scorePreload),
-                        setPivotPos(-1700),
                         setBackGate(tun.gateCloseBack)
 
                 ),
@@ -180,26 +169,6 @@ public class CommandAutoRed extends CommandOpMode {
                 new WaitCommand(9000),
                 setTunState(Tun.tunState.IDLE),
                 new FollowPathCommand(follower, leave)
-
-//                new WaitCommand(1000),
-//                new setTunDirectionCommand(tun, pivotTun, 1800),
-//
-//                new FollowPathCommand(follower, scorePickup1),
-//
-//                new WaitCommand(5000),
-//                new setTunDirectionCommand(tun, pivotTun, -1800),
-//                // Second pickup cycle
-//                new FollowPathCommand(follower, grabPickup2),
-//
-//                new FollowPathCommand(follower, scorePickup2), // Overrides maxPower to 100% for this path only
-//
-//                // Third pickup cycle
-//                new FollowPathCommand(follower, grabPickup3),
-//
-//                new FollowPathCommand(follower, scorePickup3)
-
-
-
         );
         schedule(autonomousSequence);
 
@@ -220,9 +189,6 @@ public class CommandAutoRed extends CommandOpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.addData("pivot target", pivotTun.getTARGET_POSITION());
-        telemetry.addData("pivot current", pivotTun.getCurrentPosition());
-        telemetry.addData("pivot power", pivotTun.getPIVOT_POWER());
 
         telemetry.update();
 

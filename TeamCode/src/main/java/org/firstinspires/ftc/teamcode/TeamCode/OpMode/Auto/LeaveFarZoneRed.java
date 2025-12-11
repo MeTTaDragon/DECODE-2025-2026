@@ -3,31 +3,23 @@ package org.firstinspires.ftc.teamcode.TeamCode.OpMode.Auto; // make sure this a
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
-import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
-import org.firstinspires.ftc.teamcode.TeamCode.Commands.setTunDirectionCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Leave blue", group = "Auto")
-public class LeaveFarZone extends CommandOpMode {
+@Autonomous(name = "Leave red far", group = "Auto")
+public class LeaveFarZoneRed extends CommandOpMode {
 
-    //TODO: scazut power tun, sa se deschida mai tarziu gateul
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -38,8 +30,8 @@ public class LeaveFarZone extends CommandOpMode {
     Tun tun;
     PivotTun pivotTun;
 
-    Pose startPose = new Pose(45, 8, Math.toRadians(90));
-    Pose leave = new Pose(37, 7, Math.toRadians(90));
+    Pose startPose = new Pose(96, 8, Math.toRadians(90));
+    Pose leave = new Pose(109, 8, Math.toRadians(90));
 
 
     private PathChain leavepath;
@@ -51,30 +43,6 @@ public class LeaveFarZone extends CommandOpMode {
                 .build();
     }
 
-    private InstantCommand setPivotPos(int targetPosition) {
-        return new InstantCommand(
-                () -> pivotTun.setPivotPosition(targetPosition), // Acțiunea (Lambda)
-                pivotTun // Requirement-ul (spune scheduler-ului că folosim pivotTun)
-        );
-    }
-    private InstantCommand setTunState(Tun.tunState state) {
-        return new InstantCommand(
-                () -> tun.setTunState(state),
-                tun // Requirement
-        );
-    }
-    private InstantCommand setTunPower(double targetPower) {
-        return new InstantCommand(
-                () -> tun.setTunPower(targetPower),
-                tun // Requirement
-        );
-    }
-    private InstantCommand setBackGate(double pos){
-        return new InstantCommand(() ->
-                tun.setBackGatePos(pos),
-                tun
-        );
-    }
 
 
 
@@ -93,7 +61,7 @@ public class LeaveFarZone extends CommandOpMode {
 
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-
+            new FollowPathCommand(follower, leavepath)
         );
         schedule(autonomousSequence);
 
