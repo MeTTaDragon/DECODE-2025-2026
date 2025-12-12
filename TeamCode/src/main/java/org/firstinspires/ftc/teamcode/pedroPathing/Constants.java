@@ -18,8 +18,8 @@ public class Constants {
             .forwardZeroPowerAcceleration(-30)
             .lateralZeroPowerAcceleration(-60)
             .useSecondaryDrivePIDF(false)
-            .useSecondaryHeadingPIDF(false)
-            .useSecondaryTranslationalPIDF(false)
+            .useSecondaryHeadingPIDF(true)
+            .useSecondaryTranslationalPIDF(true)
             .translationalPIDFCoefficients(new PIDFCoefficients(
                     0.08,
                     0,
@@ -34,7 +34,13 @@ public class Constants {
                     0.03
             ))
             .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(
+                    0.7,
                     0,
+                    0,
+                    0
+            ))
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(
+                    0.065,
                     0,
                     0,
                     0

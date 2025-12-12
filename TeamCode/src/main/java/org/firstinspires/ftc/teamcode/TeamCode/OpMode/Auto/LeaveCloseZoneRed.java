@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Leave blue far", group = "Auto")
-public class LeaveFarZoneBlue extends CommandOpMode {
+@Autonomous(name = "Leave red close", group = "Auto")
+public class LeaveCloseZoneRed extends CommandOpMode {
 
 
     private Follower follower;
@@ -32,8 +32,8 @@ public class LeaveFarZoneBlue extends CommandOpMode {
     Tun tun;
     PivotTun pivotTun;
 
-    Pose startPose = new Pose(47, 8, Math.toRadians(90));
-    Pose leave = new Pose(37, 8, Math.toRadians(90));
+    Pose startPose = new Pose(121, 123, Math.toRadians(-130));
+    Pose leave = new Pose(128, 107, Math.toRadians(180));
 
 
     private PathChain leavepath;
@@ -41,7 +41,7 @@ public class LeaveFarZoneBlue extends CommandOpMode {
     public void buildPaths() {
         leavepath = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, leave))
-                .setConstantHeadingInterpolation(startPose.getHeading())
+                .setLinearHeadingInterpolation(startPose.getHeading(), leave.getHeading())
                 .build();
     }
 

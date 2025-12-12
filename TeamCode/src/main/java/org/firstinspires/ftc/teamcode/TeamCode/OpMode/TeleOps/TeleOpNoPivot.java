@@ -12,6 +12,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.TeamCode.Commands.RobotCentricDriveCommand;
 import org.firstinspires.ftc.teamcode.TeamCode.Commands.setTunDirectionCommand;
+import org.firstinspires.ftc.teamcode.TeamCode.Globals;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
@@ -32,7 +33,7 @@ public class TeleOpNoPivot extends CommandOpMode {
         chassis = new GamepadEx(gamepad1);
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose());
+        follower.setStartingPose(Globals.lastAutoPose);
 
         super.reset();
 
@@ -57,6 +58,7 @@ public class TeleOpNoPivot extends CommandOpMode {
                 new InstantCommand(() -> tun.setBackGatePos(tun.getGateBackPos() == 0 ? tun.gateCloseBack : 0))
         );
 
+
         follower.startTeleopDrive();
         super.run();
     }
@@ -69,7 +71,7 @@ public class TeleOpNoPivot extends CommandOpMode {
         follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         follower.update();
 
-        telemetry.addData("Band Power", tun.getBandPower());
+
         telemetry.addData("Current state", tun.getCurrentTunState());
         telemetry.addData("tun current power dreapta", tun.getCurrentSpeedDreapta());
         telemetry.addData("tun current power stanga", tun.getCurrentSpeedStanga());

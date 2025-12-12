@@ -28,20 +28,16 @@ public class Tun extends SubsystemBase {
     public static DcMotorEx motorStanga;
     public static DcMotorEx motorDreapta;
     private CRServo servoBanda;
-    private Servo gateFront;
     private Servo gateBack;
 
     public static double TUN_POWER = 0.8;
-    public static double BAND_POWER =-1;
-    public double CURRENT_BAND_POWER = 0.0;
+    public static double BAND_POWER =1;
 
-    public static double gateCloseFront = 0.15;
     public static double gateCloseBack = 0.2;
 
     static double currentSpeedDreapta;
 
     static double currentSpeedStanga;
-    PivotTun pivotTun;
 
 
     /**
@@ -55,10 +51,9 @@ public class Tun extends SubsystemBase {
         this.motorDreapta = hwMap.get(DcMotorEx.class, "motorDreapta");
         this.motorStanga = hwMap.get(DcMotorEx.class, "motorStanga");
         this.servoBanda = hwMap.get(CRServo.class, "servoBanda");
-        this.gateFront = hwMap.get(Servo.class, "gateFront");
         this.gateBack = hwMap.get(Servo.class, "gateBack");
 
-        gateFront.setDirection(Servo.Direction.REVERSE );
+
         gateBack.setDirection(Servo.Direction.REVERSE );
 
     }
@@ -70,7 +65,6 @@ public class Tun extends SubsystemBase {
     public void init()
     {
         setTunState(tunState.IDLE);
-        gateFront.setPosition(0);
         gateBack.setPosition(0);
     }
 
@@ -93,7 +87,6 @@ public class Tun extends SubsystemBase {
     }
 
     public void setBackGatePos(double pos) {gateBack.setPosition(pos);}
-    public void setFrontGatePos(double pos) {gateFront.setPosition(pos);}
 
 
     /**
@@ -129,14 +122,9 @@ public class Tun extends SubsystemBase {
     }
 
     public double getGateBackPos(){return gateBack.getPosition();}
-    public double getGateFrontPos(){return gateFront.getPosition();}
     public static double getTunPower()
     {
         return TUN_POWER;
-    }
-    public double getBandPower()
-    {
-        return CURRENT_BAND_POWER;
     }
     public static tunState getCurrentTunState()
     {

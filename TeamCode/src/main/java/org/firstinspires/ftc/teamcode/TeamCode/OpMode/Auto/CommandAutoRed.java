@@ -18,6 +18,7 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.teamcode.TeamCode.Globals;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -34,18 +35,11 @@ public class CommandAutoRed extends CommandOpMode {
     private ElapsedTime elapsedTime = new ElapsedTime();
     Tun tun;
 
-    private final Pose startPose = new Pose(123, 123, Math.toRadians(-130)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(87.5, 86, Math.toRadians(-130));
-    private final Pose scorePose1 = new Pose(85.5, 83, Math.toRadians(-125)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    private final Pose setPickupPose1 = new Pose(100, 83, Math.toRadians(0));
-    private final Pose pickup1Pose = new Pose(130, 84, Math.toRadians(0));
-    private final Pose inter1Pose = new Pose(74, 84, Math.toRadians(0));
-    private final Pose inter2Pose = new Pose(73, 60);
-    private final Pose inter3Pose = new Pose(73, 35);
-    private final Pose pickup2Pose = new Pose(110, 60, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose pickup3Pose = new Pose(110, 35, Math.toRadians(0)); // Lowest (Third Set) of Artifacts from the Spike Mark.
-    private  final Pose leavePose = new Pose (115, 86, Math.toRadians(-130));
+    private final Pose startPose = new Pose(121, 122, Math.toRadians(46)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(89.5, 88, Math.toRadians(46));
+    private final Pose setPickupPose1 = new Pose(100, 83, Math.toRadians(-180));
+    private final Pose pickup1Pose = new Pose(128, 83, Math.toRadians(-180));
+    private  final Pose leavePose = new Pose (115, 86, Math.toRadians(50));
     private Path scorePreload;
     private PathChain leave, grabPickup1, setPickup1, scorePickup1, grabPickup2, scorePickup2,interPickup3, grabPickup3, scorePickup3;
 
@@ -73,35 +67,8 @@ public class CommandAutoRed extends CommandOpMode {
 
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(pickup1Pose,scorePose1))
-                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose1.getHeading())
-                .build();
-
-        /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        grabPickup2 = follower.pathBuilder()
-                .addPath(new BezierCurve(scorePose, inter2Pose, pickup2Pose))
-                .setLinearHeadingInterpolation(inter2Pose.getHeading(), pickup2Pose.getHeading())
-                .build();
-
-        /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(pickup2Pose, scorePose))
-                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose.getHeading())
-                .build();
-        interPickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, inter3Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), inter3Pose.getHeading())
-                .build();
-        /* This is our grabPickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        grabPickup3 = follower.pathBuilder()
-                .addPath(new BezierCurve(scorePose, inter3Pose, pickup3Pose))
-                .setLinearHeadingInterpolation(inter3Pose.getHeading(), pickup3Pose.getHeading())
-                .build();
-
-        /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(pickup3Pose, scorePose))
-                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), scorePose.getHeading())
+                .addPath(new BezierLine(pickup1Pose,scorePose))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading())
                 .build();
     }
 
@@ -146,8 +113,8 @@ public class CommandAutoRed extends CommandOpMode {
 
                 ),
 
-                setTunPower(0.80),
-                setTunState(Tun.tunState.REVERSE),
+                setTunPower(0.78),
+                setTunState(Tun.tunState.FORWARD),
 
                 new WaitCommand(300),
                 setBackGate(0),
@@ -162,13 +129,15 @@ public class CommandAutoRed extends CommandOpMode {
                 setBackGate(tun.gateCloseBack),
                 new ParallelCommandGroup(
                     new FollowPathCommand(follower, scorePreload),
-                    setTunState(Tun.tunState.REVERSE)
+                    setTunState(Tun.tunState.FORWARD)
                 ),
                 new WaitCommand(300),
                 setBackGate(0),
-                new WaitCommand(9000),
+                new WaitCommand(8000),
                 setTunState(Tun.tunState.IDLE),
-                new FollowPathCommand(follower, leave)
+                new FollowPathCommand(follower, leave),
+
+                new InstantCommand(() -> Globals.lastAutoPose = follower.getPose())
         );
         schedule(autonomousSequence);
 

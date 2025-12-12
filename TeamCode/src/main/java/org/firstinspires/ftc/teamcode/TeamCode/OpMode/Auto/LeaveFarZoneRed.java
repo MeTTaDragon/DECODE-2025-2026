@@ -10,9 +10,11 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.teamcode.TeamCode.Globals;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -61,7 +63,9 @@ public class LeaveFarZoneRed extends CommandOpMode {
 
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-            new FollowPathCommand(follower, leavepath)
+            new FollowPathCommand(follower, leavepath),
+            new InstantCommand(() -> Globals.lastAutoPose = follower.getPose())
+
         );
         schedule(autonomousSequence);
 

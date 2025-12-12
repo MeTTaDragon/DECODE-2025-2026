@@ -67,7 +67,6 @@ public class TestTunDirectionCommand extends CommandOpMode {
 
         telemetry.addData("Motor Stanga Power", tun.motorStanga.getPower());
         telemetry.addData("Motor Dreapta Power", tun.motorDreapta.getPower());
-        telemetry.addData("Band Power", tun.getBandPower());
         telemetry.addData("Current state", tun.getCurrentTunState());
         telemetry.addData("pivot power", pivotTun.getPIVOT_POWER());
         telemetry.addData("target position", pivotTun.getTARGET_POSITION());
