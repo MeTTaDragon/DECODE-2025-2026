@@ -118,7 +118,7 @@ public class CommandAutoBlue extends CommandOpMode {
 
                 ),
 
-                setTunPower(0.78),
+                setTunPower(0.74),
                 setTunState(Tun.tunState.FORWARD),
 
                 new WaitCommand(300),
@@ -133,6 +133,7 @@ public class CommandAutoBlue extends CommandOpMode {
 
                 new FollowPathCommand(follower, grabPickup1).setGlobalMaxPower(0.5),
                 setTunState(Tun.tunState.IDLE),
+                setTunPower(0.78),
                 new ParallelCommandGroup(
                         new FollowPathCommand(follower, scorePreload),
                         setTunState(Tun.tunState.FORWARD)

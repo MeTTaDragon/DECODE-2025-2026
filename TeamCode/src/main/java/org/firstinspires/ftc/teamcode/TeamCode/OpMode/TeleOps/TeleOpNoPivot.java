@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @TeleOp(name = "TeleOp Main", group = "TeleOpStructures")
 public class TeleOpNoPivot extends CommandOpMode {
+    private Timer timer;
 
     GamepadEx chassis;
     Tun tun;
@@ -30,6 +32,8 @@ public class TeleOpNoPivot extends CommandOpMode {
 
     @Override
     public void initialize() {
+        timer = new Timer();
+
         chassis = new GamepadEx(gamepad1);
 
         follower = Constants.createFollower(hardwareMap);
@@ -44,17 +48,11 @@ public class TeleOpNoPivot extends CommandOpMode {
         tun.init();
 
 
-        chassis.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> tun.setTunState(Tun.tunState.IDLE))
-        );
-        chassis.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new InstantCommand(() -> tun.setTunState(Tun.tunState.REVERSE))
-        );
-        chassis.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new InstantCommand(() -> tun.setTunState(Tun.tunState.FORWARD))
+        chassis.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+                new InstantCommand(() -> tun.setTunState(tun.getCurrentTunState().equals(Tun.tunState.IDLE) ? Tun.tunState.FORWARD : Tun.tunState.IDLE))
         );
 
-        chassis.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+        chassis.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
                 new InstantCommand(() -> tun.setBackGatePos(tun.getGateBackPos() == 0 ? tun.gateCloseBack : 0))
         );
 
@@ -69,16 +67,22 @@ public class TeleOpNoPivot extends CommandOpMode {
 
     @Override
     public void run() {
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.setMsTransmissionInterval(250);
 
         follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         follower.update();
 
+        if(timer.getElapsedTimeSeconds() > 60){
+            tun.setTunPower(0.85);
+            tun.setTunState(tun.getCurrentTunState());
+        }
 
         telemetry.addData("Current state", tun.getCurrentTunState());
         telemetry.addData("tun current power dreapta", tun.getCurrentSpeedDreapta());
         telemetry.addData("tun current power stanga", tun.getCurrentSpeedStanga());
+        telemetry.addData("Pose", follower.getPose());
         telemetry.update();
 
         super.run();

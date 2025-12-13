@@ -15,7 +15,6 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.TeamCode.Globals;
-import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.PivotTun;
 import org.firstinspires.ftc.teamcode.TeamCode.Subsystems.Tun;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
@@ -30,7 +29,6 @@ public class LeaveCloseZoneRed extends CommandOpMode {
     private boolean actionStarted = false;
     private ElapsedTime elapsedTime = new ElapsedTime();
     Tun tun;
-    PivotTun pivotTun;
 
     Pose startPose = new Pose(121, 123, Math.toRadians(-130));
     Pose leave = new Pose(128, 107, Math.toRadians(180));
@@ -53,10 +51,8 @@ public class LeaveCloseZoneRed extends CommandOpMode {
     public void initialize() {
         super.reset();
         tun = new Tun(hardwareMap);
-        pivotTun = new PivotTun(hardwareMap);
-        register(tun,pivotTun);
+        register(tun);
         tun.init();
-        pivotTun.init();
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         buildPaths();
@@ -86,9 +82,6 @@ public class LeaveCloseZoneRed extends CommandOpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.addData("pivot target", pivotTun.getTARGET_POSITION());
-        telemetry.addData("pivot current", pivotTun.getCurrentPosition());
-        telemetry.addData("pivot power", pivotTun.getPIVOT_POWER());
 
         telemetry.update();
 
