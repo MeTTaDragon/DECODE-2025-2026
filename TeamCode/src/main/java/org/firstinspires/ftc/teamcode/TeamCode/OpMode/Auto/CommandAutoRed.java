@@ -123,10 +123,11 @@ public class CommandAutoRed extends CommandOpMode {
                 // First pickup cycle
                 new FollowPathCommand(follower, setPickup1),
 
+                setBackGate(tun.gateCloseBack),
 
                 new FollowPathCommand(follower, grabPickup1).setGlobalMaxPower(0.5),
                 setTunState(Tun.tunState.IDLE),
-                setBackGate(tun.gateCloseBack),
+
                 new ParallelCommandGroup(
                     new FollowPathCommand(follower, scorePreload),
                     setTunState(Tun.tunState.FORWARD)

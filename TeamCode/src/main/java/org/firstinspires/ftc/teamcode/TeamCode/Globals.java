@@ -9,5 +9,5 @@ public class Globals {
     }
 
     public static TEAM team_color;
-    public static Pose lastAutoPose;
+    public static Pose lastAutoPose = new Pose(0, 0, 0);
 }

@@ -58,8 +58,12 @@ public class TeleOpNoPivot extends CommandOpMode {
                 new InstantCommand(() -> tun.setBackGatePos(tun.getGateBackPos() == 0 ? tun.gateCloseBack : 0))
         );
 
+        chassis.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> follower.setPose(new Pose(0, 0, Math.toRadians(90))))
+        );
 
-        follower.startTeleopDrive();
+
+        follower.startTeleopDrive(true);
         super.run();
     }
 
