@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.Robot2.pedroPathing;
 
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.changes;
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.drawCurrent;
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.drawCurrentAndHistory;
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.follower;
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.stopRobot;
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.telemetryM;
+import static org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Tuning.changes;
+import static org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Tuning.drawCurrent;
+import static org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Tuning.drawCurrentAndHistory;
+import static org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Tuning.follower;
+import static org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Tuning.stopRobot;
+import static org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Tuning.telemetryM;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.PanelsConfigurables;
