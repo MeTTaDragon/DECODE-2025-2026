@@ -11,89 +11,43 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
 @Config
 @TeleOp(name = "Turret Heading Test")
 public class TurretHeadingTest extends CommandOpMode {
-    DcMotorEx motorTureta;
     Follower follower;
-    PIDFController controller;
-
-    double targetAngle = 0;
-    public static double kp = 0;
-    public static double kd = 0;
-    double gearRatio = 3.7;
-    double TicksPerRev = 103.8;
-
-    double getTurretHeading(){
-
-        return (motorTureta.getCurrentPosition() / (TicksPerRev * gearRatio)) * 2 * Math.PI ;
-    }
-
-    double norm(double angleRadians) {
-        while (angleRadians >= Math.PI) {
-            angleRadians -= 2.0 * Math.PI;
-        }
-        while (angleRadians < -Math.PI) {
-            angleRadians += 2.0 * Math.PI;
-        }
-        return angleRadians;
-    }
-
-    void update(Pose robotPose, double targetX, double targetY){
-        // compute field angle to target
-        double dx = targetX - robotPose.getX();
-        double dy = targetY - robotPose.getY();
-        double fieldAngle = Math.atan2(dx, dy);
+    Turret turret;
 
 
-        controller.setP(kp);
-        controller.setD(kd);
-
-        // convert to turret-relative angle
-        targetAngle = norm(fieldAngle - robotPose.getHeading());
-
-
-        // Run simple P controller
-        double error = norm(targetAngle - getTurretHeading());
-        double power = controller.calculate(error, targetAngle);
-
-        motorTureta.setPower(power);
-    }
 
     @Override
     public void initialize(){
+        alliance = Alliance.RED;
+
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(72, 7.5, Math.toRadians(90)));
 
-        motorTureta = hardwareMap.get(DcMotorEx.class, "motorTureta");
-        motorTureta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorTureta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        turret = new Turret(hardwareMap, follower, telemetry);
 
-        controller = new PIDFController(kp, 0, 0, 0);
         super.reset();
 
         follower.update();
+
+        register(turret);
+
+        turret.setTurretState(Turret.TurretState.IDLE);
 
         super.run();
     }
 
     public void run(){
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
-
-        telemetry.addData("Target Angle", targetAngle);
-        telemetry.addData("Turret Heading", getTurretHeading());
-        telemetry.addData("Turret Error", norm(targetAngle - getTurretHeading()));
-        telemetry.addData("Robot pose", follower.getPose());
-        telemetry.addData("motor position", motorTureta.getCurrentPosition());
-        telemetry.addData("P", controller.getP());
-        telemetry.addData("power", motorTureta.getPower());
-
         follower.update();
 
-        update(follower.getPose(), 10, 137);
+        turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
 
         telemetry.update();
         super.run();
