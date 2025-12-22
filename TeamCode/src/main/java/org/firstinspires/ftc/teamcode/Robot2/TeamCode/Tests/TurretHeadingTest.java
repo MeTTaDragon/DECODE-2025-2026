@@ -5,12 +5,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
@@ -20,6 +22,7 @@ import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 public class TurretHeadingTest extends CommandOpMode {
     Follower follower;
     Turret turret;
+    LimelightSubsystem limelight;
 
 
 
@@ -31,14 +34,18 @@ public class TurretHeadingTest extends CommandOpMode {
         follower.setStartingPose(new Pose(72, 7.5, Math.toRadians(90)));
 
         turret = new Turret(hardwareMap, follower, telemetry);
+        limelight = new LimelightSubsystem(hardwareMap);
 
         super.reset();
 
         follower.update();
 
         register(turret);
+        register(limelight);
 
         turret.setTurretState(Turret.TurretState.IDLE);
+        limelight.init();
+        limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
 
         super.run();
     }
@@ -47,7 +54,7 @@ public class TurretHeadingTest extends CommandOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         follower.update();
 
-        turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
+        turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT);
 
         telemetry.update();
         super.run();
