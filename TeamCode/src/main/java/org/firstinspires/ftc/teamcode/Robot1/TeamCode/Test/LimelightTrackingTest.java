@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.controller.PController;
 
 @Config
-@TeleOp
+//@TeleOp
 public class LimelightTrackingTest extends LinearOpMode {
 
     Limelight3A limelight;

@@ -86,8 +86,9 @@ public class Turret extends SubsystemBase {
 
 
     double errorCalculate(double targetAngle){
-        double turretAngle = getTurretHeading();
-        double error = normalizeAngle(targetAngle - turretAngle, false);
+        double robotAngle = follower. getPose().getHeading();
+        double trueHeadding = normalizeAngle(robotAngle + getTurretHeading(), false);
+        double error = normalizeAngle(targetAngle - trueHeadding, false);
         return error;
     }
 
@@ -128,7 +129,7 @@ public class Turret extends SubsystemBase {
     }
 
     double getTurretHeading(){
-        return (motorTureta.getCurrentPosition() / (TicksPerRev * gearRatio)) * 2 * Math.PI ;
+        return - (motorTureta.getCurrentPosition() / (TicksPerRev )) * 2 * Math.PI ;
     }
 
     @Override
@@ -139,10 +140,12 @@ public class Turret extends SubsystemBase {
 
         telemetry.addData("goal pose", goalPose);
         telemetry.addData("turret heading", turretHeading);
+        telemetry.addData("turret position", motorTureta.getCurrentPosition());
         telemetry.addData("turret state", currentTurretState);
         telemetry.addData("turret setPoint", turretController.getSetPoint());
         telemetry.addData("turret error", turretController.getPositionError());
         telemetry.addData("turret power", motorTureta.getPower());
+        telemetry.addData("robot heading", follower.getPose().getHeading());
 
     }
 }
