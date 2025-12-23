@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -13,22 +15,30 @@ import com.seattlesolvers.solverslib.geometry.Vector2d;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals;
 
 @Config
 public class Turret extends SubsystemBase {
 
     private final DcMotorEx motorTureta;
+
     PIDFController turretController;
     Follower follower;
     Telemetry telemetry;
 
     Pose goalPose;
 
+    // PID Coefficients for Position (Pinpoint)
     public static double P = 0.0, I = 0.0, D = 0.0, F = 0.0;
+
+    // PID Coefficients for Vision (Limelight) - Tune these separately!
+    public static double lime_P = 0.02, lime_I = 0.0, lime_D = 0.001;
+
     double gearRatio = 3.7;
     double TicksPerRev = 103.8;
-    double maxAngle;
 
+    // Helper to track if we need to switch PID modes
+    private boolean usingLimelightPID = false;
 
     public enum TurretState {
         IDLE,
@@ -40,6 +50,9 @@ public class Turret extends SubsystemBase {
 
     public Turret(HardwareMap hwMap, Follower flwr, Telemetry telemetry) {
         motorTureta = hwMap.get(DcMotorEx.class, "motorTureta");
+
+
+
         turretController = new PIDFController(P, I, D, F);
 
         goalPose = (alliance == Alliance.RED) ? redGoalPose : blueGoalPose;
@@ -52,19 +65,48 @@ public class Turret extends SubsystemBase {
     }
 
     void update() {
+        double power;
+
         switch (currentTurretState){
             case IDLE:
                 motorTureta.setPower(0);
                 break;
+
             case FULL_LIMELIGHT:
-                // Implement Limelight tracking logic here
+                // 1. Switch controller coefficients to Vision settings
+                if (!usingLimelightPID) {
+                    turretController.setPIDF(lime_P, lime_I, lime_D, 0);
+                    usingLimelightPID = true;
+                }
+
+                turretController.setSetPoint(0);
+
+                // Note: Depending on motor direction, you might need to negate this power
+                // If tx is positive (target to right), turret needs to turn right.
+                power = turretController.calculate(lltx);
+
+                if(turretController.atSetPoint()){
+                    motorTureta.setPower(0);
+                    turretController.clearTotalError();
+                }
+                else{
+                    motorTureta.setPower(power);
+                }
+
+
                 break;
 
             case FULL_PINPOINT:
-                Pose2d turretPose = new Pose2d(follower.getPose().getX(), follower.getPose().getY(), getTurretHeading());
-                Pose2d goalPose = new Pose2d(this.goalPose.getX(), this.goalPose.getY(), 0);
+                // 1. Switch controller coefficients back to Position settings
+                if (usingLimelightPID) {
+                    turretController.setPIDF(P, I, D, F);
+                    usingLimelightPID = false;
+                }
 
-                double error = errorCalculate(posesToAngle(turretPose, goalPose));
+                Pose2d turretPose = new Pose2d(follower.getPose().getX(), follower.getPose().getY(), getTurretHeading());
+                Pose2d targetGoalPose = new Pose2d(this.goalPose.getX(), this.goalPose.getY(), 0);
+
+                double error = errorCalculate(posesToAngle(turretPose, targetGoalPose));
 
                 turretController.setSetPoint(error);
 
@@ -72,10 +114,9 @@ public class Turret extends SubsystemBase {
                     motorTureta.setPower(0);
                     turretController.clearTotalError();
                 } else {
-                    double power = turretController.calculate(normalizeAngle(getTurretHeading(), false));
+                    power = turretController.calculate(normalizeAngle(getTurretHeading(), false));
                     motorTureta.setPower(power);
                 }
-
                 break;
 
             case MIXED:
@@ -84,7 +125,6 @@ public class Turret extends SubsystemBase {
         }
     }
 
-
     double errorCalculate(double targetAngle){
         double robotAngle = follower. getPose().getHeading();
         double trueHeadding = normalizeAngle(robotAngle + getTurretHeading(), false);
@@ -92,28 +132,15 @@ public class Turret extends SubsystemBase {
         return error;
     }
 
-
-    /**
-     * @param robotPose what the targetPose is being compared to
-     * @param targetPose what the robotPose is being compared to
-     * @return angle in radians, field-centric, normalized to 0-2pi
-     */
-     double posesToAngle(Pose2d robotPose, Pose2d targetPose) {
+    double posesToAngle(Pose2d robotPose, Pose2d targetPose) {
         return normalizeAngle(
                 new Vector2d(targetPose).minus(new Vector2d(robotPose)).angle(),
                 true
         );
     }
 
-    /**
-     * Function to normalize all angles
-     *
-     * @param angle the angle to be normalized, in degrees or radians
-     * @param zeroToMax whether the returned value should be normalized to 0 to 2Pi or -Pi to Pi
-     * @return the normalized angle
-     */
     double normalizeAngle(double angle, boolean zeroToMax) {
-        double max = Math.PI * 2; //radians
+        double max = Math.PI * 2;
         double angle2 = angle % max;
         if (zeroToMax && angle2 < 0) {
             return angle2 + max;
@@ -124,7 +151,6 @@ public class Turret extends SubsystemBase {
                 return angle2 + max;
             }
         }
-
         return angle2;
     }
 
@@ -134,18 +160,28 @@ public class Turret extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double turretHeading = getTurretHeading();
-        update();
-        turretController.setPIDF(P, I , D, F);
+        // Ensure PID values are live-updateable from Dashboard
+        if(currentTurretState == TurretState.FULL_LIMELIGHT) {
+            turretController.setPIDF(lime_P, lime_I, lime_D, 0);
+        } else if (currentTurretState == TurretState.FULL_PINPOINT) {
+            turretController.setPIDF(P, I, D, F);
+        }
 
+        update();
+
+        double turretHeading = getTurretHeading();
         telemetry.addData("goal pose", goalPose);
         telemetry.addData("turret heading", turretHeading);
         telemetry.addData("turret position", motorTureta.getCurrentPosition());
         telemetry.addData("turret state", currentTurretState);
         telemetry.addData("turret setPoint", turretController.getSetPoint());
         telemetry.addData("turret error", turretController.getPositionError());
-        telemetry.addData("turret power", motorTureta.getPower());
         telemetry.addData("robot heading", follower.getPose().getHeading());
 
+        // Added Limelight telemetry
+        telemetry.addData("LL tx", lltx);
+        telemetry.addData("LL ty", llty);
+
+        telemetry.addData("turret power", motorTureta.getPower());
     }
 }

@@ -8,6 +8,11 @@ public class Globals {
         BLUE
     }
 
+    public static double lltx;
+    public static double llty;
+    public static double llta;
+    public static double llpower;
+
     public static Alliance alliance;
     public static Pose lastAutoPose = new Pose(0, 0, Math.toRadians(90));
 
