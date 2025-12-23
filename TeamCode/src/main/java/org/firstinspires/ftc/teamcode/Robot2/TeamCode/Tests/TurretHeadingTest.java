@@ -28,7 +28,7 @@ public class TurretHeadingTest extends CommandOpMode {
 
     @Override
     public void initialize(){
-        alliance = Alliance.RED;
+        alliance = Alliance.BLUE;
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(72, 7.5, Math.toRadians(90)));
