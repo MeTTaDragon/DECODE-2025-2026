@@ -55,7 +55,7 @@ public class TurretHeadingTest extends CommandOpMode {
     public void run(){
         follower.update();
 
-        turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT);
+        turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
 
         telemetry.update();
         super.run();

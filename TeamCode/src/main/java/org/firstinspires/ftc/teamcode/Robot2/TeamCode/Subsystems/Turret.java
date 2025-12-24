@@ -48,7 +48,7 @@ public class Turret extends SubsystemBase {
 
     public Turret(HardwareMap hwMap, Follower flwr, Telemetry telemetry) {
         motorTureta = hwMap.get(DcMotorEx.class, "motorTureta");
-        motorTureta.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorTureta.setDirection(DcMotorSimple.Direction.FORWARD);
 
         turretController = new PIDFController(P, I, D, F);
 
@@ -81,7 +81,7 @@ public class Turret extends SubsystemBase {
                     turretController.clearTotalError();
                 }
                 else{
-                    motorTureta.setPower(power);
+                    motorTureta.setPower(-power);
                 }
                 break;
 
@@ -98,7 +98,8 @@ public class Turret extends SubsystemBase {
                     motorTureta.setPower(0);
                     turretController.clearTotalError();
                 } else {
-                    power = turretController.calculate();
+                    double trueHeading = normalizeAngle(follower.getPose().getHeading() + getTurretHeading(), false);
+                    power = turretController.calculate(trueHeading);
                     motorTureta.setPower(power);
                 }
                 break;
@@ -110,7 +111,7 @@ public class Turret extends SubsystemBase {
     }
 
     double errorCalculate(double targetAngle){
-        double robotAngle = follower. getPose().getHeading();
+        double robotAngle = follower.getPose().getHeading();
         double trueHeading = normalizeAngle(robotAngle + getTurretHeading(), false);
 
         double error = normalizeAngle(targetAngle - trueHeading, false);
