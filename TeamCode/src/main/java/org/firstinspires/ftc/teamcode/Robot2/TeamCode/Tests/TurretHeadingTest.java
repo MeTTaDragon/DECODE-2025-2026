@@ -28,6 +28,8 @@ public class TurretHeadingTest extends CommandOpMode {
 
     @Override
     public void initialize(){
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         alliance = Alliance.BLUE;
 
         follower = Constants.createFollower(hardwareMap);
@@ -51,7 +53,6 @@ public class TurretHeadingTest extends CommandOpMode {
     }
 
     public void run(){
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         follower.update();
 
         turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT);

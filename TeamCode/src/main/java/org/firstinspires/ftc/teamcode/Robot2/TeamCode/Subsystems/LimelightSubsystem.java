@@ -105,9 +105,9 @@ public class LimelightSubsystem extends SubsystemBase {
             llta = ta;
         } else {
             // Optional: Reset values if no target is found to prevent ghost data
-            tx = 0;
-            ty = 0;
-            ta = 0;
+            lltx = 0;
+            llty = 0;
+            llta = 0;
         }
     }
 
