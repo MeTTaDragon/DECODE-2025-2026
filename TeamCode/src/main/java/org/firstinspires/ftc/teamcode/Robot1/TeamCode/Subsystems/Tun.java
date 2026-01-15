@@ -33,7 +33,7 @@ public class Tun extends SubsystemBase {
     public static double TUN_POWER = 0.8;
     public static double BAND_POWER =1;
 
-    public static double gateCloseBack = 0.2;
+    public static double gateCloseBack = 0.18;
 
     static double currentSpeedDreapta;
 

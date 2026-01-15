@@ -17,8 +17,6 @@ public class Launcher extends SubsystemBase {
 
 
 
-
-
     public Launcher(HardwareMap hwMap) {
         launcherMotor1 = hwMap.get(DcMotorEx.class, "motorStanga");
         launcherMotor2 = hwMap.get(DcMotorEx.class, "motorDreapta");
