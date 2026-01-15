@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.Robot1.TeamCode.Globals;
 import org.firstinspires.ftc.teamcode.Robot1.TeamCode.Subsystems.Tun;
 import org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Constants;
 
-@Autonomous(name = "Auto Red command", group = "Auto")
+@Autonomous(name = "Auto Red command robot 1", group = "Auto")
 public class CommandAutoRed extends CommandOpMode {
 
 

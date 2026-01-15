@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Robot1.TeamCode.Globals;
 import org.firstinspires.ftc.teamcode.Robot1.TeamCode.Subsystems.Tun;
 import org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Constants;
 
-@TeleOp(name = "TeleOp Main", group = "TeleOpStructures")
+@TeleOp(name = "TeleOp Main robot 1", group = "TeleOpStructures")
 public class TeleOpNoPivot extends CommandOpMode {
     private Timer timer;
 
