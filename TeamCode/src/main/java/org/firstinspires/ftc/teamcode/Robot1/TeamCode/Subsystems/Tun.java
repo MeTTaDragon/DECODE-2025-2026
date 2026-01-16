@@ -75,6 +75,7 @@ public class Tun extends SubsystemBase {
      */
     public void setTunPower(double power) {
         TUN_POWER = power;
+        setTunState(currentTunState);
     }
 
     /**

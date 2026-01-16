@@ -56,6 +56,14 @@ public class TeleOpNoPivot extends CommandOpMode {
                 new InstantCommand(() -> follower.setPose(new Pose(0, 0, Math.toRadians(90))))
         );
 
+        chassis.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new InstantCommand(() -> tun.setTunPower(tun.getTunPower() + 0.025))
+        );
+        chassis.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new InstantCommand(() -> tun.setTunPower(tun.getTunPower() - 0.025))
+        );
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         follower.startTeleopDrive(true);
         super.run();
@@ -64,20 +72,15 @@ public class TeleOpNoPivot extends CommandOpMode {
     @Override
     public void run() {
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.setMsTransmissionInterval(250);
 
         follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         follower.update();
 
-        if(timer.getElapsedTimeSeconds() > 60){
-            tun.setTunPower(0.85);
-            tun.setTunState(tun.getCurrentTunState());
-        }
+
 
         telemetry.addData("Current state", tun.getCurrentTunState());
-        telemetry.addData("tun current power dreapta", tun.getCurrentSpeedDreapta());
-        telemetry.addData("tun current power stanga", tun.getCurrentSpeedStanga());
+        telemetry.addData("tun current power", tun.getTunPower());
         telemetry.addData("Pose", follower.getPose());
         telemetry.update();
 

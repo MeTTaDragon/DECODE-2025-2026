@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot1.pedroPathing;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
@@ -11,6 +12,7 @@ import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
@@ -70,7 +72,7 @@ public class Constants {
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(6.49)
             .strafePodX(0)
-            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
+            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
     /**

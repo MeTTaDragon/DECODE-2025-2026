@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.Robot1.pedroPathing;
 
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.changes;
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.drawCurrent;
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.drawCurrentAndHistory;
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.follower;
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.stopRobot;
-import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Tuning.telemetryM;
+import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.TuningRobot1.changes;
+import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.TuningRobot1.drawCurrent;
+import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.TuningRobot1.drawCurrentAndHistory;
+import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.TuningRobot1.follower;
+import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.TuningRobot1.stopRobot;
+import static org.firstinspires.ftc.teamcode.Robot1.pedroPathing.TuningRobot1.telemetryM;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.PanelsConfigurables;
@@ -36,8 +36,8 @@ import java.util.List;
  */
 @Configurable
 @Config
-//@TeleOp(name = "Tuning", group = "Pedro Pathing")
-public class Tuning extends SelectableOpMode {
+@TeleOp(name = "Tuning robot 1", group = "Pedro Pathing")
+public class TuningRobot1 extends SelectableOpMode {
     public static Follower follower;
 
     @IgnoreConfigurable
@@ -49,7 +49,7 @@ public class Tuning extends SelectableOpMode {
     @IgnoreConfigurable
     static ArrayList<String> changes = new ArrayList<>();
 
-    public Tuning() {
+    public TuningRobot1() {
         super("Select a Tuning OpMode", s -> {
             s.folder("Localization", l -> {
                 l.add("Localization Test", LocalizationTest::new);

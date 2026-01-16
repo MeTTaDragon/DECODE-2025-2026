@@ -34,7 +34,7 @@ public class CommandAutoRed extends CommandOpMode {
     Tun tun;
 
     private final Pose startPose = new Pose(121, 122, Math.toRadians(46)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(89.5, 88, Math.toRadians(46));
+    private final Pose scorePose = new Pose(89, 87.5, Math.toRadians(46));
     private final Pose setPickupPose1 = new Pose(100, 83, Math.toRadians(-180));
     private final Pose pickup1Pose = new Pose(128, 83, Math.toRadians(-180));
     private  final Pose leavePose = new Pose (115, 86, Math.toRadians(50));
@@ -111,7 +111,7 @@ public class CommandAutoRed extends CommandOpMode {
 
                 ),
 
-                setTunPower(0.74),
+                setTunPower(0.70),
                 setTunState(Tun.tunState.FORWARD),
 
                 new WaitCommand(300),
@@ -125,7 +125,7 @@ public class CommandAutoRed extends CommandOpMode {
 
                 new FollowPathCommand(follower, grabPickup1).setGlobalMaxPower(0.5),
                 setTunState(Tun.tunState.IDLE),
-                setTunPower(0.78),
+                setTunPower(0.72),
                 new ParallelCommandGroup(
                     new FollowPathCommand(follower, scorePreload),
                     setTunState(Tun.tunState.FORWARD)
