@@ -38,7 +38,7 @@ public class CommandAutoBlue extends CommandOpMode {
     private final Pose scorePose = new Pose(54, 89, Math.toRadians(128));
    private final Pose setPickupPose1 = new Pose(45, 82.5, Math.toRadians(360));
     private final Pose pickup1Pose = new Pose(15, 82.5, Math.toRadians(360));
-    private  final Pose leavePose = new Pose (35, 86, Math.toRadians(   130));
+    private  final Pose leavePose = new Pose (30, 86, Math.toRadians(   130));
     private Path scorePreload;
     private PathChain leave, grabPickup1, setPickup1, scorePickup1, grabPickup2, scorePickup2,interPickup3, grabPickup3, scorePickup3;
 
@@ -114,7 +114,7 @@ public class CommandAutoBlue extends CommandOpMode {
 
                 ),
 
-                setTunPower(0.70),
+                setTunPower(0.79),
                 setTunState(Tun.tunState.FORWARD),
 
                 new WaitCommand(300),
@@ -129,7 +129,7 @@ public class CommandAutoBlue extends CommandOpMode {
 
                 new FollowPathCommand(follower, grabPickup1).setGlobalMaxPower(0.5),
                 setTunState(Tun.tunState.IDLE),
-                setTunPower(0.72),
+                setTunPower(0.82),
                 new ParallelCommandGroup(
                         new FollowPathCommand(follower, scorePreload),
                         setTunState(Tun.tunState.FORWARD)
@@ -140,7 +140,7 @@ public class CommandAutoBlue extends CommandOpMode {
                 setTunState(Tun.tunState.IDLE),
                 new FollowPathCommand(follower, leave),
 
-                new InstantCommand(() -> Globals.lastAutoPose = follower.getPose())
+                new InstantCommand(() -> Globals.lastAutoPose = follower.getPose().plus(new Pose(0, 0, Math.toRadians(180))))
         );
         schedule(autonomousSequence);
 

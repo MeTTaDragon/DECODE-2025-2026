@@ -20,6 +20,7 @@ public class TeleOpNoPivot extends CommandOpMode {
     private Timer timer;
 
     GamepadEx chassis;
+    GamepadEx second;
     Tun tun;
     Follower follower;
 
@@ -31,6 +32,7 @@ public class TeleOpNoPivot extends CommandOpMode {
         timer = new Timer();
 
         chassis = new GamepadEx(gamepad1);
+        second = new GamepadEx(gamepad2);
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(Globals.lastAutoPose);
@@ -60,6 +62,12 @@ public class TeleOpNoPivot extends CommandOpMode {
                 new InstantCommand(() -> tun.setTunPower(tun.getTunPower() + 0.025))
         );
         chassis.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new InstantCommand(() -> tun.setTunPower(tun.getTunPower() - 0.025))
+        );
+        second.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new InstantCommand(() -> tun.setTunPower(tun.getTunPower() + 0.025))
+        );
+        second.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new InstantCommand(() -> tun.setTunPower(tun.getTunPower() - 0.025))
         );
 

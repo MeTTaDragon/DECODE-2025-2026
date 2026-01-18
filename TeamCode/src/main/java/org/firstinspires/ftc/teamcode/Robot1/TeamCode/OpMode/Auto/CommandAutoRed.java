@@ -37,7 +37,7 @@ public class CommandAutoRed extends CommandOpMode {
     private final Pose scorePose = new Pose(89, 87.5, Math.toRadians(46));
     private final Pose setPickupPose1 = new Pose(100, 83, Math.toRadians(-180));
     private final Pose pickup1Pose = new Pose(128, 83, Math.toRadians(-180));
-    private  final Pose leavePose = new Pose (115, 86, Math.toRadians(50));
+    private  final Pose leavePose = new Pose (120, 86, Math.toRadians(50));
     private Path scorePreload;
     private PathChain leave, grabPickup1, setPickup1, scorePickup1, grabPickup2, scorePickup2,interPickup3, grabPickup3, scorePickup3;
 
@@ -111,7 +111,56 @@ public class CommandAutoRed extends CommandOpMode {
 
                 ),
 
-                setTunPower(0.70),
+                setTunPower(0.79
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                ),
                 setTunState(Tun.tunState.FORWARD),
 
                 new WaitCommand(300),
@@ -125,7 +174,7 @@ public class CommandAutoRed extends CommandOpMode {
 
                 new FollowPathCommand(follower, grabPickup1).setGlobalMaxPower(0.5),
                 setTunState(Tun.tunState.IDLE),
-                setTunPower(0.72),
+                setTunPower(0.82),
                 new ParallelCommandGroup(
                     new FollowPathCommand(follower, scorePreload),
                     setTunState(Tun.tunState.FORWARD)
