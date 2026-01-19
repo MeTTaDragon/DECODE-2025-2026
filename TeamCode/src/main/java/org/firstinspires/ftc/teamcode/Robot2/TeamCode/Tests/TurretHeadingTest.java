@@ -32,30 +32,30 @@ public class TurretHeadingTest extends CommandOpMode {
 
         alliance = Alliance.BLUE;
 
-        follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(72, 7.5, Math.toRadians(90)));
+//        follower = Constants.createFollower(hardwareMap);
+//        follower.setStartingPose(new Pose(72, 7.5, Math.toRadians(90)));
 
-        turret = new Turret(hardwareMap, follower, telemetry);
-        limelight = new LimelightSubsystem(hardwareMap);
+        turret = new Turret(hardwareMap, null, telemetry);
+        //limelight = new LimelightSubsystem(hardwareMap);
 
         super.reset();
 
-        follower.update();
+        //follower.update();
 
         register(turret);
-        register(limelight);
+        //register(limelight);
 
-        turret.setTurretState(Turret.TurretState.IDLE);
-        limelight.init();
-        limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
+        turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
+//        limelight.init();
+//        limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
 
         super.run();
     }
 
     public void run(){
-        follower.update();
+        //follower.update();
 
-        turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
+
 
         telemetry.update();
         super.run();

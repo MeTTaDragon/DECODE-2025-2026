@@ -32,17 +32,20 @@ public class Turret extends SubsystemBase {
     Pose2d turretPose;
 
 
-    public static double P = 0.006, I = 0.005, D = 0.00025, F = 0.0;
+    public static double P = 0.35, I = 0, D = 0.0012, F = 0;
 
-    double gearRatio = 3.7; //pune asta cand o sa stiu exact gear ratio-ul de la tureta
-    double TicksPerRev = 103.8;
+    double gearRatio = 5.75;//pune asta cand o sa stiu exact gear ratio-ul de la tureta
+    double TicksPerRev = 145.1;
+
+     double testPoint;
 
 
     public enum TurretState {
         IDLE,
         FULL_LIMELIGHT,
         FULL_PINPOINT,
-        MIXED
+        MIXED,
+        TEST
     }
     private static TurretState currentTurretState = TurretState.IDLE;
 
@@ -62,7 +65,9 @@ public class Turret extends SubsystemBase {
     public void setTurretState(TurretState state) {
         currentTurretState = state;
     }
-
+    public TurretState getCurrentTurretState(){ return currentTurretState; }
+    public double getPower(){ return motorTureta.getPower();}
+    public void setTestPoint(double point){ testPoint = point; }
     void update() {
         double power;
 
@@ -107,6 +112,18 @@ public class Turret extends SubsystemBase {
             case MIXED:
                 // Implement mixed tracking logic here
                 break;
+
+            case TEST:
+                turretController.setSetPoint(testPoint);
+
+                if(turretController.atSetPoint()){
+                    motorTureta.setPower(0);
+                    turretController.clearTotalError();
+                } else {
+                    double trueHeading = normalizeAngle(getTurretHeading(), true);
+                    power = turretController.calculate(trueHeading);
+                    motorTureta.setPower(power);
+                }
         }
     }
 
@@ -121,8 +138,9 @@ public class Turret extends SubsystemBase {
 
     double posesToAngle(Pose2d robotPose, Pose2d targetPose) {
 
-        return new Vector2d(targetPose).minus(new Vector2d(robotPose)).angle();
+        double angle = new Vector2d(targetPose).minus(new Vector2d(robotPose)).angle();
 
+        return normalizeAngle(angle,true);
     }
 
     double normalizeAngle(double angle, boolean zeroToMax) {
@@ -140,31 +158,18 @@ public class Turret extends SubsystemBase {
         return angle2;
     }
 
-    double getTurretHeading(){
-        return (motorTureta.getCurrentPosition() / (TicksPerRev )) * 2 * Math.PI ;
+    public double getTurretHeading(){
+        return (motorTureta.getCurrentPosition() / (TicksPerRev * gearRatio)) * 2 * Math.PI ;
     }
+
+
+    public double getSetPoint(){ return turretController.getSetPoint(); }
 
     @Override
     public void periodic() {
 
         turretController.setPIDF(P, I, D, F);
 
-
         update();
-
-        double turretHeading = getTurretHeading();
-        telemetry.addData("goal pose", goalPose);
-        telemetry.addData("turret heading", turretHeading);
-        telemetry.addData("turret position", motorTureta.getCurrentPosition());
-        telemetry.addData("turret state", currentTurretState);
-        telemetry.addData("turret setPoint", turretController.getSetPoint());
-        telemetry.addData("turret error", turretController.getPositionError());
-        telemetry.addData("robot heading", follower.getPose().getHeading());
-
-        // Added Limelight telemetry
-        telemetry.addData("LL tx", lltx);
-        telemetry.addData("LL ty", llty);
-
-        telemetry.addData("turret power", motorTureta.getPower());
     }
 }
