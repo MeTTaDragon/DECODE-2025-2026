@@ -34,7 +34,7 @@ public class Turret extends SubsystemBase {
 
     public static double P = 0.35, I = 0, D = 0.0012, F = 0;
 
-    double gearRatio = 5.75;//pune asta cand o sa stiu exact gear ratio-ul de la tureta
+double gearRatio = 5.75;
     double TicksPerRev = 145.1;
 
      double testPoint;

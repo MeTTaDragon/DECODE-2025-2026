@@ -30,8 +30,8 @@ public class Tun extends SubsystemBase {
     private CRServo servoBanda;
     private Servo gateBack;
 
-    public static double TUN_POWER = 0.8;
-    public static double BAND_POWER =1;
+    public static double TUN_POWER = 0.84;
+    public static double BAND_POWER =-1;
 
     public static double gateCloseBack = 0.02;
 
