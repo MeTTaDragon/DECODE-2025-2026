@@ -1,10 +1,5 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Tests;
 
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.lltx;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.llty;
-
-import androidx.core.location.GnssStatusCompat;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -59,7 +54,7 @@ public class PIDTuretatest extends CommandOpMode {
 
         telemetry.addData("current state", tureta.getCurrentTurretState());
         telemetry.addData("power", tureta.getPower());
-        telemetry.addData("current heading", tureta.getTurretHeading());
+        telemetry.addData("current heading", tureta.getTurretTrueHeading());
         telemetry.addData("set point", tureta.getSetPoint());
         telemetry.update();
 

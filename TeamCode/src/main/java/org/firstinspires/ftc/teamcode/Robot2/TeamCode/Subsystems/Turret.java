@@ -3,20 +3,16 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
-import com.seattlesolvers.solverslib.geometry.Vector2d;
 
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals;
 
 @Config
 public class Turret extends SubsystemBase {
@@ -91,19 +87,24 @@ public class Turret extends SubsystemBase {
                 break;
 
             case FULL_PINPOINT:
-                turretPose = new Pose2d(follower.getPose().getX(), follower.getPose().getY(), getTurretHeading());
+                turretPose = new Pose2d(follower.getPose().getX(), follower.getPose().getY(), getTurretTrueHeading());
 
                 double targetAngle = posesToAngle(turretPose, targetGoalPose);
 
-                double error = errorCalculate(targetAngle);
+                if(getTurretHeading() > Math.toRadians(170)){
+                    turretController.setSetPoint(getTurretHeading() - 2 * Math.PI);
+                } else if(getTurretHeading() < Math.toRadians(-170)){
+                    turretController.setSetPoint(getTurretHeading() + 2 * Math.PI);
+                } else {
+                    turretController.setSetPoint(targetAngle);
+                }
 
-                turretController.setSetPoint(targetAngle);
 
                 if(turretController.atSetPoint()){
                     motorTureta.setPower(0);
                     //turretController.clearTotalError();
                 } else {
-                    power = turretController.calculate(getTurretHeading());
+                    power = turretController.calculate(getTurretTrueHeading());
                     motorTureta.setPower(power);
                 }
                 break;
@@ -112,36 +113,10 @@ public class Turret extends SubsystemBase {
                 // Implement mixed tracking logic here
                 break;
 
-            case TEST:
-                turretController.setSetPoint(testPoint);
-
-                if(turretController.atSetPoint()){
-                    motorTureta.setPower(0);
-                    turretController.clearTotalError();
-                } else {
-                    double trueHeading = normalizeAngle(getTurretHeading(), true);
-                    power = turretController.calculate(trueHeading);
-                    motorTureta.setPower(power);
-                }
         }
     }
 
-    double errorCalculate(double targetAngle){
 
-        double error = calcError2(targetAngle, getTurretHeading());
-
-
-        return error;
-    }
-
-    double calcError2(double targetangle, double trueheading) {
-        if ((targetangle - trueheading < -180) || (targetangle - trueheading > 180)) {
-            return (targetangle + trueheading);
-        }
-        else {
-            return (targetangle - trueheading);
-        }
-    }
 
     double posesToAngle(Pose2d robotPose, Pose2d targetPose) {
 
@@ -150,7 +125,7 @@ public class Turret extends SubsystemBase {
 
         double targetAngle = Math.atan2(deltaY, deltaX);
 
-        return targetAngle;
+        return normalizeAngle(targetAngle, false);
     }
 
     double normalizeAngle(double angle, boolean zeroToMax) {
@@ -170,12 +145,17 @@ public class Turret extends SubsystemBase {
 
 
 
-    public double getTurretHeading(){
+    public double getTurretTrueHeading(){
         double turretHeading = (motorTureta.getCurrentPosition() / (TicksPerRev * gearRatio)) * 2 * Math.PI ;
 
         double trueHeading = turretHeading + robotAngle;
 
-        return trueHeading;
+        return normalizeAngle(trueHeading, true);
+    }
+
+    public double getTurretHeading() {
+
+        return (motorTureta.getCurrentPosition() / (TicksPerRev * gearRatio)) * 2 * Math.PI ;
     }
 
     public double getCurrentPower(){
@@ -187,7 +167,6 @@ public class Turret extends SubsystemBase {
 
     @Override
     public void periodic() {
-
         turretController.setPIDF(P, I, D, F);
 
         robotAngle = follower.getPose().getHeading();

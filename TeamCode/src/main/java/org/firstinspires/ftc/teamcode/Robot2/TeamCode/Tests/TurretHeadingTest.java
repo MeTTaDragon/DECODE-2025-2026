@@ -5,14 +5,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
@@ -20,8 +17,6 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsys
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
-
-import android.opengl.EGLObjectHandle;
 
 @Config
 @TeleOp(name = "Turret Heading Test")
@@ -92,7 +87,7 @@ public class TurretHeadingTest extends CommandOpMode {
 
         telemetry.addData("Current state", turret.getCurrentTurretState());
         telemetry.addData("Turret Power", turret.getCurrentPower());
-        telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
+        telemetry.addData("turret heading", Math.toDegrees(turret.getTurretTrueHeading()));
         telemetry.addData("Set Point", Math.toDegrees(turret.getSetPoint()));
         telemetry.addData("Robot X", follower.getPose().getX());
         telemetry.addData("Robot Y", follower.getPose().getY());

@@ -5,14 +5,12 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.Robot1.TeamCode.Globals;
-import org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
@@ -28,8 +26,6 @@ public class TeleOpMain extends CommandOpMode {
     Turret turret;
     Launcher launcher;
     Intake intake;
-
-    public double middle_x = 56;
 
     @Override
     public void initialize() {
@@ -93,7 +89,7 @@ public class TeleOpMain extends CommandOpMode {
 
     public void run() {
         super.run();
-        follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
+        follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x, false);
         follower.update();
 
 
@@ -101,7 +97,7 @@ public class TeleOpMain extends CommandOpMode {
         telemetry.addData("Target velocity", launcher.getTargetVelocity());
         telemetry.addData("Current state", turret.getCurrentTurretState());
         telemetry.addData("Turret Power", turret.getCurrentPower());
-        telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
+        telemetry.addData("turret heading", Math.toDegrees(turret.getTurretTrueHeading()));
         telemetry.addData("Set Point", Math.toDegrees(turret.getSetPoint()));
         telemetry.addData("Robot X", follower.getPose().getX());
         telemetry.addData("Robot Y", follower.getPose().getY());
