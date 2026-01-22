@@ -23,10 +23,13 @@ public class Launcher extends SubsystemBase {
     Follower follower;
     Telemetry telemetry;
     private final Servo hoodServo;
-    public double farHoodPose = 0.5;
-    public double closeHoodPose = 0.1;
+    private final Servo stopper;
+    public static double farHoodPose = 0.5;
+    public static double closeHoodPose = 0.1;
+    public static double middle_Y = 72;
 
-    public double middle_Y = 72;
+    public static double stopperClose = 0;
+    public static double stopperOpen = 0.25;
 
 
     // --- TUNING VARIABLES (Edit in FTC Dashboard) ---
@@ -45,6 +48,7 @@ public class Launcher extends SubsystemBase {
         masterMotor = hwMap.get(DcMotorEx.class, "motorDreapta"); // MUST have encoder cable
         followerMotor = hwMap.get(DcMotorEx.class, "motorStanga");// Encoder optional/ignored
         hoodServo = hwMap.get(Servo.class, "hoodServo");
+        stopper = hwMap.get(Servo.class, "stopper");
         follower = flwr;
         this.telemetry = telemetry;
 
@@ -65,9 +69,13 @@ public class Launcher extends SubsystemBase {
         // Check this physically! Usually, flywheels spin opposite ways to shoot forward.
         // If the robot shoots backward, remove this REVERSE or move it to masterMotor.
         masterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        followerMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        followerMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
+    }
+
+    public void init(){
+        setTargetVelocity(0);
     }
 
     /**
@@ -96,12 +104,18 @@ public class Launcher extends SubsystemBase {
         hoodServo.setPosition(pos);
     }
 
-
+    public void setStopperPose(double pos) {
+        stopper.setPosition(pos);
+    }
     /**
      * The heartbeat of the subsystem. This runs constantly to update motor power.
      */
     @Override
     public void periodic() {
+//        if(getVelocity() > targetVelocity - 20){
+//            stopper.setPosition(stopperOpen);
+//        } else { stopper.setPosition(stopperClose); }
+
         // If target is 0, safety cut power
         if (targetVelocity == 0) {
             masterMotor.setPower(0);

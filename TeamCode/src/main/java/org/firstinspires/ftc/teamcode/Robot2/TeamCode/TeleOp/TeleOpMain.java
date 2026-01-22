@@ -31,8 +31,6 @@ public class TeleOpMain extends CommandOpMode {
     public void initialize() {
         controller = new GamepadEx(gamepad1);
 
-
-
         follower = Constants.createFollower(hardwareMap);
        // follower.setStartingPose(Globals.lastAutoPose); cod normal
         follower.setStartingPose(new Pose(72, 7.5, Math.toRadians(90))); //pozitie setata pentru testari
@@ -49,6 +47,8 @@ public class TeleOpMain extends CommandOpMode {
         follower.startTeleopDrive(true);
 
         register(turret, launcher, intake);
+
+        turret.setTurretState(Turret.TurretState.IDLE);
 
         controller.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
@@ -80,7 +80,19 @@ public class TeleOpMain extends CommandOpMode {
         controller.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new InstantCommand(() -> turret.setTurretState(Turret.TurretState.IDLE))
         );
+        controller.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+                new InstantCommand(() -> {
+                    launcher.setHoodPose(0);
+                    launcher.setStopperPose(0);
 
+                }
+        ));
+        controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new InstantCommand(() -> {
+                    launcher.setHoodPose(0.1);
+                    launcher.setStopperPose(0.1);
+                }
+        ));
         telemetry.setMsTransmissionInterval(250);
 
         super.run();
@@ -91,7 +103,6 @@ public class TeleOpMain extends CommandOpMode {
         super.run();
         follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x, false);
         follower.update();
-
 
         telemetry.addData("Current velocity", launcher.getVelocity());
         telemetry.addData("Target velocity", launcher.getTargetVelocity());

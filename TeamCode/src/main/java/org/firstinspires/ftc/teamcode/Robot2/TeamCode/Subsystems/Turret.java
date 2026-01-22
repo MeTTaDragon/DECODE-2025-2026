@@ -6,6 +6,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
@@ -69,7 +70,8 @@ public class Turret extends SubsystemBase {
     void update() {
         switch (currentTurretState){
             case IDLE:
-                motorTureta.setPower(0);
+                power = turretController.calculate(getTurretHeading(), 0);
+                motorTureta.setPower(power);
                 break;
 
             case FULL_LIMELIGHT:
