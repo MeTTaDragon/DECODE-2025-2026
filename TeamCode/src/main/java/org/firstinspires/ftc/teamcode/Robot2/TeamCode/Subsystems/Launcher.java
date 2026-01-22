@@ -18,8 +18,11 @@ public class Launcher extends SubsystemBase {
     // --- TUNING VARIABLES (Edit in FTC Dashboard) ---
     // F (Feedforward): Base power to hold speed. Start small (0.0001 - 0.0005)
     // P (Proportional): "Snap" power to fix errors.
-    public static double F = 0.0004315;
-    public static double P = 0.1;
+    public static double F = 0.00036239;
+    public static double P = 0.01;
+    //vel far zone: 1940
+    //vel close middle: 1200
+    //vel next to goal:
     public double closHoodPos = 0.5;
     public double farHoodPos = 0.8;
     public double far_X = 0.6;
