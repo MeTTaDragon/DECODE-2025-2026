@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+
 
 @Config
 public class Launcher extends SubsystemBase {
@@ -14,6 +16,15 @@ public class Launcher extends SubsystemBase {
 
     // "Follower" = motorStanga (Encoder ignored, just follows power)
     private final DcMotorEx followerMotor;
+
+
+    private final Servo hoodServo;
+    private final VoltageSensor voltage;
+    public double farHoodPose = 0.5;
+    public double closeHoodPose = 0.1;
+
+    public double middle_X = 72;
+
 
     // --- TUNING VARIABLES (Edit in FTC Dashboard) ---
     // F (Feedforward): Base power to hold speed. Start small (0.0001 - 0.0005)
@@ -28,6 +39,17 @@ public class Launcher extends SubsystemBase {
     public double far_X = 0.6;
     public double close_X = 0.6;
 
+    public Launcher(HardwareMap hwMap, Follower flwr, Telemetry telemetry) {
+        launcherMotor1 = hwMap.get(DcMotorEx.class, "motorStanga");
+        launcherMotor2 = hwMap.get(DcMotorEx.class, "motorDreapta");
+        hoodServo = hwMap.get(Servo.class, "hoodServo");
+
+        follower = flwr;
+
+        voltage = hwMap.voltageSensor.iterator().next();
+
+        launcherMotor1.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        launcherMotor2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
     private double targetVelocity = 0.0;
 
@@ -109,5 +131,16 @@ public class Launcher extends SubsystemBase {
         // This ensures they stay synced, driven by motorDreapta's encoder data.
         masterMotor.setPower(power);
         followerMotor.setPower(power);
+    public void setHoodPose(double pos) {
+        hoodServo.setPosition(pos);
+    }
+    @Override
+    public void periodic() {
+        if (follower.getPose().getX() > middle_X) {
+            setHoodPose(farHoodPose);
+        } else {
+            setHoodPose(closeHoodPose);
+        }
+
     }
 }

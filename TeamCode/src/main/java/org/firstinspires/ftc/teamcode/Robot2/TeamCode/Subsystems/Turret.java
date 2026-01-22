@@ -31,13 +31,15 @@ public class Turret extends SubsystemBase {
     Pose2d targetGoalPose;
     Pose2d turretPose;
 
+    double robotAngle;
+    double power;
+
 
     public static double P = 0.35, I = 0, D = 0.0012, F = 0;
 
-double gearRatio = 5.75;
+    double gearRatio = 5.75;
     double TicksPerRev = 145.1;
-
-     double testPoint;
+    double testPoint;
 
 
     public enum TurretState {
@@ -51,7 +53,7 @@ double gearRatio = 5.75;
 
     public Turret(HardwareMap hwMap, Follower flwr, Telemetry telemetry) {
         motorTureta = hwMap.get(DcMotorEx.class, "motorTureta");
-        motorTureta.setDirection(DcMotorSimple.Direction.FORWARD);
+        motorTureta.setDirection(DcMotorSimple.Direction.REVERSE);
 
         turretController = new PIDFController(P, I, D, F);
 
@@ -69,8 +71,6 @@ double gearRatio = 5.75;
     public double getPower(){ return motorTureta.getPower();}
     public void setTestPoint(double point){ testPoint = point; }
     void update() {
-        double power;
-
         switch (currentTurretState){
             case IDLE:
                 motorTureta.setPower(0);
@@ -91,20 +91,19 @@ double gearRatio = 5.75;
                 break;
 
             case FULL_PINPOINT:
-                turretPose = new Pose2d(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                turretPose = new Pose2d(follower.getPose().getX(), follower.getPose().getY(), getTurretHeading());
 
                 double targetAngle = posesToAngle(turretPose, targetGoalPose);
 
                 double error = errorCalculate(targetAngle);
 
-                turretController.setSetPoint(error);
+                turretController.setSetPoint(targetAngle);
 
                 if(turretController.atSetPoint()){
                     motorTureta.setPower(0);
-                    turretController.clearTotalError();
+                    //turretController.clearTotalError();
                 } else {
-                    double trueHeading = normalizeAngle(follower.getPose().getHeading() + getTurretHeading(), false);
-                    power = turretController.calculate(trueHeading);
+                    power = turretController.calculate(getTurretHeading());
                     motorTureta.setPower(power);
                 }
                 break;
@@ -128,19 +127,30 @@ double gearRatio = 5.75;
     }
 
     double errorCalculate(double targetAngle){
-        double robotAngle = follower.getPose().getHeading();
-        double trueHeading = normalizeAngle(robotAngle + getTurretHeading(), false);
 
-        double error = normalizeAngle(targetAngle - trueHeading, false);
+        double error = calcError2(targetAngle, getTurretHeading());
+
 
         return error;
     }
 
+    double calcError2(double targetangle, double trueheading) {
+        if ((targetangle - trueheading < -180) || (targetangle - trueheading > 180)) {
+            return (targetangle + trueheading);
+        }
+        else {
+            return (targetangle - trueheading);
+        }
+    }
+
     double posesToAngle(Pose2d robotPose, Pose2d targetPose) {
 
-        double angle = new Vector2d(targetPose).minus(new Vector2d(robotPose)).angle();
+        double deltaY = targetPose.getY() - robotPose.getY();
+        double deltaX = targetPose.getX() - robotPose.getX();
 
-        return normalizeAngle(angle,true);
+        double targetAngle = Math.atan2(deltaY, deltaX);
+
+        return targetAngle;
     }
 
     double normalizeAngle(double angle, boolean zeroToMax) {
@@ -158,8 +168,18 @@ double gearRatio = 5.75;
         return angle2;
     }
 
+
+
     public double getTurretHeading(){
-        return (motorTureta.getCurrentPosition() / (TicksPerRev * gearRatio)) * 2 * Math.PI ;
+        double turretHeading = (motorTureta.getCurrentPosition() / (TicksPerRev * gearRatio)) * 2 * Math.PI ;
+
+        double trueHeading = turretHeading + robotAngle;
+
+        return trueHeading;
+    }
+
+    public double getCurrentPower(){
+        return power;
     }
 
 
@@ -169,6 +189,8 @@ double gearRatio = 5.75;
     public void periodic() {
 
         turretController.setPIDF(P, I, D, F);
+
+        robotAngle = follower.getPose().getHeading();
 
         update();
     }
