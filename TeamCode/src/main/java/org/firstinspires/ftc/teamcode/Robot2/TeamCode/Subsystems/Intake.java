@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry; // Import Telemetry
+
+import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 @Config
@@ -20,6 +22,7 @@ public class Intake extends SubsystemBase {
 
     private IntakeState currentIntakeState = IntakeState.IDLE;
     private DcMotorEx intakeMotor;
+
 
     // We store the telemetry object to use it in periodic()
     private Telemetry telemetry;

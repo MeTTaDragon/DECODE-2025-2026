@@ -43,6 +43,10 @@ public class Launcher extends SubsystemBase {
         launcherMotor2.setPower(0);
     }
 
+    public void setPosition(double pos) {
+        hoodServo.setPosition(pos);
+    }
+
     @Override
     public void periodic() {
     }
