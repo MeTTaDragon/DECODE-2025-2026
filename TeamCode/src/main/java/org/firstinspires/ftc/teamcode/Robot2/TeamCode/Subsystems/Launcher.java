@@ -20,6 +20,11 @@ public class Launcher extends SubsystemBase {
     // P (Proportional): "Snap" power to fix errors.
     public static double F = 0.0004315;
     public static double P = 0.1;
+    public double closHoodPos = 0.5;
+    public double farHoodPos = 0.8;
+    public double far_X = 0.6;
+    public double close_X = 0.6;
+
 
     private double targetVelocity = 0.0;
 
