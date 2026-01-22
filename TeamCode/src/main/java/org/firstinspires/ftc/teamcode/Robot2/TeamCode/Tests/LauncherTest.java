@@ -19,16 +19,15 @@ public class LauncherTest extends CommandOpMode {
     GamepadEx gamepad;
 
     // --- DASHBOARD VARIABLES ---
-    // Edit these numbers in Dashboard to test different speeds
-    public static double TARGET_VELOCITY_HIGH = 1500;
-    public static double TARGET_VELOCITY_LOW = 900;
+    // Change these in Dashboard to test overshoot/recovery
+    public static double TARGET_VELOCITY_HIGH = 1800;
+    public static double TARGET_VELOCITY_LOW = 1000;
 
-    // Helper state
     private boolean isHighSpeed = true;
 
     @Override
     public void initialize() {
-        // Setup Dashboard Telemetry (Crucial for the graph!)
+        // Setup Dashboard Telemetry to see the graph
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         launcher = new Launcher(hardwareMap);
@@ -36,16 +35,16 @@ public class LauncherTest extends CommandOpMode {
 
         gamepad = new GamepadEx(gamepad1);
 
-        // Constant loop to send data to the graph
+        // Default Command: Updates Telemetry & maintains speed
         launcher.setDefaultCommand(new RunCommand(() -> {
+            // "getVelocity" here calls the Master (motorDreapta) automatically
             double currentVel = launcher.getVelocity();
             double target = isHighSpeed ? TARGET_VELOCITY_HIGH : TARGET_VELOCITY_LOW;
 
-            // If the launcher is stopped (target 0), we don't graph errors
-            // But if it's running, we graph the setpoint
-            if(launcher.getVelocity() > 10 || target > 0) {
-                telemetry.addData("Target Velocity", target);
-                telemetry.addData("Actual Velocity", currentVel);
+            // Only graph if moving or trying to move
+            if(Math.abs(currentVel) > 10 || target > 0) {
+                telemetry.addData("Target (SetPoint)", target);
+                telemetry.addData("Actual (motorDreapta)", currentVel);
                 telemetry.addData("Error", target - currentVel);
             }
 
@@ -54,7 +53,7 @@ public class LauncherTest extends CommandOpMode {
             telemetry.update();
         }, launcher));
 
-        // TRIANGLE: Toggle between High and Low speed
+        // TRIANGLE: Toggle Speed (The "Step Test")
         gamepad.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
                 new InstantCommand(() -> {
                     isHighSpeed = !isHighSpeed;
@@ -63,11 +62,11 @@ public class LauncherTest extends CommandOpMode {
                 })
         );
 
-        // CROSS: Stop the launcher
+        // CROSS: Emergency Stop
         gamepad.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
                 new InstantCommand(() -> {
                     launcher.stop();
-                    isHighSpeed = false; // Reset toggle
+                    isHighSpeed = false;
                 })
         );
     }

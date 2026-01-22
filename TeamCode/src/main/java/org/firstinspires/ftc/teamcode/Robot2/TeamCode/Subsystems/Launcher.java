@@ -5,42 +5,47 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 @Config
 public class Launcher extends SubsystemBase {
-    private final DcMotorEx masterMotor;   // Motor WITH Encoder
-    private final DcMotorEx followerMotor; // Motor WITHOUT Encoder (or ignored)
-    private final Servo hoodServo;
+    // "Master" = motorDreapta (The one with the Encoder Cable plugged in)
+    private final DcMotorEx masterMotor;
+
+    // "Follower" = motorStanga (Encoder ignored, just follows power)
+    private final DcMotorEx followerMotor;
 
     // --- TUNING VARIABLES (Edit in FTC Dashboard) ---
-    // F (Feedforward): Holds the speed. Start small (e.g., 0.0001)
-    // P (Proportional): Fixes errors.
-    public static double F = 0.0;
-    public static double P = 0.0;
+    // F (Feedforward): Base power to hold speed. Start small (0.0001 - 0.0005)
+    // P (Proportional): "Snap" power to fix errors.
+    public static double F = 0.0004315;
+    public static double P = 0.1;
 
     private double targetVelocity = 0.0;
 
     public Launcher(HardwareMap hwMap) {
-        // Hardware Mapping
-        masterMotor = hwMap.get(DcMotorEx.class, "motorDreapta");
-        followerMotor = hwMap.get(DcMotorEx.class, "motorStanga");
-        hoodServo = hwMap.get(Servo.class, "hoodServo");
+        // 1. Hardware Mapping - HERE is where we define the Master
+        masterMotor = hwMap.get(DcMotorEx.class, "motorDreapta"); // MUST have encoder cable
+        followerMotor = hwMap.get(DcMotorEx.class, "motorStanga"); // Encoder optional/ignored
 
-        // Reset Master Encoder
+        // 2. Reset the Master Encoder so we start at 0
         masterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        // Set to RUN_WITHOUT_ENCODER because we are doing the PID calculation ourselves
+        // 3. Set to RUN_WITHOUT_ENCODER
+        // This is CRITICAL. It tells the internal REV hub "Don't use your built-in PID,
+        // let me handle the math myself in the periodic() function."
         masterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         followerMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Float behavior allows smoother deceleration
+        // 4. Float behavior for smoother deceleration
         masterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         followerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        // Reverse one motor if they are facing each other
+        // 5. Direction Setup
+        // Check this physically! Usually, flywheels spin opposite ways to shoot forward.
+        // If the robot shoots backward, remove this REVERSE or move it to masterMotor.
         masterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        followerMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     /**
@@ -60,7 +65,7 @@ public class Launcher extends SubsystemBase {
     }
 
     /**
-     * Returns the current velocity from the master motor's encoder.
+     * Returns the current velocity strictly from the MASTER motor (motorDreapta).
      */
     public double getVelocity() {
         return masterMotor.getVelocity();
@@ -71,25 +76,29 @@ public class Launcher extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        // If target is 0, cut power immediately
+        // If target is 0, safety cut power
         if (targetVelocity == 0) {
             masterMotor.setPower(0);
             followerMotor.setPower(0);
             return;
         }
 
+        // 1. READ strictly from motorDreapta (Master)
         double currentVel = getVelocity();
+
+        // 2. CALCULATE Error
         double error = targetVelocity - currentVel;
 
-        // --- Custom PIDF Calculation ---
-        // Feedforward (F): Predicting the power needed for the target speed
-        // Proportional (P): Nudging the power based on how far off we are
+        // 3. CALCULATE Power (PF Controller)
+        // Feedforward (F): Base power to maintain target
+        // Proportional (P): Correction power based on error
         double power = (targetVelocity * F) + (error * P);
 
-        // Clamp power to ensure it stays within valid range -1 to 1
+        // 4. CLAMP power to safe range (-1.0 to 1.0)
         power = Math.max(-1.0, Math.min(1.0, power));
 
-        // Apply same power to both motors to keep them synced
+        // 5. APPLY the SAME calculated power to BOTH motors
+        // This ensures they stay synced, driven by motorDreapta's encoder data.
         masterMotor.setPower(power);
         followerMotor.setPower(power);
     }
