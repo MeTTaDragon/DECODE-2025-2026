@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -27,7 +26,7 @@ public class Launcher extends SubsystemBase {
     public double farHoodPose = 0.5;
     public double closeHoodPose = 0.1;
 
-    public double middle_X = 72;
+    public double middle_Y = 72;
 
 
     // --- TUNING VARIABLES (Edit in FTC Dashboard) ---
@@ -109,7 +108,7 @@ public class Launcher extends SubsystemBase {
             followerMotor.setPower(0);
             return;
         }
-        if (follower.getPose().getX() > middle_X) {
+        if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
         } else {
             setHoodPose(closeHoodPose);
