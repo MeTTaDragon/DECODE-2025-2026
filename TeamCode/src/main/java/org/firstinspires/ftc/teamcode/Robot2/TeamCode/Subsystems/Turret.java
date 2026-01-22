@@ -101,7 +101,7 @@ public class Turret extends SubsystemBase {
 
                 if(turretController.atSetPoint()){
                     motorTureta.setPower(0);
-                    turretController.clearTotalError();
+                    //turretController.clearTotalError();
                 } else {
                     power = turretController.calculate(getTurretHeading());
                     motorTureta.setPower(power);

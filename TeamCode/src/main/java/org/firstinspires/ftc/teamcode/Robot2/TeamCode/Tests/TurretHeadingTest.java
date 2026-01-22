@@ -52,7 +52,7 @@ public class TurretHeadingTest extends CommandOpMode {
         motorIntake.setDirection(DcMotorSimple.Direction.REVERSE);
         motorStanga = hardwareMap.get(DcMotor.class, "motorStanga");
         motorDreapta = hardwareMap.get(DcMotor.class, "motorDreapta");
-        motorStanga.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorDreapta.setDirection(DcMotorSimple.Direction.REVERSE);
         //limelight = new LimelightSubsystem(hardwareMap);
 
         super.reset();

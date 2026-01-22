@@ -76,10 +76,16 @@ public class TeleOpMain extends CommandOpMode {
                 new InstantCommand(() -> launcher.setPower(0.0))
         );
 
+        controller.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_PINPOINT))
+        );
+        controller.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.IDLE))
+        );
 
+        telemetry.setMsTransmissionInterval(250);
 
         super.run();
-
     }
 
 
@@ -87,7 +93,7 @@ public class TeleOpMain extends CommandOpMode {
         super.run();
         follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         follower.update();
-        telemetry.setMsTransmissionInterval(250);
+
 
         telemetry.addData("Current state", turret.getCurrentTurretState());
         telemetry.addData("Turret Power", turret.getCurrentPower());
@@ -97,8 +103,5 @@ public class TeleOpMain extends CommandOpMode {
         telemetry.addData("Robot Y", follower.getPose().getY());
         telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.update();
-
-
-        turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
     }
 }
