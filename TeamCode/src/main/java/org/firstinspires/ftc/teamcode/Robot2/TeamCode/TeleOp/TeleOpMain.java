@@ -29,6 +29,8 @@ public class TeleOpMain extends CommandOpMode {
     Launcher launcher;
     Intake intake;
 
+    public double middle_x = 56;
+
     @Override
     public void initialize() {
         controller = new GamepadEx(gamepad1);
@@ -43,7 +45,7 @@ public class TeleOpMain extends CommandOpMode {
 
         super.reset();
         turret = new Turret(hardwareMap, follower, telemetry);
-        launcher = new Launcher(hardwareMap);
+        launcher = new Launcher(hardwareMap, follower, telemetry);
         intake = new Intake(hardwareMap, telemetry);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -93,6 +95,7 @@ public class TeleOpMain extends CommandOpMode {
         super.run();
         follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         follower.update();
+
 
 
         telemetry.addData("Current state", turret.getCurrentTurretState());
