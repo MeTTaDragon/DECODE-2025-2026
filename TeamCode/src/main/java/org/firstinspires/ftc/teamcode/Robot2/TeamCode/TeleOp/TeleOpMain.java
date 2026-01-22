@@ -63,19 +63,19 @@ public class TeleOpMain extends CommandOpMode {
         );
 
         controller.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new InstantCommand(() -> launcher.setPower(0.6))
+                new InstantCommand(() -> launcher.setTargetVelocity(1940))
         );
 
         controller.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenReleased(
-                new InstantCommand(() -> launcher.setPower(0.0))
+                new InstantCommand(() -> launcher.stop())
         );
 
         controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> launcher.setPower(0.3))
+                new InstantCommand(() -> launcher.setTargetVelocity(1200))
         );
 
         controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenReleased(
-                new InstantCommand(() -> launcher.setPower(0.0))
+                new InstantCommand(() -> launcher.stop())
         );
 
         controller.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
@@ -97,7 +97,8 @@ public class TeleOpMain extends CommandOpMode {
         follower.update();
 
 
-
+        telemetry.addData("Current velocity", launcher.getVelocity());
+        telemetry.addData("Target velocity", launcher.getTargetVelocity());
         telemetry.addData("Current state", turret.getCurrentTurretState());
         telemetry.addData("Turret Power", turret.getCurrentPower());
         telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
