@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 
 
@@ -96,8 +97,7 @@ public class Launcher extends SubsystemBase {
         follower = flwr;
         this.telemetry = telemetry;
 
-        // 2. Reset the Master Encoder so we start at 0
-        masterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         // 3. Set to RUN_WITHOUT_ENCODER
         // This is CRITICAL. It tells the internal REV hub "Don't use your built-in PID,
@@ -113,7 +113,8 @@ public class Launcher extends SubsystemBase {
         // Check this physically! Usually, flywheels spin opposite ways to shoot forward.
         // If the robot shoots backward, remove this REVERSE or move it to masterMotor.
         masterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        followerMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
 
         //stopper.setDirection(Servo.Direction.REVERSE);
 
