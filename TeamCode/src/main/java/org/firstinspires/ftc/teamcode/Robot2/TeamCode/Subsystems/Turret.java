@@ -51,7 +51,6 @@ public class Turret extends SubsystemBase {
 
         // CHECK THIS: Ensure Positive Power = Counter-Clockwise rotation
         motorTureta.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorTureta.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         motorTureta.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         turretController = new PIDFController(P, I, D, F);
@@ -68,19 +67,34 @@ public class Turret extends SubsystemBase {
         currentTurretState = state;
     }
 
+    public TurretState getCurrentTurretState(){ return currentTurretState; }
+    public double getPower(){ return motorTureta.getPower();}
+    public double getSetPoint(){ return turretController.getSetPoint(); }
+    public double getCurrentPower(){
+        return power;}
+
     void update() {
         // Update PID coefficients from Dashboard
         turretController.setPIDF(P, I, D, F);
 
         switch (currentTurretState){
             case IDLE:
-                motorTureta.setPower(0);
+                power = turretController.calculate(getTurretHeading(), 0);
+                motorTureta.setPower(power);
                 break;
 
             case FULL_LIMELIGHT:
-                // Your existing Limelight logic
-                power = turretController.calculate(lltx, 0); // Calculate error from 0
-                motorTureta.setPower(power);
+                turretController.setSetPoint(0);
+
+                power = turretController.calculate(lltx);
+
+                if(turretController.atSetPoint()){
+                    motorTureta.setPower(0);
+                    turretController.clearTotalError();
+                }
+                else{
+                    motorTureta.setPower(-power);
+                }
                 break;
 
             case FULL_PINPOINT:
@@ -146,11 +160,5 @@ public class Turret extends SubsystemBase {
     public void periodic() {
         robotAngle = follower.getPose().getHeading();
         update();
-
-        // Debugging
-        telemetry.addData("Turret State", currentTurretState);
-        telemetry.addData("Turret Power", power);
-        telemetry.addData("Turret Heading (Rad)", getTurretHeading());
-        // telemetry.update(); // Let the main OpMode handle update
     }
 }

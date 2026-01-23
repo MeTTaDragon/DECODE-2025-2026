@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 
+
+
 import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -8,8 +11,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals;
+
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
 
 @Config
@@ -24,12 +31,12 @@ public class Launcher extends SubsystemBase {
     Telemetry telemetry;
     private final Servo hoodServo;
     private final Servo stopper;
-    public static double farHoodPose = 0.5;
-    public static double closeHoodPose = 0.1;
-    public static double middle_Y = 72;
+    public static double farHoodPose = 0;
+    public static double closeHoodPose = 0.45;
+    public static double middle_Y = 60;
 
-    public static double stopperClose = 0;
-    public static double stopperOpen = 0.25;
+    public static double stopperClose = 0.25;
+    public static double stopperOpen = 0.55;
 
 
     // --- TUNING VARIABLES (Edit in FTC Dashboard) ---
@@ -37,11 +44,48 @@ public class Launcher extends SubsystemBase {
     // P (Proportional): "Snap" power to fix errors.
     public static double F = 0.00036239;
     public static double P = 0.01;
+    public static double D = 0;
     //vel far zone: 1940
     //vel close middle: 1200
     //vel next to goal:
-    private double targetVelocity = 0.0;
+    public static double targetVelocity = 0.0;
 
+    private PIDFController launcherController;
+
+    Pose goalPose;
+
+
+    public enum LauncherState{
+        IDLE,
+        SHOOTING
+    }
+
+    public enum StopperState{
+        MANUAL,
+        AUTO
+    }
+
+
+
+    LauncherState currentLauncherState = LauncherState.IDLE;
+    StopperState currentStopperState = StopperState.AUTO;
+
+
+    public StopperState getCurrentStopperState() {
+        return currentStopperState;
+    }
+
+    public void setCurrentStopperState(StopperState currentStopperState) {
+        this.currentStopperState = currentStopperState;
+    }
+
+    public LauncherState getCurrentLauncherState() {
+        return currentLauncherState;
+    }
+
+    public void setCurrentLauncherState(LauncherState currentLauncherState) {
+        this.currentLauncherState = currentLauncherState;
+    }
 
     public Launcher(HardwareMap hwMap, Follower flwr, Telemetry telemetry) {
         // 1. Hardware Mapping - HERE is where we define the Master
@@ -71,11 +115,66 @@ public class Launcher extends SubsystemBase {
         masterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         followerMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        //stopper.setDirection(Servo.Direction.REVERSE);
 
+        launcherController = new PIDFController(P, 0, D, F);
+
+        goalPose = (alliance == Alliance.RED) ? redGoalPose : blueGoalPose;
     }
 
+
+    void updateLauncherState(){
+        switch (currentLauncherState){
+            case IDLE:
+                setTargetVelocity(0);
+                masterMotor.setVelocity(0);
+                followerMotor.setVelocity(0);
+                break;
+
+            case SHOOTING:
+                launcherController.setPIDF(P, 0, D, F);
+
+                double currentVel = getVelocity();
+
+                // 2. CALCULATE Error
+                double error = targetVelocity - currentVel;
+
+                // 3. CALCULATE Power (PF Controller)
+                // Feedforward (F): Base power to maintain target
+                // Proportional (P): Correction power based on error
+                double power = launcherController.calculate(0, error);
+
+                // 4. CLAMP power to safe range (-1.0 to 1.0)
+                power = Math.max(-1.0, Math.min(1.0, power));
+
+                // 5. APPLY the SAME calculated power to BOTH motors
+                // This ensures they stay synced, driven by motorDreapta's encoder data.
+                masterMotor.setPower(power);
+                followerMotor.setPower(power);
+                break;
+        }
+    }
+
+    void updateStopperState(){
+        switch (currentStopperState){
+            case MANUAL:
+
+                break;
+            case AUTO:
+                if(getVelocity() > getTargetVelocity() - 30){
+                    setStopperPose(stopperOpen);
+                } else {
+                    setStopperPose(stopperClose);
+                }
+                break;
+        }
+    }
+
+
+
     public void init(){
-        setTargetVelocity(0);
+        setCurrentLauncherState(LauncherState.IDLE);
+        setCurrentStopperState(StopperState.AUTO);
     }
 
     /**
@@ -107,43 +206,26 @@ public class Launcher extends SubsystemBase {
     public void setStopperPose(double pos) {
         stopper.setPosition(pos);
     }
+
+    public double getDistance(){
+        return Math.sqrt(Math.pow(follower.getPose().getX() - goalPose.getX(),2) + Math.pow(follower.getPose().getY() - goalPose.getY(),2));
+    }
+
     /**
      * The heartbeat of the subsystem. This runs constantly to update motor power.
      */
     @Override
     public void periodic() {
-//        if(getVelocity() > targetVelocity - 20){
-//            stopper.setPosition(stopperOpen);
-//        } else { stopper.setPosition(stopperClose); }
+        updateStopperState();
+        updateLauncherState();
 
-        // If target is 0, safety cut power
-        if (targetVelocity == 0) {
-            masterMotor.setPower(0);
-            followerMotor.setPower(0);
-            return;
-        }
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
         } else {
             setHoodPose(closeHoodPose);
         }
-        // 1. READ strictly from motorDreapta (Master)
-        double currentVel = getVelocity();
 
-        // 2. CALCULATE Error
-        double error = targetVelocity - currentVel;
-
-        // 3. CALCULATE Power (PF Controller)
-        // Feedforward (F): Base power to maintain target
-        // Proportional (P): Correction power based on error
-        double power = (targetVelocity * F) + (error * P);
-
-        // 4. CLAMP power to safe range (-1.0 to 1.0)
-        power = Math.max(-1.0, Math.min(1.0, power));
-
-        // 5. APPLY the SAME calculated power to BOTH motors
-        // This ensures they stay synced, driven by motorDreapta's encoder data.
-        masterMotor.setPower(power);
-        followerMotor.setPower(power);
+        //completeaza cu functia de distanta
+        targetVelocity = getDistance() * 10;
     }
 }

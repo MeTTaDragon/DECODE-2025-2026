@@ -27,7 +27,7 @@ public class Intake extends SubsystemBase {
     // We store the telemetry object to use it in periodic()
     private Telemetry telemetry;
 
-    public static double INTAKE_POWER = 0.8;
+    public static double INTAKE_POWER = 1;
 
     /**
      * Constructs a new Intake subsystem.

@@ -111,56 +111,7 @@ public class CommandAutoRed extends CommandOpMode {
 
                 ),
 
-                setTunPower(0.79
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                ),
+                setTunPower(0.79),
                 setTunState(Tun.tunState.FORWARD),
 
                 new WaitCommand(300),
