@@ -4,7 +4,6 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.TeleOp;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -81,11 +80,18 @@ public class TeleOpMain extends CommandOpMode {
         Trigger rightTrigger = new Trigger(() -> gamepad1.right_trigger > 0.1);
         Trigger leftTrigger = new Trigger(() -> gamepad1.left_trigger > 0.1);
 
-        leftTrigger.whenActive(
-                new InstantCommand(() -> launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING))
+        leftTrigger.whileActiveContinuous(
+                new InstantCommand(() -> {
+                    turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
+                    launcher.Manual_shooting = false;
+                    launcher.setVelocity();
+                })
         );
         leftTrigger.whenInactive(
-                new InstantCommand(() -> launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE))
+                new InstantCommand(() -> {
+                    turret.setTurretState(Turret.TurretState.IDLE);
+                    launcher.setVelToZero();
+                })
         );
 
         rightTrigger.whenActive(
@@ -102,18 +108,25 @@ public class TeleOpMain extends CommandOpMode {
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.IDLE))
         );
 
-        controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+        controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whileHeld(
                 new InstantCommand(() -> {
-                    launcher.setCurrentStopperState(Launcher.StopperState.AUTO);
-                    turret.setTurretState(Turret.TurretState.IDLE);
+                    launcher.Manual_shooting = true;
+                    launcher.setManualVelocity(1900);
                 })
         );
-
-        controller.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING))
+        controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenInactive(
+                new InstantCommand(() -> {
+                    launcher.Manual_shooting = false;
+                    launcher.setManualVelocity(0);
+                })
         );
-        controller.getGamepadButton(GamepadKeys.Button.CIRCLE).whenReleased(
-                new InstantCommand(() -> launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE))
+        controller.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new InstantCommand(() ->  {
+                    launcher.setCurrentStopperState(Launcher.StopperState.AUTO);
+                    turret.setTurretState(Turret.TurretState.IDLE);
+
+                }
+                )
         );
 
         telemetry.setMsTransmissionInterval(250);
@@ -124,12 +137,12 @@ public class TeleOpMain extends CommandOpMode {
 
     public void run() {
         super.run();
-        if(alliance == Alliance.RED){
+        /*if(alliance == Alliance.RED){
             follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         } else{
             follower.setTeleOpDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
-        }
-
+        }*/
+        follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         follower.update();
 
 

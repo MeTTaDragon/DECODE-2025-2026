@@ -74,7 +74,7 @@ public class LauncherTest extends CommandOpMode {
                     double newTarget = isHighSpeed ? TARGET_VELOCITY_HIGH : TARGET_VELOCITY_LOW;
 
                     // Set Launcher Speed
-                    launcher.setTargetVelocity(newTarget);
+                    launcher.setManualVelocity(newTarget);
 
                     // 3. Turn Intake ON
                     intake.setPower(-1.0);
