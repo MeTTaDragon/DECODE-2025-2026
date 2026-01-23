@@ -33,14 +33,14 @@ public class PIDTuretatest extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> {
-                    tureta.setTestPoint(3.14);
+                    //tureta.setTestPoint(3.14);
                     tureta.setTurretState(Turret.TurretState.TEST);
                 })
         );
 
         gamepad.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
                 new InstantCommand(() -> {
-                    tureta.setTestPoint(0);
+                   // tureta.setTestPoint(0);
                     tureta.setTurretState(Turret.TurretState.TEST);
                 })
         );
@@ -52,10 +52,6 @@ public class PIDTuretatest extends CommandOpMode {
     public void run() {
         telemetry.setMsTransmissionInterval(250);
 
-        telemetry.addData("current state", tureta.getCurrentTurretState());
-        telemetry.addData("power", tureta.getPower());
-        telemetry.addData("current heading", tureta.getTurretTrueHeading());
-        telemetry.addData("set point", tureta.getSetPoint());
         telemetry.update();
 
         super.run();

@@ -106,10 +106,6 @@ public class TeleOpMain extends CommandOpMode {
 
         telemetry.addData("Current velocity", launcher.getVelocity());
         telemetry.addData("Target velocity", launcher.getTargetVelocity());
-        telemetry.addData("Current state", turret.getCurrentTurretState());
-        telemetry.addData("Turret Power", turret.getCurrentPower());
-        telemetry.addData("turret heading", Math.toDegrees(turret.getTurretTrueHeading()));
-        telemetry.addData("Set Point", Math.toDegrees(turret.getSetPoint()));
         telemetry.addData("Robot X", follower.getPose().getX());
         telemetry.addData("Robot Y", follower.getPose().getY());
         telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));

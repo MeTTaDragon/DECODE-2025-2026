@@ -6,38 +6,36 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
-
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
 @Config
 public class Turret extends SubsystemBase {
 
     private final DcMotorEx motorTureta;
-
-    PIDFController turretController;
-    Follower follower;
-    Telemetry telemetry;
+    private final PIDFController turretController;
+    private final Follower follower;
+    private final Telemetry telemetry;
 
     Pose goalPose;
     Pose2d targetGoalPose;
-    Pose2d turretPose;
 
+    // Variables for logic
     double robotAngle;
     double power;
 
+    // PID Coefficients
+    // Note: Since we are using Radians, the error is small (e.g., 0.5 rads).
+    // You might need a higher P than 0.35 if it's sluggish.
+    // Try P = 0.8 or higher if it doesn't move fast enough.
+    public static double P = 0.8, I = 0, D = 0.03, F = 0;
 
-    public static double P = 0.35, I = 0, D = 0.0012, F = 0;
-
+    // Hardware Constants
     double gearRatio = 5.75;
-    double TicksPerRev = 145.1;
-    double testPoint;
-
+    double TicksPerRev = 145.1; // Motor internal PPR
 
     public enum TurretState {
         IDLE,
@@ -50,10 +48,15 @@ public class Turret extends SubsystemBase {
 
     public Turret(HardwareMap hwMap, Follower flwr, Telemetry telemetry) {
         motorTureta = hwMap.get(DcMotorEx.class, "motorTureta");
+
+        // CHECK THIS: Ensure Positive Power = Counter-Clockwise rotation
         motorTureta.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorTureta.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        motorTureta.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         turretController = new PIDFController(P, I, D, F);
 
+        // Pedro uses its own Pose class, be careful not to mix up Point/Pose classes
         goalPose = (alliance == Alliance.RED) ? redGoalPose : blueGoalPose;
         follower = flwr;
         this.telemetry = telemetry;
@@ -64,115 +67,90 @@ public class Turret extends SubsystemBase {
     public void setTurretState(TurretState state) {
         currentTurretState = state;
     }
-    public TurretState getCurrentTurretState(){ return currentTurretState; }
-    public double getPower(){ return motorTureta.getPower();}
-    public void setTestPoint(double point){ testPoint = point; }
+
     void update() {
+        // Update PID coefficients from Dashboard
+        turretController.setPIDF(P, I, D, F);
+
         switch (currentTurretState){
             case IDLE:
-                power = turretController.calculate(getTurretHeading(), 0);
-                motorTureta.setPower(power);
+                motorTureta.setPower(0);
                 break;
 
             case FULL_LIMELIGHT:
-                turretController.setSetPoint(0);
-
-                power = turretController.calculate(lltx);
-
-                if(turretController.atSetPoint()){
-                    motorTureta.setPower(0);
-                    turretController.clearTotalError();
-                }
-                else{
-                    motorTureta.setPower(-power);
-                }
+                // Your existing Limelight logic
+                power = turretController.calculate(lltx, 0); // Calculate error from 0
+                motorTureta.setPower(power);
                 break;
 
             case FULL_PINPOINT:
-                turretPose = new Pose2d(follower.getPose().getX(), follower.getPose().getY(), getTurretTrueHeading());
+                // 1. Get Robot Position & Heading from Pedro
+                Pose robotPose = follower.getPose();
 
-                double targetAngle = posesToAngle(turretPose, targetGoalPose);
+                // 2. Calculate the "Field Heading" (Angle from Robot to Goal globally)
+                double targetFieldHeading = Math.atan2(targetGoalPose.getY() - robotPose.getY(),
+                        targetGoalPose.getX() - robotPose.getX());
 
-                if(getTurretHeading() > Math.toRadians(170)){
-                    turretController.setSetPoint(getTurretHeading() - 2 * Math.PI);
-                } else if(getTurretHeading() < Math.toRadians(-170)){
-                    turretController.setSetPoint(getTurretHeading() + 2 * Math.PI);
-                } else {
-                    turretController.setSetPoint(targetAngle);
-                }
+                // 3. Calculate "Target Local Heading"
+                // This is where the turret needs to be relative to the robot chassis.
+                // Formula: Field_Angle - Robot_Body_Angle
+                double targetLocalHeading = targetFieldHeading - robotPose.getHeading();
 
+                // 4. Get "Current Local Heading" from Encoder
+                double currentLocalHeading = getTurretHeading(); // returns Radians
 
-                if(turretController.atSetPoint()){
-                    motorTureta.setPower(0);
-                    //turretController.clearTotalError();
-                } else {
-                    power = turretController.calculate(getTurretTrueHeading());
-                    motorTureta.setPower(power);
-                }
+                // 5. Calculate the Error (Shortest Path)
+                // This helper function handles the -180 to 180 wrap automatically.
+                // If the error is 350 degrees, it converts it to -10 degrees.
+                double error = angleWrap(targetLocalHeading - currentLocalHeading);
+
+                // 6. PID Calculation
+                // We calculate power to drive 'error' to 0.
+                // Note: PIDFController.calculate(measured, setpoint)
+                // We pass 0 as measured and error as setpoint (or vice versa depending on sign)
+                // Effectively: P * error
+                power = turretController.calculate(0, error);
+
+                motorTureta.setPower(power);
                 break;
 
             case MIXED:
-                // Implement mixed tracking logic here
                 break;
-
         }
     }
 
-
-
-    double posesToAngle(Pose2d robotPose, Pose2d targetPose) {
-
-        double deltaY = targetPose.getY() - robotPose.getY();
-        double deltaX = targetPose.getX() - robotPose.getX();
-
-        double targetAngle = Math.atan2(deltaY, deltaX);
-
-        return normalizeAngle(targetAngle, false);
-    }
-
-    double normalizeAngle(double angle, boolean zeroToMax) {
-        double max = Math.PI * 2;
-        double angle2 = angle % max;
-        if (zeroToMax && angle2 < 0) {
-            return angle2 + max;
-        } else if (!zeroToMax) {
-            if (angle2 > max/2) {
-                return angle2 - max;
-            } else if (angle2 < -max/2) {
-                return angle2 + max;
-            }
-        }
-        return angle2;
-    }
-
-
-
-    public double getTurretTrueHeading(){
-        double turretHeading = (motorTureta.getCurrentPosition() / (TicksPerRev * gearRatio)) * 2 * Math.PI ;
-
-        double trueHeading = turretHeading + robotAngle;
-
-        return normalizeAngle(trueHeading, true);
-    }
-
+    /**
+     * Converts motor ticks to Local Turret Radians (0 is front of robot)
+     */
     public double getTurretHeading() {
-
-        return (motorTureta.getCurrentPosition() / (TicksPerRev * gearRatio)) * 2 * Math.PI ;
+        double ticks = motorTureta.getCurrentPosition();
+        // Formula: (Ticks / Total_Ticks_Per_Rev) * 2PI
+        return (ticks / (TicksPerRev * gearRatio)) * 2 * Math.PI;
     }
 
-    public double getCurrentPower(){
-        return power;
+    /**
+     * Normalizes an angle to be between -PI and +PI
+     * This ensures the turret takes the shortest path.
+     */
+    private double angleWrap(double angle) {
+        while (angle > Math.PI) {
+            angle -= 2 * Math.PI;
+        }
+        while (angle < -Math.PI) {
+            angle += 2 * Math.PI;
+        }
+        return angle;
     }
-
-
-    public double getSetPoint(){ return turretController.getSetPoint(); }
 
     @Override
     public void periodic() {
-        turretController.setPIDF(P, I, D, F);
-
         robotAngle = follower.getPose().getHeading();
-
         update();
+
+        // Debugging
+        telemetry.addData("Turret State", currentTurretState);
+        telemetry.addData("Turret Power", power);
+        telemetry.addData("Turret Heading (Rad)", getTurretHeading());
+        // telemetry.update(); // Let the main OpMode handle update
     }
 }
