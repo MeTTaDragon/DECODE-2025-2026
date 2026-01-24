@@ -1,0 +1,92 @@
+package org.firstinspires.ftc.teamcode.Robot2.TeamCode.TeleOp;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
+import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
+
+import org.firstinspires.ftc.teamcode.Robot1.TeamCode.Globals;
+import org.firstinspires.ftc.teamcode.Robot1.TeamCode.Subsystems.Tun;
+import org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Constants;
+
+@Autonomous(name = "Leave red close", group = "Auto")
+public class LeaveCloseZoneRed extends CommandOpMode {
+
+
+    private Follower follower;
+    private Timer pathTimer, actionTimer, opmodeTimer;
+
+    private int pathState;
+    private boolean actionStarted = false;
+    private ElapsedTime elapsedTime = new ElapsedTime();
+
+    Pose startPose = new Pose(121, 123, Math.toRadians(-130));
+    Pose leave = new Pose(128, 107, Math.toRadians(180));
+
+
+    private PathChain leavepath;
+
+    public void buildPaths() {
+        leavepath = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, leave))
+                .setLinearHeadingInterpolation(startPose.getHeading(), leave.getHeading())
+                .build();
+    }
+
+
+
+
+    /** This method is called once at the init of the OpMode. **/
+    @Override
+    public void initialize() {
+        super.reset();
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(startPose);
+        buildPaths();
+
+
+        SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
+                new FollowPathCommand(follower, leavepath),
+                new InstantCommand(() -> Globals.lastAutoPose = follower.getPose())
+
+        );
+        schedule(autonomousSequence);
+
+    }
+
+    @Override
+    public void run() {
+        super.run();
+        follower.update();
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+
+        // These loop the movements of the robot, these must be called continuously in order to work
+
+        // Feedback to Driver Hub for debugging
+        telemetry.addData("path state", pathState);
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
+
+        telemetry.update();
+
+    }
+
+    /** This method is called continuously after Init while waiting for "play". **/
+
+    /** This method is called once at the start of the OpMode.
+     * It runs all the setup actions, including building paths and starting the path system **/
+
+
+}

@@ -4,13 +4,16 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.TeleOp;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
+import com.seattlesolvers.solverslib.geometry.Pose2d;
 
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
@@ -21,7 +24,7 @@ import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher
 
 @TeleOp(name = "TeleOp Main Robo2", group = "Main")
 public class TeleOpMain extends CommandOpMode {
-
+    private static double veltarget =1940;
     GamepadEx controller;
 
     Follower follower;
@@ -29,7 +32,6 @@ public class TeleOpMain extends CommandOpMode {
     Turret turret;
     Launcher launcher;
     Intake intake;
-
     @Override
     public void initialize() {
         controller = new GamepadEx(gamepad1);
@@ -83,6 +85,7 @@ public class TeleOpMain extends CommandOpMode {
         leftTrigger.whileActiveContinuous(
                 new InstantCommand(() -> {
                     turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
+                    launcher.setStopperPose(stopperOpen);
                     launcher.Manual_shooting = false;
                     launcher.setVelocity();
                 })
@@ -91,6 +94,8 @@ public class TeleOpMain extends CommandOpMode {
                 new InstantCommand(() -> {
                     turret.setTurretState(Turret.TurretState.IDLE);
                     launcher.setVelToZero();
+                    launcher.setStopperPose(stopperClose);
+                    launcher.Manual_shooting = true;
                 })
         );
 
@@ -110,23 +115,49 @@ public class TeleOpMain extends CommandOpMode {
 
         controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whileHeld(
                 new InstantCommand(() -> {
+                    turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
+                    launcher.setStopperPose(stopperOpen);
                     launcher.Manual_shooting = true;
-                    launcher.setManualVelocity(1900);
+                    launcher.setManualVelocity(veltarget);
                 })
         );
         controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenInactive(
                 new InstantCommand(() -> {
+                    turret.setTurretState(Turret.TurretState.IDLE);
+                    launcher.setStopperPose(stopperClose);
                     launcher.Manual_shooting = false;
-                    launcher.setManualVelocity(0);
+                    launcher.setVelToZero();
                 })
         );
         controller.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() ->  {
-                    launcher.setCurrentStopperState(Launcher.StopperState.AUTO);
-                    turret.setTurretState(Turret.TurretState.IDLE);
-
+                    follower.setPose(new Pose(72, 7.5, Math.toRadians(100)));
+                    telemetry.addData("Status", "Pose Reset Triggered");
                 }
                 )
+
+        );
+        controller.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
+                new InstantCommand(() ->  {
+                    alliance = Alliance.BLUE;
+                    turret.goalPose =  blueGoalPose;
+                    turret.targetGoalPose = new Pose2d(turret.goalPose.getX(), turret.goalPose.getY(), 0);
+                }
+                )
+        );
+        controller.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
+                new InstantCommand(() ->  {
+                    alliance = Alliance.RED;
+                    turret.goalPose =  redGoalPose;
+                    turret.targetGoalPose = new Pose2d(turret.goalPose.getX(), turret.goalPose.getY(), 0);
+                }
+                )
+        );
+        controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new InstantCommand(() -> veltarget-=25)
+        );
+        controller.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+                new InstantCommand(() -> veltarget+=25)
         );
 
         telemetry.setMsTransmissionInterval(250);
@@ -149,16 +180,15 @@ public class TeleOpMain extends CommandOpMode {
 
         telemetry.addData("Current velocity", launcher.getVelocity());
         telemetry.addData("Target velocity", launcher.getTargetVelocity());
-        telemetry.addData("launcher state", launcher.getCurrentLauncherState());
-        telemetry.addData("stopper state", launcher.getCurrentStopperState());
         telemetry.addData("Robot X", follower.getPose().getX());
         telemetry.addData("Robot Y", follower.getPose().getY());
         telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));
-        telemetry.addData("Current state", turret.getCurrentTurretState());
-        telemetry.addData("Turret Power", turret.getCurrentPower());
         telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
         telemetry.addData("Set Point", Math.toDegrees(turret.getSetPoint()));
         telemetry.addData("distance", launcher.getDistance());
+        telemetry.addData("alliance", alliance);
+        telemetry.addData("goalPose", turret.goalPose);
+        telemetry.addData("Manual vel", veltarget);
         telemetry.update();
     }
 }

@@ -36,7 +36,8 @@ public class Launcher extends SubsystemBase {
     public static double middle_Y = 60;
 
     public static double stopperClose = 0.25;
-    public static double stopperOpen = 0.55;
+    public static double stopperOpen = 0.6;
+
 
 
     // --- TUNING VARIABLES (Edit in FTC Dashboard) ---
@@ -162,12 +163,12 @@ public class Launcher extends SubsystemBase {
 
                 break;
             case AUTO:
-                if(getVelocity() > getTargetVelocity() - 70){
+                /*if(getVelocity() > getTargetVelocity() - 70){
                     setStopperPose(stopperOpen);
                 } else {
                     setStopperPose(stopperClose);
                 }
-                break;
+                break;*/
         }
     }
 
@@ -175,7 +176,11 @@ public class Launcher extends SubsystemBase {
 
     public void init(){
         setCurrentLauncherState(LauncherState.IDLE);
-        setCurrentStopperState(StopperState.AUTO);
+        //setCurrentStopperState(StopperState.AUTO);
+        setHoodPose(farHoodPose);
+        setStopperPose(stopperOpen);
+
+
         setManualVelocity(0);
         masterMotor.setVelocity(0);
         followerMotor.setVelocity(0);
@@ -185,11 +190,8 @@ public class Launcher extends SubsystemBase {
      * Sets the target velocity for the flywheel in Ticks Per Second.
      */
     public void setManualVelocity(double velocity) {
-
-        if(Manual_shooting == false){
-            masterMotor.setVelocity(velocity);
-            followerMotor.setVelocity(velocity);
-        }
+        masterMotor.setVelocity(velocity);
+        followerMotor.setVelocity(velocity);
     }
     public double getTargetVelocity(){
         return targetVelocity;
@@ -198,7 +200,7 @@ public class Launcher extends SubsystemBase {
      * Stops the flywheel.
      */
     public void stop() {
-        this.targetVelocity = 0;
+        this.setManualVelocity(0);
     }
 
     /**
@@ -254,15 +256,15 @@ public class Launcher extends SubsystemBase {
         updateStopperState();
         //updateLauncherState();
 
-        if (follower.getPose().getY() < middle_Y) {
+        /*if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
         } else {
             setHoodPose(closeHoodPose);
-        }
+        }*/
 
         //completeaza cu functia de distanta
         if(Manual_shooting == false){
-            targetVelocity = Math.pow(getDistance(), 0.49171)* 160.4617;
+            targetVelocity = Math.pow(getDistance(), 0.49171)* 160.4617+100;
 
         }
     }

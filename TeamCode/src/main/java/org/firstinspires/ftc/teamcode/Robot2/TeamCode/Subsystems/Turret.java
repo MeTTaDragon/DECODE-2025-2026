@@ -20,8 +20,8 @@ public class Turret extends SubsystemBase {
     private final Follower follower;
     private final Telemetry telemetry;
 
-    Pose goalPose;
-    Pose2d targetGoalPose;
+    public Pose goalPose;
+    public Pose2d targetGoalPose;
 
     // Variables for logic
     double robotAngle;
@@ -159,6 +159,7 @@ public class Turret extends SubsystemBase {
     @Override
     public void periodic() {
         robotAngle = follower.getPose().getHeading();
+        telemetry.update();
         update();
     }
 }
