@@ -28,7 +28,6 @@ public class Launcher extends SubsystemBase {
     private final DcMotorEx followerMotor;
 
     Follower follower;
-    Telemetry telemetry;
     private final Servo hoodServo;
     private final Servo stopper;
     public static double farHoodPose = 0;
@@ -46,6 +45,7 @@ public class Launcher extends SubsystemBase {
     public static double F = 0.00036239;
     public static double P = 0.01;
     public static double D = 0;
+
     //vel far zone: 1940
     //vel close middle: 1200
     //vel next to goal:
@@ -89,14 +89,13 @@ public class Launcher extends SubsystemBase {
         this.currentLauncherState = currentLauncherState;
     }
 
-    public Launcher(HardwareMap hwMap, Follower flwr, Telemetry telemetry) {
+    public Launcher(HardwareMap hwMap, Follower flwr) {
         // 1. Hardware Mapping - HERE is where we define the Master
         masterMotor = hwMap.get(DcMotorEx.class, "motorDreapta"); // MUST have encoder cable
         followerMotor = hwMap.get(DcMotorEx.class, "motorStanga");// Encoder optional/ignored
         hoodServo = hwMap.get(Servo.class, "hoodServo");
         stopper = hwMap.get(Servo.class, "stopper");
         follower = flwr;
-        this.telemetry = telemetry;
 
 
 
@@ -112,12 +111,8 @@ public class Launcher extends SubsystemBase {
 
         // 5. Direction Setup
         // Check this physically! Usually, flywheels spin opposite ways to shoot forward.
-        // If the robot shoots backward, remove this REVERSE or move it to masterMotor.
+        // If the robot shoots backward, remove this REVERSE or move it to followerMotor.
         masterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-
-
-        //stopper.setDirection(Servo.Direction.REVERSE);
 
         launcherController = new PIDFController(P, 0, D, F);
 
@@ -126,16 +121,15 @@ public class Launcher extends SubsystemBase {
 
 
     void updateLauncherState(){
+        launcherController.setPIDF(P, 0, D, F);
+
         switch (currentLauncherState){
             case IDLE:
-                /*setTargetVelocity(0);
-                masterMotor.setVelocity(0);
-                followerMotor.setVelocity(0);*/
+                setTargetVelocity(0);
+                setManualVelocity(0);
                 break;
 
             case SHOOTING:
-                /*launcherController.setPIDF(P, 0, D, F);
-
                 double currentVel = getVelocity();
 
                 // 2. CALCULATE Error
@@ -152,7 +146,7 @@ public class Launcher extends SubsystemBase {
                 // 5. APPLY the SAME calculated power to BOTH motors
                 // This ensures they stay synced, driven by motorDreapta's encoder data.
                 masterMotor.setPower(power);
-                followerMotor.setPower(power);*/
+                followerMotor.setPower(power);
                 break;
         }
     }
@@ -179,11 +173,6 @@ public class Launcher extends SubsystemBase {
         //setCurrentStopperState(StopperState.AUTO);
         setHoodPose(farHoodPose);
         setStopperPose(stopperOpen);
-
-
-        setManualVelocity(0);
-        masterMotor.setVelocity(0);
-        followerMotor.setVelocity(0);
     }
 
     /**
@@ -193,14 +182,18 @@ public class Launcher extends SubsystemBase {
         masterMotor.setVelocity(velocity);
         followerMotor.setVelocity(velocity);
     }
+
     public double getTargetVelocity(){
         return targetVelocity;
+    }
+    public static void setTargetVelocity(double targetVelocity) {
+        Launcher.targetVelocity = targetVelocity;
     }
     /**
      * Stops the flywheel.
      */
     public void stop() {
-        this.setManualVelocity(0);
+        setCurrentLauncherState(LauncherState.IDLE);
     }
 
     /**
@@ -216,34 +209,7 @@ public class Launcher extends SubsystemBase {
     public void setStopperPose(double pos) {
         stopper.setPosition(pos);
     }
-    public void setVelocity(){
-        /*masterMotor.setVelocity(targetVelocity);
-        followerMotor.setVelocity(targetVelocity);*/
-        launcherController.setPIDF(0.01, 0, 0, 0.00036239);
 
-        double currentVel = getVelocity();
-
-        // 2. CALCULATE Error
-        double error = targetVelocity - currentVel;
-
-        // 3. CALCULATE Power (PF Controller)
-        // Feedforward (F): Base power to maintain target
-        // Proportional (P): Correction power based on error
-        double power = launcherController.calculate(0, error);
-
-        // 4. CLAMP power to safe range (-1.0 to 1.0)
-        power = Math.max(-1.0, Math.min(1.0, power));
-
-        // 5. APPLY the SAME calculated power to BOTH motors
-        // This ensures they stay synced, driven by motorDreapta's encoder data.
-        masterMotor.setPower(power);
-        followerMotor.setPower(power);
-
-    }
-    public void setVelToZero(){
-        masterMotor.setVelocity(0);
-        followerMotor.setVelocity(0);
-    }
     public double getDistance(){
         return Math.sqrt(Math.pow(follower.getPose().getX() - goalPose.getX(),2) + Math.pow(follower.getPose().getY() - goalPose.getY(),2));
     }
@@ -253,8 +219,8 @@ public class Launcher extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        updateStopperState();
-        //updateLauncherState();
+        //updateStopperState();
+        updateLauncherState();
 
         /*if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
@@ -263,9 +229,8 @@ public class Launcher extends SubsystemBase {
         }*/
 
         //completeaza cu functia de distanta
-        if(Manual_shooting == false){
-            targetVelocity = Math.pow(getDistance(), 0.49171)* 160.4617+100;
-
+        if(Manual_shooting == false && !currentLauncherState.equals(LauncherState.IDLE)) {
+            targetVelocity = Math.pow(getDistance(), 0.49171) * 160.4617 + 100; //de ce +100?
         }
     }
 }

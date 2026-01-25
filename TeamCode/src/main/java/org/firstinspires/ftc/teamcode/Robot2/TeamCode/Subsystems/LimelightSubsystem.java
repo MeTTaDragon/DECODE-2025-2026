@@ -5,7 +5,6 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -30,11 +29,6 @@ public class LimelightSubsystem extends SubsystemBase {
     static double robotCoordsZ;
     static int id;
 
-    // --- Simple P-Controller Variables for Alignment ---
-    // kP: Turn speed per degree of error.
-    // Start small (0.01) and increase if it's too slow. Lower if it oscillates.
-    final double kP = 0.03;
-    final double MAX_AUTO_TURN = 0.5; // Cap the turning speed
 
     public enum LimelightMode {
         READ_PATTERN,
@@ -42,9 +36,6 @@ public class LimelightSubsystem extends SubsystemBase {
         BASKET,
         PAUSE
     }
-
-
-
     private static LimelightMode currentMode;
 
     public LimelightSubsystem(HardwareMap hwMap) {

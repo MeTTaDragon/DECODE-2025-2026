@@ -18,7 +18,6 @@ public class Turret extends SubsystemBase {
     private final DcMotorEx motorTureta;
     private final PIDFController turretController;
     private final Follower follower;
-    private final Telemetry telemetry;
 
     public Pose goalPose;
     public Pose2d targetGoalPose;
@@ -42,11 +41,10 @@ public class Turret extends SubsystemBase {
         FULL_LIMELIGHT,
         FULL_PINPOINT,
         MIXED,
-        TEST
     }
     private static TurretState currentTurretState = TurretState.IDLE;
 
-    public Turret(HardwareMap hwMap, Follower flwr, Telemetry telemetry) {
+    public Turret(HardwareMap hwMap, Follower flwr) {
         motorTureta = hwMap.get(DcMotorEx.class, "motorTureta");
 
         // CHECK THIS: Ensure Positive Power = Counter-Clockwise rotation
@@ -58,7 +56,6 @@ public class Turret extends SubsystemBase {
         // Pedro uses its own Pose class, be careful not to mix up Point/Pose classes
         goalPose = (alliance == Alliance.RED) ? redGoalPose : blueGoalPose;
         follower = flwr;
-        this.telemetry = telemetry;
 
         targetGoalPose = new Pose2d(this.goalPose.getX(), this.goalPose.getY(), 0);
     }
@@ -68,7 +65,7 @@ public class Turret extends SubsystemBase {
     }
 
     public TurretState getCurrentTurretState(){ return currentTurretState; }
-    public double getPower(){ return motorTureta.getPower();}
+    public double getPower(){ return motorTureta.getPower(); }
     public double getSetPoint(){ return turretController.getSetPoint(); }
     public double getCurrentPower(){
         return power;}
@@ -158,8 +155,11 @@ public class Turret extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if(currentTurretState == TurretState.FULL_PINPOINT){
+            setTurretState(TurretState.FULL_LIMELIGHT);
+        }
+
         robotAngle = follower.getPose().getHeading();
-        telemetry.update();
         update();
     }
 }
