@@ -35,7 +35,7 @@ public class Launcher extends SubsystemBase {
     public static double closeHoodPose = 0.45;
     public static double middle_Y = 60;
 
-    public static double stopperClose = 0.25;
+    public static double stopperClose = 0.35;
     public static double stopperOpen = 0.6;
 
 
@@ -147,8 +147,6 @@ public class Launcher extends SubsystemBase {
                 // Proportional (P): Correction power based on error
                 double power = launcherController.calculate(0, error);
 
-                // 4. CLAMP power to safe range (-1.0 to 1.0)
-                power = Math.max(-1.0, Math.min(1.0, power));
 
                 // 5. APPLY the SAME calculated power to BOTH motors
                 // This ensures they stay synced, driven by motorDreapta's encoder data.
@@ -157,6 +155,7 @@ public class Launcher extends SubsystemBase {
                     followerMotor.setPower(power);
                     lastPower = power;
                 }
+                launcherController.clearTotalError();
                 break;
         }
     }
@@ -222,6 +221,10 @@ public class Launcher extends SubsystemBase {
 
     public double getDistance(){
         return Math.sqrt(Math.pow(follower.getPose().getX() - goalPose.getX(),2) + Math.pow(follower.getPose().getY() - goalPose.getY(),2));
+    }
+
+    public boolean isVelocityReached() {
+        return launcherController.atSetPoint();
     }
 
     /**

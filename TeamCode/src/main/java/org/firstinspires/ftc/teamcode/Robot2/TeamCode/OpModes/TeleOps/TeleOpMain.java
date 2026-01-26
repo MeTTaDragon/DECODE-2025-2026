@@ -2,6 +2,7 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.OpModes.TeleOps;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.message.redux.ReceiveGamepadState;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
@@ -13,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.command.WaitUntilCommand;
@@ -34,10 +36,11 @@ import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperOpen;
 
 import java.util.List;
-
+@Config
 @TeleOp(name = "TeleOp Main Robo2", group = "Main")
 public class TeleOpMain extends CommandOpMode {
     private static double veltarget =1940;
+    public static double ledcolor = 0.278;
     GamepadEx controller;
 
     Follower follower;
@@ -51,6 +54,8 @@ public class TeleOpMain extends CommandOpMode {
     List<LynxModule> allHubs;
     ElapsedTime timer;
     Gamepad.RumbleEffect customRumbleEffect;
+    private static double totallooptime=0;
+    private static double loops=0;
 
 
     @Override
@@ -133,15 +138,18 @@ public class TeleOpMain extends CommandOpMode {
         Trigger rightTrigger = new Trigger(() -> gamepad1.right_trigger > 0.1);
         Trigger leftTrigger = new Trigger(() -> gamepad1.left_trigger > 0.1);
 
-        leftTrigger.whenActive(
+        leftTrigger.whileActiveOnce(
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
                             launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING);
                             turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
-                            launcher.setStopperPose(stopperOpen);
+                            limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
                         }),
-                        new WaitCommand(2000),
-                        new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
+                        new WaitUntilCommand(() -> launcher.isVelocityReached()),
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
+                                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
+                        )
                 )
         );
         leftTrigger.whenInactive(
@@ -150,10 +158,11 @@ public class TeleOpMain extends CommandOpMode {
                     turret.setTurretState(Turret.TurretState.IDLE);
                     launcher.setStopperPose(stopperClose);
                     intake.setIntakeState(Intake.IntakeState.IDLE);
+                    limelight.setMode(LimelightSubsystem.LimelightMode.PAUSE);
                 })
         );
         //intake trage
-        rightTrigger.whenActive(
+        rightTrigger.whileActiveOnce(
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE), intake)
         );
         rightTrigger.whenInactive(
@@ -168,22 +177,27 @@ public class TeleOpMain extends CommandOpMode {
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.IDLE), intake)
         );
 
-//        controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whileHeld(
-//                new InstantCommand(() -> {
-//                    turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
-//                    launcher.setStopperPose(stopperOpen);
-//                    launcher.Manual_shooting = true;
-//                    launcher.setManualVelocity(veltarget);
-//                })
-//        );
-//        controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenInactive(
-//                new InstantCommand(() -> {
-//                    turret.setTurretState(Turret.TurretState.IDLE);
-//                    launcher.setStopperPose(stopperClose);
-//                    launcher.Manual_shooting = false;
-//                    launcher.stop();
-//                })
-//        );
+        controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenHeld(
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> {
+                            launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING);
+                            turret.setTurretState(Turret.TurretState.IDLE);
+                            limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
+                        }),
+                        new WaitUntilCommand(() -> launcher.isVelocityReached()),
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
+                                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
+                        )
+                )
+        );
+        controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenInactive(
+                new InstantCommand(() -> {
+                    launcher.setStopperPose(stopperClose);
+                    launcher.stop();
+                    limelight.setMode(LimelightSubsystem.LimelightMode.PAUSE);
+                })
+        );
 
         //reset position odometrie
         controller.getGamepadButton(GamepadKeys.Button.TOUCHPAD).whenPressed(
@@ -227,12 +241,16 @@ public class TeleOpMain extends CommandOpMode {
         }*/
         follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         follower.update();
-        if(alliance == Alliance.RED) {
-            led.setPosition(0.27);
-        } else{
-            led.setPosition(0.1);
-        }
 
+
+        if(alliance == Alliance.RED) {
+            led.setPosition(0.28);
+        } else if(alliance == Alliance.BLUE){
+            led.setPosition(0.61);
+        }
+        else{
+            led.setPosition(0);
+        }
 
 
         telemetry.addData("Current velocity", launcher.getVelocity());
@@ -246,7 +264,12 @@ public class TeleOpMain extends CommandOpMode {
         telemetry.addData("alliance", alliance);
         telemetry.addData("goalPose", turret.goalPose);
         telemetry.addData("Manual vel", veltarget);
-        telemetry.addData("Loop Time", timer.milliseconds());
+
+        telemetry.addData("Loop Time", 1/timer.seconds());
+        totallooptime+=1/timer.seconds();
+        loops++;
+        telemetry.addData("Average Looptime", totallooptime/loops);
+
 
         timer.reset();
 
