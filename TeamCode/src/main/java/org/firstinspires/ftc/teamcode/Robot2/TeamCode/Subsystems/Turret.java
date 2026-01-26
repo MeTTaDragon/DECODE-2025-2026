@@ -155,10 +155,6 @@ public class Turret extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(currentTurretState == TurretState.FULL_PINPOINT && turretController.atSetPoint()){
-            setTurretState(TurretState.FULL_LIMELIGHT);
-        }
-
         robotAngle = follower.getPose().getHeading();
         update();
     }

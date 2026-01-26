@@ -10,6 +10,7 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 public class LimelightSubsystem extends SubsystemBase {
@@ -140,6 +141,9 @@ public class LimelightSubsystem extends SubsystemBase {
     public static double getRobotCoordsX() { return robotCoordsX; }
     public static double getRobotCoordsY() { return robotCoordsY; }
     public static int getId() { return id; }
+    public LimelightMode getCurrentMode(){
+        return currentMode;
+    }
 
     /**
      * Run periodically by the CommandScheduler

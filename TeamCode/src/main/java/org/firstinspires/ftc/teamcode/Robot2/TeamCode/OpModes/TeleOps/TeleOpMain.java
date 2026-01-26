@@ -42,6 +42,21 @@ public class TeleOpMain extends CommandOpMode {
     private static double veltarget =1940;
     public static double ledcolor = 0.278;
     GamepadEx controller;
+    // LED Value for White (Adjust this based on your specific LED controller, 1.0 is standard for many)
+    public static double ledWhite = 1.0;
+
+    // --- Triangle Zone Coordinates (PEDRO PATHING COORDINATES: 0-144 inches) ---
+    // You must change these numbers to match the actual field triangles
+
+    // Front Triangle Corners (x, y)
+    private final Pose2d frontA = new Pose2d(72, 72, 0);
+    private final Pose2d frontB = new Pose2d(15, 128, 0);
+    private final Pose2d frontC = new Pose2d(130, 128, 0);
+
+    // Back Triangle Corners (x, y)
+    private final Pose2d backA = new Pose2d(72, 23, 0);
+    private final Pose2d backB = new Pose2d(100, 0, 0);
+    private final Pose2d backC = new Pose2d(45, 0, 0);
 
     Follower follower;
     Servo led;
@@ -143,13 +158,12 @@ public class TeleOpMain extends CommandOpMode {
                         new InstantCommand(() -> {
                             launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING);
                             turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
-                            limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
                         }),
                         new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                        new ParallelCommandGroup(
-                                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
-                                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
-                        )
+                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET)),
+                        new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
+                        new WaitCommand(500),
+                        new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
                 )
         );
         leftTrigger.whenInactive(
@@ -182,13 +196,12 @@ public class TeleOpMain extends CommandOpMode {
                         new InstantCommand(() -> {
                             launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING);
                             turret.setTurretState(Turret.TurretState.IDLE);
-                            limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
                         }),
                         new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                        new ParallelCommandGroup(
-                                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
-                                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
-                        )
+                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET)),
+                        new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
+                        new WaitCommand(500),
+                        new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
                 )
         );
         controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenInactive(
@@ -229,6 +242,44 @@ public class TeleOpMain extends CommandOpMode {
 
         register(turret, launcher, intake);
     }
+    /**
+     * Updates the LED color based on Robot Position and Alliance
+     */
+    public void updateLEDs() {
+        // Get current robot position from Pedro Pathing
+        Pose currentPose = follower.getPose();
+        Pose2d robotPoint = new Pose2d(currentPose.getX(), currentPose.getY(), 0);
+
+        // Check if robot is inside either triangle
+        boolean inFront = isPointInTriangle(robotPoint, frontA, frontB, frontC);
+        boolean inBack  = isPointInTriangle(robotPoint, backA, backB, backC);
+
+        if (inFront || inBack) {
+            // Force WHITE if inside a launch triangle
+            led.setPosition(ledWhite);
+        } else {
+            // Standard Alliance Colors
+            if (alliance == Alliance.RED) {
+                led.setPosition(0.28);
+            } else if (alliance == Alliance.BLUE) {
+                led.setPosition(0.61);
+            } else {
+                led.setPosition(0);
+            }
+        }
+    }
+
+    /**
+     * Math Helper: Checks if point P is inside Triangle ABC
+     */
+    private boolean isPointInTriangle(Pose2d p, Pose2d a, Pose2d b, Pose2d c) {
+        double w1 = (a.getX() * (c.getY() - a.getY()) + (p.getY() - a.getY()) * (c.getX() - a.getX()) - p.getX() * (c.getY() - a.getY())) /
+                ((b.getY() - a.getY()) * (c.getX() - a.getX()) - (b.getX() - a.getX()) * (c.getY() - a.getY()));
+
+        double w2 = (p.getY() - a.getY() - w1 * (b.getY() - a.getY())) / (c.getY() - a.getY());
+
+        return (w1 >= 0.0) && (w2 >= 0.0) && ((w1 + w2) <= 1.0);
+    }
 
 
     public void run() {
@@ -243,14 +294,8 @@ public class TeleOpMain extends CommandOpMode {
         follower.update();
 
 
-        if(alliance == Alliance.RED) {
-            led.setPosition(0.28);
-        } else if(alliance == Alliance.BLUE){
-            led.setPosition(0.61);
-        }
-        else{
-            led.setPosition(0);
-        }
+        updateLEDs();
+
 
 
         telemetry.addData("Current velocity", launcher.getVelocity());
@@ -259,11 +304,11 @@ public class TeleOpMain extends CommandOpMode {
         telemetry.addData("Robot Y", follower.getPose().getY());
         telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
-        telemetry.addData("Set Point", Math.toDegrees(turret.getSetPoint()));
         telemetry.addData("distance", launcher.getDistance());
         telemetry.addData("alliance", alliance);
-        telemetry.addData("goalPose", turret.goalPose);
-        telemetry.addData("Manual vel", veltarget);
+        telemetry.addData("limelight mode", limelight.getCurrentMode());
+        telemetry.addData("tx", lltx);
+        telemetry.addData("ty", llty);
 
         telemetry.addData("Loop Time", 1/timer.seconds());
         totallooptime+=1/timer.seconds();

@@ -35,7 +35,7 @@ public class Launcher extends SubsystemBase {
     public static double closeHoodPose = 0.45;
     public static double middle_Y = 60;
 
-    public static double stopperClose = 0.35;
+    public static double stopperClose = 0.25;
     public static double stopperOpen = 0.6;
 
 
@@ -224,7 +224,7 @@ public class Launcher extends SubsystemBase {
     }
 
     public boolean isVelocityReached() {
-        return launcherController.atSetPoint();
+        return getVelocity() > targetVelocity - 100;
     }
 
     /**
@@ -235,11 +235,11 @@ public class Launcher extends SubsystemBase {
         //updateStopperState();
         updateLauncherState();
 
-        /*if (follower.getPose().getY() < middle_Y) {
+        if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
         } else {
             setHoodPose(closeHoodPose);
-        }*/
+        }
 
         //completeaza cu functia de distanta
         if(Manual_shooting == false && !currentLauncherState.equals(LauncherState.IDLE)) {
