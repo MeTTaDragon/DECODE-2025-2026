@@ -41,7 +41,7 @@ public class TurretHeadingTest extends CommandOpMode {
        follower = Constants.createFollower(hardwareMap);
        follower.setStartingPose(new Pose(72, 7.5, Math.toRadians(90)));
 
-        turret = new Turret(hardwareMap, follower, telemetry);
+        turret = new Turret(hardwareMap, follower);
         gamepad = new GamepadEx(gamepad1);
         motorIntake = hardwareMap.get(DcMotor.class, "intakeMotor");
         motorIntake.setDirection(DcMotorSimple.Direction.REVERSE);

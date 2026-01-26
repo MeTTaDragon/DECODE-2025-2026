@@ -9,6 +9,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -40,6 +41,7 @@ public class TeleOpMain extends CommandOpMode {
     GamepadEx controller;
 
     Follower follower;
+    Servo led;
 
     Turret turret;
     Launcher launcher;
@@ -71,6 +73,7 @@ public class TeleOpMain extends CommandOpMode {
 
         super.reset();
 
+        led = hardwareMap.get(Servo.class, "led");
         turret = new Turret(hardwareMap, follower);
         launcher = new Launcher(hardwareMap, follower);
         intake = new Intake(hardwareMap);
@@ -131,16 +134,6 @@ public class TeleOpMain extends CommandOpMode {
         Trigger leftTrigger = new Trigger(() -> gamepad1.left_trigger > 0.1);
 
         leftTrigger.whenActive(
-                new InstantCommand(() -> {
-                    turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
-                    launcher.setStopperPose(stopperOpen);
-                }).andThen(
-                        new InstantCommand(() ->
-                            launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)
-                        )
-                )
-        );
-        leftTrigger.whenActive(
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
                             launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING);
@@ -156,6 +149,7 @@ public class TeleOpMain extends CommandOpMode {
                     launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
                     turret.setTurretState(Turret.TurretState.IDLE);
                     launcher.setStopperPose(stopperClose);
+                    intake.setIntakeState(Intake.IntakeState.IDLE);
                 })
         );
         //intake trage
@@ -233,6 +227,11 @@ public class TeleOpMain extends CommandOpMode {
         }*/
         follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         follower.update();
+        if(alliance == Alliance.RED) {
+            led.setPosition(0.27);
+        } else{
+            led.setPosition(0.1);
+        }
 
 
 

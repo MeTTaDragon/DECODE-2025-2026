@@ -13,7 +13,7 @@ import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.Robot1.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 
 @TeleOp
@@ -38,7 +38,7 @@ public class LauncherTest extends CommandOpMode {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(72, 7.5, Math.toRadians(90))); //pozitie setata pentru testari
 
-        launcher = new Launcher(hardwareMap, follower, telemetry);
+        launcher = new Launcher(hardwareMap, follower);
 
         register(launcher);
 
