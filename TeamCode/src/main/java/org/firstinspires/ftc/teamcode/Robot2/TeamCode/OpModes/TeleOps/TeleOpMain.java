@@ -141,7 +141,7 @@ public class TeleOpMain extends CommandOpMode {
                             launcher.setStopperPose(stopperOpen);
                         }),
                         new WaitCommand(2000),
-                        new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.FORWARD))
+                        new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
                 )
         );
         leftTrigger.whenInactive(
