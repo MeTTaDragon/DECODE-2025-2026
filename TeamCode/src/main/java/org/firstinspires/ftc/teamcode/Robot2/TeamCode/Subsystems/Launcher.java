@@ -17,6 +17,7 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
+import static java.lang.Math.abs;
 
 
 @Config
@@ -51,6 +52,8 @@ public class Launcher extends SubsystemBase {
     //vel next to goal:
     public static double targetVelocity = 0.0;
     public boolean Manual_shooting = false;
+    public static double minPowerDiff = 0.0001;
+    public static double lastPower = 0.0;
 
     private PIDFController launcherController;
 
@@ -125,8 +128,12 @@ public class Launcher extends SubsystemBase {
 
         switch (currentLauncherState){
             case IDLE:
-                setTargetVelocity(0);
-                setManualVelocity(0);
+                if(lastPower != 0){
+                    setTargetVelocity(0);
+                    setManualVelocity(0);
+                    lastPower = 0;
+                }
+
                 break;
 
             case SHOOTING:
@@ -145,8 +152,11 @@ public class Launcher extends SubsystemBase {
 
                 // 5. APPLY the SAME calculated power to BOTH motors
                 // This ensures they stay synced, driven by motorDreapta's encoder data.
-                masterMotor.setPower(power);
-                followerMotor.setPower(power);
+                if(abs(power - lastPower) >= minPowerDiff){
+                    masterMotor.setPower(power);
+                    followerMotor.setPower(power);
+                    lastPower = power;
+                }
                 break;
         }
     }
