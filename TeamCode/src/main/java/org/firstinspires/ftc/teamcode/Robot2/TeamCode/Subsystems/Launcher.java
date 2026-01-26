@@ -30,7 +30,7 @@ public class Launcher extends SubsystemBase {
     Follower follower;
     private final Servo hoodServo;
     private final Servo stopper;
-    public static double farHoodPose = 0;
+    public static double farHoodPose = 0.1;
     public static double closeHoodPose = 0.45;
     public static double middle_Y = 60;
 

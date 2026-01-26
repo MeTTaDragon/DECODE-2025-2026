@@ -25,13 +25,12 @@ public class Intake extends SubsystemBase {
 
 
 
-    public static double INTAKE_POWER = 1;
+    public static double INTAKE_POWER = 0.9;
 
     /**
      * Constructs a new Intake subsystem.
      *
      * @param hwMap The hardware map from the OpMode.
-     * @param telemetry The telemetry object to display data on the Driver Station.
      */
     public Intake(HardwareMap hwMap) {
         // Initialize the motor

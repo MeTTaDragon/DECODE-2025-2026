@@ -2,14 +2,19 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.OpModes.TeleOps;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.message.redux.ReceiveGamepadState;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
+import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -22,6 +27,8 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.closeHoodPose;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.farHoodPose;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperClose;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperOpen;
 
@@ -41,6 +48,8 @@ public class TeleOpMain extends CommandOpMode {
 
     List<LynxModule> allHubs;
     ElapsedTime timer;
+    Gamepad.RumbleEffect customRumbleEffect;
+
 
     @Override
     public void initialize() {
@@ -52,6 +61,10 @@ public class TeleOpMain extends CommandOpMode {
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         controller = new GamepadEx(gamepad1);
+
+        customRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.0, 1.0, 100)
+                .build();
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(lastAutoPose);
@@ -81,21 +94,35 @@ public class TeleOpMain extends CommandOpMode {
         controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_PINPOINT), turret)
         );
-
+        //hood far zone
         controller.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new InstantCommand(() -> {
-                    launcher.setCurrentStopperState(Launcher.StopperState.MANUAL);
-                    launcher.setStopperPose(stopperOpen);
+                    launcher.setHoodPose(farHoodPose);
                 })
         );
+        //hood close zone
         controller.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new InstantCommand(() -> {
-                    launcher.setCurrentStopperState(Launcher.StopperState.MANUAL);
-                    launcher.setStopperPose(stopperClose);
+                    launcher.setHoodPose(closeHoodPose);
                 })
         );
+        //scade velocity
+        controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new InstantCommand(() -> veltarget-=25)
+        );
+        //creste velocity
+        controller.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+                new InstantCommand(() -> veltarget+=25)
+        );
+        //open stopper
         controller.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new InstantCommand(() -> launcher.setCurrentStopperState(Launcher.StopperState.AUTO))
+                new InstantCommand(() -> launcher.setStopperPose(stopperOpen))
+        );
+        //close stopper
+        controller.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new InstantCommand(() -> {
+                    launcher.setStopperPose(stopperClose);
+                })
         );
 
 
@@ -113,6 +140,17 @@ public class TeleOpMain extends CommandOpMode {
                         )
                 )
         );
+        leftTrigger.whenActive(
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> {
+                            launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING);
+                            turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
+                            launcher.setStopperPose(stopperOpen);
+                        }),
+                        new WaitCommand(2000),
+                        new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.FORWARD))
+                )
+        );
         leftTrigger.whenInactive(
                 new InstantCommand(() -> {
                     launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
@@ -120,7 +158,7 @@ public class TeleOpMain extends CommandOpMode {
                     launcher.setStopperPose(stopperClose);
                 })
         );
-
+        //intake trage
         rightTrigger.whenActive(
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE), intake)
         );
@@ -128,6 +166,7 @@ public class TeleOpMain extends CommandOpMode {
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.IDLE), intake)
         );
 
+        //intake scuipa
         controller.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.FORWARD), intake)
         );
@@ -152,14 +191,16 @@ public class TeleOpMain extends CommandOpMode {
 //                })
 //        );
 
-        controller.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+        //reset position odometrie
+        controller.getGamepadButton(GamepadKeys.Button.TOUCHPAD).whenPressed(
                 new InstantCommand(() ->  {
-                    follower.setPose(new Pose(72, 7.5, Math.toRadians(100)));
+                    follower.setPose(new Pose(72, 7.5, Math.toRadians(90)));
                     telemetry.addData("Status", "Pose Reset Triggered");
                 }
                 )
         );
-        controller.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
+        //setare manuala alianta albastra
+        controller.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
                 new InstantCommand(() ->  {
                     alliance = Alliance.BLUE;
                     turret.goalPose =  blueGoalPose;
@@ -167,7 +208,8 @@ public class TeleOpMain extends CommandOpMode {
                 }
                 )
         );
-        controller.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
+        //setare manuala alianta rosie
+        controller.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
                 new InstantCommand(() ->  {
                     alliance = Alliance.RED;
                     turret.goalPose =  redGoalPose;
@@ -175,12 +217,7 @@ public class TeleOpMain extends CommandOpMode {
                 }
                 )
         );
-        controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new InstantCommand(() -> veltarget-=25)
-        );
-        controller.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
-                new InstantCommand(() -> veltarget+=25)
-        );
+
 
         register(turret, launcher, intake);
     }
