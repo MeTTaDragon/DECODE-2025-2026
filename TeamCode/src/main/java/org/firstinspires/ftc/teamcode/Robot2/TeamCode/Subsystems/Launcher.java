@@ -181,7 +181,7 @@ public class Launcher extends SubsystemBase {
         setCurrentLauncherState(LauncherState.IDLE);
         //setCurrentStopperState(StopperState.AUTO);
         setHoodPose(farHoodPose);
-        setStopperPose(stopperOpen);
+        setStopperPose(stopperClose);
     }
 
     /**
@@ -225,6 +225,10 @@ public class Launcher extends SubsystemBase {
 
     public boolean isVelocityReached() {
         return getVelocity() > targetVelocity - 100;
+    }
+
+    public boolean isStopperOpen(){
+        return stopper.getPosition() == stopperOpen;
     }
 
     /**
