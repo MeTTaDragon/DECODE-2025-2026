@@ -5,12 +5,12 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 public class LimelightSubsystem extends SubsystemBase {
@@ -30,11 +30,6 @@ public class LimelightSubsystem extends SubsystemBase {
     static double robotCoordsZ;
     static int id;
 
-    // --- Simple P-Controller Variables for Alignment ---
-    // kP: Turn speed per degree of error.
-    // Start small (0.01) and increase if it's too slow. Lower if it oscillates.
-    final double kP = 0.03;
-    final double MAX_AUTO_TURN = 0.5; // Cap the turning speed
 
     public enum LimelightMode {
         READ_PATTERN,
@@ -42,9 +37,6 @@ public class LimelightSubsystem extends SubsystemBase {
         BASKET,
         PAUSE
     }
-
-
-
     private static LimelightMode currentMode;
 
     public LimelightSubsystem(HardwareMap hwMap) {
@@ -149,6 +141,9 @@ public class LimelightSubsystem extends SubsystemBase {
     public static double getRobotCoordsX() { return robotCoordsX; }
     public static double getRobotCoordsY() { return robotCoordsY; }
     public static int getId() { return id; }
+    public LimelightMode getCurrentMode(){
+        return currentMode;
+    }
 
     /**
      * Run periodically by the CommandScheduler

@@ -5,12 +5,13 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
-import com.seattlesolvers.solverslib.controller.PIDFController;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
+import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
@@ -23,6 +24,11 @@ public class TurretHeadingTest extends CommandOpMode {
     Follower follower;
     Turret turret;
     LimelightSubsystem limelight;
+    GamepadEx gamepad;
+
+    DcMotor motorIntake;
+    DcMotor motorStanga;
+    DcMotor motorDreapta;
 
 
 
@@ -32,22 +38,46 @@ public class TurretHeadingTest extends CommandOpMode {
 
         alliance = Alliance.BLUE;
 
-        follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(72, 7.5, Math.toRadians(90)));
+       follower = Constants.createFollower(hardwareMap);
+       follower.setStartingPose(new Pose(72, 7.5, Math.toRadians(90)));
 
-        turret = new Turret(hardwareMap, follower, telemetry);
-        limelight = new LimelightSubsystem(hardwareMap);
+        turret = new Turret(hardwareMap, follower);
+        gamepad = new GamepadEx(gamepad1);
+        motorIntake = hardwareMap.get(DcMotor.class, "intakeMotor");
+        motorIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorStanga = hardwareMap.get(DcMotor.class, "motorStanga");
+        motorDreapta = hardwareMap.get(DcMotor.class, "motorDreapta");
+        motorDreapta.setDirection(DcMotorSimple.Direction.REVERSE);
+        //limelight = new LimelightSubsystem(hardwareMap);
 
         super.reset();
 
         follower.update();
 
         register(turret);
-        register(limelight);
+        //register(limelight);
 
         turret.setTurretState(Turret.TurretState.IDLE);
-        limelight.init();
-        limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
+//        limelight.init();
+
+//        limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
+
+        gamepad.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_PINPOINT))
+        );
+        gamepad.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.IDLE))
+        );
+        gamepad.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                new InstantCommand(() -> motorIntake.setPower(0.7))
+        );
+        gamepad.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+                new InstantCommand(() -> {
+                    motorDreapta.setPower(0.6);
+                    motorStanga.setPower(0.6);
+                })
+        );
+
 
         super.run();
     }
@@ -55,8 +85,10 @@ public class TurretHeadingTest extends CommandOpMode {
     public void run(){
         follower.update();
 
-        turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
-
+        telemetry.addData("Robot X", follower.getPose().getX());
+        telemetry.addData("Robot Y", follower.getPose().getY());
+        telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("launcher", motorDreapta.getPower());
         telemetry.update();
         super.run();
     }

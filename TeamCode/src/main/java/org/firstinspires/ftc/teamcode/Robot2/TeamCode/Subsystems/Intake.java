@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry; // Import Telemetry
+
+import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 @Config
@@ -21,20 +23,16 @@ public class Intake extends SubsystemBase {
     private IntakeState currentIntakeState = IntakeState.IDLE;
     private DcMotorEx intakeMotor;
 
-    // We store the telemetry object to use it in periodic()
-    private Telemetry telemetry;
 
-    public static double INTAKE_POWER = 0.8;
+
+    public static double INTAKE_POWER = 1;
 
     /**
      * Constructs a new Intake subsystem.
      *
      * @param hwMap The hardware map from the OpMode.
-     * @param telemetry The telemetry object to display data on the Driver Station.
      */
-    public Intake(HardwareMap hwMap, Telemetry telemetry) {
-        this.telemetry = telemetry;
-
+    public Intake(HardwareMap hwMap) {
         // Initialize the motor
         this.intakeMotor = hwMap.get(DcMotorEx.class, "intakeMotor");
 
@@ -80,12 +78,5 @@ public class Intake extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        telemetry.addData("Intake State", currentIntakeState);
-
-        telemetry.addData("Intake Target Power", INTAKE_POWER);
-
-        telemetry.addData("Intake Motor Power", intakeMotor.getPower());
-
-        telemetry.addData("Intake Velocity", intakeMotor.getVelocity());
     }
 }
