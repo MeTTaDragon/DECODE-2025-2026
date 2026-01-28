@@ -209,7 +209,8 @@ public class TeleOpMain extends CommandOpMode {
                 new InstantCommand(() -> {
                     launcher.setStopperPose(stopperClose);
                     launcher.stop();
-                    limelight.setMode(LimelightSubsystem.LimelightMode.PAUSE);
+                   limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
+                   intake.setIntakeState(Intake.IntakeState.IDLE);
                 })
         );
 
