@@ -25,7 +25,7 @@ public class Intake extends SubsystemBase {
 
 
 
-    public static double INTAKE_POWER = 0.9;
+    public static double INTAKE_POWER = 1;
 
     /**
      * Constructs a new Intake subsystem.

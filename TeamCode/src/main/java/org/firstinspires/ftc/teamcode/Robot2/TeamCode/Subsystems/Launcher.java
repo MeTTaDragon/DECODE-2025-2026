@@ -32,7 +32,7 @@ public class Launcher extends SubsystemBase {
     private final Servo hoodServo;
     private final Servo stopper;
     public static double farHoodPose = 0.1;
-    public static double closeHoodPose = 0.45;
+    public static double closeHoodPose = 0.28;
     public static double middle_Y = 60;
 
     public static double stopperClose = 0.25;
@@ -247,7 +247,7 @@ public class Launcher extends SubsystemBase {
 
         //completeaza cu functia de distanta
         if(Manual_shooting == false && !currentLauncherState.equals(LauncherState.IDLE)) {
-            targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126; //de ce +100?
+            targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + 125; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda
         }
     }
 }
