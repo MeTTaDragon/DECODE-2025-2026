@@ -247,7 +247,7 @@ public class Launcher extends SubsystemBase {
 
         //completeaza cu functia de distanta
         if(Manual_shooting == false && !currentLauncherState.equals(LauncherState.IDLE)) {
-            targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + 125; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda
+            targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + 25; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda
         }
     }
 }

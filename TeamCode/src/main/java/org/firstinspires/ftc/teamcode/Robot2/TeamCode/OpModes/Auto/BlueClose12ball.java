@@ -59,25 +59,25 @@ public class BlueClose12ball extends CommandOpMode {
 
         // Path 4
         path4 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(73.000, 55.000), new Pose(24.000, 60.000)))
+                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(73.000, 55.000), new Pose(23.000, 58.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 5
         path5 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(24.000, 60.000), new Pose(62.000, 84.000)))
+                .addPath(new BezierLine(new Pose(23.000, 58.000), new Pose(62.000, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 6
         path6 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(72.000, 32.000), new Pose(24.000, 36.000)))
+                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(72.000, 32.000), new Pose(23.000, 35.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 7
         path7 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(24.000, 36.000), new Pose(62.000, 84.000)))
+                .addPath(new BezierLine(new Pose(23.000, 35.000), new Pose(62.000, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
@@ -167,7 +167,7 @@ public class BlueClose12ball extends CommandOpMode {
                 intakeState(Intake.IntakeState.REVERSE),
 
                 new FollowPathCommand(follower, path2),
-                new WaitCommand(300),
+                new WaitCommand(500),
                 intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path3),
@@ -177,7 +177,7 @@ public class BlueClose12ball extends CommandOpMode {
                 intakeState(Intake.IntakeState.REVERSE),
 
                 new FollowPathCommand(follower, path4),
-                new WaitCommand(300),
+                new WaitCommand(500),
                 intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path5),
@@ -187,7 +187,7 @@ public class BlueClose12ball extends CommandOpMode {
                 intakeState(Intake.IntakeState.REVERSE),
 
                 new FollowPathCommand(follower, path6),
-                new WaitCommand(300),
+                new WaitCommand(500),
                 intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path7),
@@ -211,7 +211,7 @@ public class BlueClose12ball extends CommandOpMode {
             launcher.setHoodPose(launcher.closeHoodPose);
         }
 
-        launcher.targetVelocity = Math.pow(launcher.getDistance(), 0.4768327) * 183.7126 + 125; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda
+        launcher.targetVelocity = Math.pow(launcher.getDistance(), 0.4768327) * 183.7126 + 25; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda
          follower.update();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("x", follower.getPose().getX());
