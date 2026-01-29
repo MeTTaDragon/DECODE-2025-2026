@@ -37,7 +37,7 @@ public class RedClose12ball extends CommandOpMode {
     private Follower follower;
 
     private final Pose startPose = new Pose(116, 126.534, Math.toRadians(0));
-    private PathChain path1, path2, path3, path4, path5, path6, path7, path8;
+    private PathChain path1, path2, path3, path4, path4_1, path5, path6, path7, path8;
 
     public void buildPaths() {
         // Path 1
@@ -64,9 +64,14 @@ public class RedClose12ball extends CommandOpMode {
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        // Path 5
+        path4_1 = follower.pathBuilder()
+                 .addPath(new BezierLine(new Pose(121.000, 58.000), new Pose(128.61068702290078, 68.1526717557252)))
+                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                 .build();
+
+        // Path 5 (without gate open 121, 58)
         path5 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(121.000, 58.000), new Pose(82.000, 84.000)))
+                .addPath(new BezierLine(new Pose(128.61068702290078, 68.1526717557252), new Pose(82.000, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
@@ -193,6 +198,11 @@ public class RedClose12ball extends CommandOpMode {
                 savePoseCommand(),
                 new WaitCommand(500),
                 intakeState(Intake.IntakeState.IDLE),
+
+                new FollowPathCommand(follower, path4_1),
+                savePoseCommand(),
+                new WaitCommand(2000),
+
 
                 new FollowPathCommand(follower, path5),
                 savePoseCommand(),

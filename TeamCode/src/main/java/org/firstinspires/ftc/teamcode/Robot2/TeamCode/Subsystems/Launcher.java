@@ -33,6 +33,7 @@ public class Launcher extends SubsystemBase {
     private final Servo stopper;
     public static double farHoodPose = 0.1;
     public static double closeHoodPose = 0.28;
+    public static double veryCloseHoodPose = 0.5;
     public static double middle_Y = 60;
 
     public static double stopperClose = 0.25;
@@ -250,7 +251,13 @@ public class Launcher extends SubsystemBase {
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
         } else {
-            setHoodPose(closeHoodPose);
+            if(getDistance() <=58 )
+            {
+                setHoodPose(veryCloseHoodPose);
+            } else{
+                setHoodPose(closeHoodPose);
+            }
+
         }
 
         //completeaza cu functia de distanta
