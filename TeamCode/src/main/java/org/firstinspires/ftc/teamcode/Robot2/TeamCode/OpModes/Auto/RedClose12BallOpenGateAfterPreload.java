@@ -24,73 +24,90 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
-@Autonomous(name = "Blue close 12 ball", group = "Auto")
-public class BlueClose12ball extends CommandOpMode {
+@Autonomous(name = "Red close 12 ball-open gate after preload", group = "Auto")
+public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
     Intake intake;
     Launcher launcher;
     Turret turret;
     LimelightSubsystem limelight;
 
     public static double stopperClose = 0.25;
-    public static double stopperOpen = 0.65; // Ensure this is defined
+    public static double stopperOpen = 0.65;
     private Follower follower;
 
-    private final Pose startPose = new Pose(27.000, 126.534, Math.toRadians(180));
-    private PathChain path1, path2, path3, path4,path4_1, path5, path6, path7, path8;
+    // MIRROR CALCULATION (X only):
+    // Blue X: 27.000 -> Red X: 144 - 27 = 117.000
+    // Y remains 126.534
+    // Heading 180 (Left) -> 0 (Right)
+    private final Pose startPose = new Pose(117.000, 126.534, Math.toRadians(0));
 
-    public void buildPaths() {
-        // Path 1
-        path1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(27.000, 126.534), new Pose(62.000, 84.000)))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
-                .build();
+    // Instance of the new Paths class
+    private Paths paths;
 
-        // Path 2
-        path2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(62.000, 84.000), new Pose(24.000, 84.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+    // --- Inner Class for Paths ---
+    public static class Paths {
+        public PathChain Path1; public PathChain Path2; public PathChain Path3;
+        public PathChain Path4; public PathChain Path5; public PathChain Path6;
+        public PathChain Path7; public PathChain Path8; public PathChain Path9;
 
-        // Path 3
-        path3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(24.000, 84.000), new Pose(62.000, 84.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+        public Paths(Follower follower) {
+            // Path 1: Preload
+            // Blue: (27, 126.5) -> (62, 84)
+            // Red X: 144-27=117 -> 144-62=82. Y stays same.
+            Path1 = follower.pathBuilder().addPath(
+                    new BezierLine(new Pose(117.000, 126.534), new Pose(82.000, 84.000))
+            ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0)).build();
 
-        // Path 4
-        path4 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(73.000, 55.000), new Pose(23.000, 58.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+            // Path 2: Back off for approach
+            // Blue: (62, 84) -> (21, 84.5)
+            // Red X: 144-62=82 -> 144-21=123.
+            Path2 = follower.pathBuilder().addPath(
+                    new BezierLine(new Pose(82.000, 84.000), new Pose(123.000, 84.500))
+            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
-        path4_1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(73, 55.000), new Pose(17, 69)))
-                .setConstantHeadingInterpolation(Math.toRadians(225))
-                .build();
+            // Path 3: Curve to Intake Sample 1
+            // Blue Control: (25, 69.5) -> Red X: 144-25=119
+            // Blue End: (15, 70) -> Red X: 144-15=129
+            Path3 = follower.pathBuilder().addPath(
+                    new BezierCurve(new Pose(123.000, 84.500), new Pose(119.000, 71), new Pose(129.000, 71.000))
+            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
-        // Path 5
-        path5 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(17, 69), new Pose(62.000, 84.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+            // Path 4: Go to Score Sample 1
+            // Red End X: 144-62=82
+            Path4 = follower.pathBuilder().addPath(
+                    new BezierLine(new Pose(129.000, 71.000), new Pose(82.000, 84.000))
+            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
-        // Path 6
-        path6 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(72.000, 32.000), new Pose(23.000, 35.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+            // Path 5: Curve to Intake Sample 2
+            // Blue Control: (62, 57) -> Red X: 144-62=82
+            // Blue End: (20, 59) -> Red X: 144-20=124
+            Path5 = follower.pathBuilder().addPath(
+                    new BezierCurve(new Pose(82.000, 84.000), new Pose(82.000, 57.000), new Pose(124.000, 59.000))
+            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
-        // Path 7
-        path7 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(23.000, 35.000), new Pose(62.000, 84.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+            // Path 6: Go to Score Sample 2
+            Path6 = follower.pathBuilder().addPath(
+                    new BezierLine(new Pose(124.000, 59.000), new Pose(82.000, 84.000))
+            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
-        // Path 8
-        path8 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(62.000, 84.000), new Pose(32.854, 82.732)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+            // Path 7: Curve to Intake Sample 3
+            // Blue Control: (62, 32) -> Red X: 144-62=82
+            // Blue End: (21, 35) -> Red X: 144-21=123
+            Path7 = follower.pathBuilder().addPath(
+                    new BezierCurve(new Pose(82.000, 84.000), new Pose(82.000, 32.000), new Pose(123.000, 35.000))
+            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
+
+            // Path 8: Go to Score Sample 3
+            Path8 = follower.pathBuilder().addPath(
+                    new BezierLine(new Pose(123.000, 35.000), new Pose(82.000, 84.000))
+            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
+
+            // Path 9: Park
+            // Blue End: (21, 84) -> Red X: 144-21=123
+            Path9 = follower.pathBuilder().addPath(
+                    new BezierLine(new Pose(82.000, 84.000), new Pose(123.000, 84.000))
+            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
+        }
     }
 
     // --- Helper Methods ---
@@ -138,7 +155,6 @@ public class BlueClose12ball extends CommandOpMode {
 
     private Command stopLaunchSequence() {
         return new ParallelCommandGroup(
-                // FIXED: Combined Launcher actions into one command
                 new InstantCommand(() -> {
                     launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
                     launcher.setStopperPose(stopperClose);
@@ -152,14 +168,14 @@ public class BlueClose12ball extends CommandOpMode {
 
     private Command savePoseCommand() {
         return new InstantCommand(() ->
-            lastAutoPose = follower.getPose()
+                lastAutoPose = follower.getPose()
         );
     }
 
     @Override
     public void initialize() {
         super.reset();
-        alliance = Alliance.BLUE;
+        alliance = Alliance.RED;
         // Initialize Follower and Subsystems
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
@@ -171,56 +187,62 @@ public class BlueClose12ball extends CommandOpMode {
 
         register(turret, launcher, intake, limelight);
 
-        buildPaths();
+        // Initialize the new Paths object
+        paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-                new FollowPathCommand(follower, path1),
+                // --- Preload ---
+                new FollowPathCommand(follower, paths.Path1),
                 savePoseCommand(),
                 launchSequence(),
                 new WaitCommand(1800),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
-                new FollowPathCommand(follower, path2),
-                savePoseCommand(),
-                new WaitCommand(500),
+                // --- Sample 1 ---
+                new FollowPathCommand(follower, paths.Path2),
+                // Turn on intake during the curve approach (Path3)
                 intakeState(Intake.IntakeState.IDLE),
-
-                new FollowPathCommand(follower, path3),
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                intakeState(Intake.IntakeState.REVERSE),
-
-                new FollowPathCommand(follower, path4),
-                savePoseCommand(),
-                new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
-
-                new FollowPathCommand(follower, path4_1),
+                new FollowPathCommand(follower, paths.Path3),
                 savePoseCommand(),
                 new WaitCommand(325),
+                intakeState(Intake.IntakeState.IDLE), // Ensure hold
 
-                new FollowPathCommand(follower, path5),
+                new FollowPathCommand(follower, paths.Path4), // Score Sample 1
                 savePoseCommand(),
                 launchSequence(),
                 new WaitCommand(1800),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
-                new FollowPathCommand(follower, path6),
+                // --- Sample 2 ---
+                new FollowPathCommand(follower, paths.Path5),
                 savePoseCommand(),
-                new WaitCommand(1800),
+                new WaitCommand(500),
                 intakeState(Intake.IntakeState.IDLE),
 
-                new FollowPathCommand(follower, path7),
+                new FollowPathCommand(follower, paths.Path6), // Score Sample 2
+                savePoseCommand(),
+                launchSequence(),
+                new WaitCommand(1800),
+                stopLaunchSequence(),
+                intakeState(Intake.IntakeState.REVERSE),
+
+                // --- Sample 3 ---
+                new FollowPathCommand(follower, paths.Path7),
+                savePoseCommand(),
+                new WaitCommand(700),
+
+                intakeState(Intake.IntakeState.IDLE),
+
+                new FollowPathCommand(follower, paths.Path8), // Score Sample 3
                 savePoseCommand(),
                 launchSequence(),
                 new WaitCommand(1800),
                 stopLaunchSequence(),
 
-                new FollowPathCommand(follower, path8),
+                // --- Park ---
+                new FollowPathCommand(follower, paths.Path9),
                 savePoseCommand()
         );
 

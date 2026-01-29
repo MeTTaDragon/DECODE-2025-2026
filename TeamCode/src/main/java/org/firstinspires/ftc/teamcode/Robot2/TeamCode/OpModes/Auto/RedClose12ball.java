@@ -65,13 +65,13 @@ public class RedClose12ball extends CommandOpMode {
                 .build();
 
         path4_1 = follower.pathBuilder()
-                 .addPath(new BezierLine(new Pose(121.000, 58.000), new Pose(128.61068702290078, 68.1526717557252)))
-                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                 .addPath(new BezierLine(new Pose(121.000, 58.000), new Pose(127, 69)))
+                 .setConstantHeadingInterpolation(Math.toRadians(315))
                  .build();
 
         // Path 5 (without gate open 121, 58)
         path5 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(128.61068702290078, 68.1526717557252), new Pose(82.000, 84.000)))
+                .addPath(new BezierLine(new Pose(127, 69), new Pose(82.000, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
@@ -178,7 +178,7 @@ public class RedClose12ball extends CommandOpMode {
                 new FollowPathCommand(follower, path1),
                 savePoseCommand(),
                 launchSequence(),
-                new WaitCommand(2000),
+                new WaitCommand(1800),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
@@ -190,7 +190,7 @@ public class RedClose12ball extends CommandOpMode {
                 new FollowPathCommand(follower, path3),
                 savePoseCommand(),
                 launchSequence(),
-                new WaitCommand(2000),
+                new WaitCommand(1800),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
@@ -201,13 +201,13 @@ public class RedClose12ball extends CommandOpMode {
 
                 new FollowPathCommand(follower, path4_1),
                 savePoseCommand(),
-                new WaitCommand(2000),
+                new WaitCommand(250),
 
 
                 new FollowPathCommand(follower, path5),
                 savePoseCommand(),
                 launchSequence(),
-                new WaitCommand(2000),
+                new WaitCommand(1800),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
@@ -219,7 +219,7 @@ public class RedClose12ball extends CommandOpMode {
                 new FollowPathCommand(follower, path7),
                 savePoseCommand(),
                 launchSequence(),
-                new WaitCommand(2000),
+                new WaitCommand(1800),
                 stopLaunchSequence(),
 
                 new FollowPathCommand(follower, path8),

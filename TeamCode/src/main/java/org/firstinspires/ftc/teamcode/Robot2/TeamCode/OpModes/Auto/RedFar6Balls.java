@@ -24,73 +24,68 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
-@Autonomous(name = "Blue close 12 ball", group = "Auto")
-public class BlueClose12ball extends CommandOpMode {
+@Autonomous(name = "Red Far 6 Balls", group = "Auto")
+public class RedFar6Balls extends CommandOpMode {
     Intake intake;
     Launcher launcher;
     Turret turret;
     LimelightSubsystem limelight;
 
     public static double stopperClose = 0.25;
-    public static double stopperOpen = 0.65; // Ensure this is defined
+    public static double stopperOpen = 0.65;
     private Follower follower;
 
-    private final Pose startPose = new Pose(27.000, 126.534, Math.toRadians(180));
-    private PathChain path1, path2, path3, path4,path4_1, path5, path6, path7, path8;
+    // MIRROR CALCULATION:
+    // Blue X: 65.000 -> Red X: 144 - 65 = 79.000
+    // Y remains 7.5
+    // Heading 180 (Left) -> 0 (Right)
+    private final Pose startPose = new Pose(79.000, 7.5, Math.toRadians(0));
 
-    public void buildPaths() {
-        // Path 1
-        path1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(27.000, 126.534), new Pose(62.000, 84.000)))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
-                .build();
+    private Paths paths;
 
-        // Path 2
-        path2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(62.000, 84.000), new Pose(24.000, 84.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+    // --- Inner Class for Paths ---
+    public static class Paths {
+        public PathChain Path1;
+        public PathChain Path2;
+        public PathChain Path3;
 
-        // Path 3
-        path3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(24.000, 84.000), new Pose(62.000, 84.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+        public Paths(Follower follower) {
+            // Path 1: Go to Intake Position
+            // Blue Start: (63, 7.5) -> Red X: 144-63 = 81
+            // Blue Control: (61.854, 36.305) -> Red X: 144-61.854 = 82.146
+            // Blue End: (21, 37.5) -> Red X: 144-21 = 123
+            Path1 = follower.pathBuilder().addPath(
+                            new BezierCurve(
+                                    new Pose(81.000, 7.5),
+                                    new Pose(82.146, 36.305),
+                                    new Pose(123.000, 37.5)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .build();
 
-        // Path 4
-        path4 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(73.000, 55.000), new Pose(23.000, 58.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+            // Path 2: Return to Shoot
+            // Blue Start: (21, 37.5) -> Red X: 123
+            // Blue End: (63, 7.5) -> Red X: 81
+            Path2 = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(123.000, 37.5),
+                                    new Pose(81.000, 7.5)
+                            )
+                    )
+                    .setConstantHeadingInterpolation(Math.toRadians(0))
+                    .build();
 
-        path4_1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(73, 55.000), new Pose(17, 69)))
-                .setConstantHeadingInterpolation(Math.toRadians(225))
-                .build();
-
-        // Path 5
-        path5 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(17, 69), new Pose(62.000, 84.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
-
-        // Path 6
-        path6 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(72.000, 32.000), new Pose(23.000, 35.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
-
-        // Path 7
-        path7 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(23.000, 35.000), new Pose(62.000, 84.000)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
-
-        // Path 8
-        path8 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(62.000, 84.000), new Pose(32.854, 82.732)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+            // Path 3: Park
+            // Blue Start: (65, 9) -> Red X: 144-65 = 79
+            // Blue End: (35, 10) -> Red X: 144-35 = 109
+            Path3 = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(79.000, 9.000),
+                                    new Pose(109.000, 10.000)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    .build();
+        }
     }
 
     // --- Helper Methods ---
@@ -117,7 +112,7 @@ public class BlueClose12ball extends CommandOpMode {
     // --- Sequences ---
     private Command launchSequence() {
         return new SequentialCommandGroup(
-                // Spin up launcher and aim turret simultaneously
+                // Spin up launcher and aim turret
                 new ParallelCommandGroup(
                         setLauncherState(Launcher.LauncherState.SHOOTING),
                         setTurretState(Turret.TurretState.FULL_PINPOINT)
@@ -138,12 +133,10 @@ public class BlueClose12ball extends CommandOpMode {
 
     private Command stopLaunchSequence() {
         return new ParallelCommandGroup(
-                // FIXED: Combined Launcher actions into one command
                 new InstantCommand(() -> {
                     launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
                     launcher.setStopperPose(stopperClose);
                 }, launcher),
-
                 setTurretState(Turret.TurretState.IDLE),
                 intakeState(Intake.IntakeState.IDLE),
                 setLimelightMode(LimelightSubsystem.LimelightMode.PAUSE)
@@ -151,15 +144,15 @@ public class BlueClose12ball extends CommandOpMode {
     }
 
     private Command savePoseCommand() {
-        return new InstantCommand(() ->
-            lastAutoPose = follower.getPose()
-        );
+        return new InstantCommand(() -> lastAutoPose = follower.getPose());
     }
 
     @Override
     public void initialize() {
         super.reset();
-        alliance = Alliance.BLUE;
+        // CHANGED TO RED
+        alliance = Alliance.RED;
+
         // Initialize Follower and Subsystems
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
@@ -171,56 +164,35 @@ public class BlueClose12ball extends CommandOpMode {
 
         register(turret, launcher, intake, limelight);
 
-        buildPaths();
+        // Initialize the Paths object
+        paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-                new FollowPathCommand(follower, path1),
-                savePoseCommand(),
+                // 1. Launch Preload immediately on start
                 launchSequence(),
                 new WaitCommand(1800),
                 stopLaunchSequence(),
-                intakeState(Intake.IntakeState.REVERSE),
 
-                new FollowPathCommand(follower, path2),
+                // 2. Go to Intake Position (Path 1)
+                intakeState(Intake.IntakeState.REVERSE),
+                new FollowPathCommand(follower, paths.Path1),
                 savePoseCommand(),
-                new WaitCommand(500),
+
+                // 3. Intake On for 1.8 seconds (Wait 700ms then idle per blue code)
+                new WaitCommand(700),
                 intakeState(Intake.IntakeState.IDLE),
 
-                new FollowPathCommand(follower, path3),
+                // 4. Return to Shoot (Path 2)
+                new FollowPathCommand(follower, paths.Path2),
                 savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                intakeState(Intake.IntakeState.REVERSE),
 
-                new FollowPathCommand(follower, path4),
-                savePoseCommand(),
-                new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
-
-                new FollowPathCommand(follower, path4_1),
-                savePoseCommand(),
-                new WaitCommand(325),
-
-                new FollowPathCommand(follower, path5),
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                intakeState(Intake.IntakeState.REVERSE),
-
-                new FollowPathCommand(follower, path6),
-                savePoseCommand(),
-                new WaitCommand(1800),
-                intakeState(Intake.IntakeState.IDLE),
-
-                new FollowPathCommand(follower, path7),
-                savePoseCommand(),
+                // 5. Launch Second Shot
                 launchSequence(),
                 new WaitCommand(1800),
                 stopLaunchSequence(),
 
-                new FollowPathCommand(follower, path8),
+                // 6. Park (Path 3)
+                new FollowPathCommand(follower, paths.Path3),
                 savePoseCommand()
         );
 
@@ -230,7 +202,6 @@ public class BlueClose12ball extends CommandOpMode {
     @Override
     public void run() {
         super.run();
-
         follower.update();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("x", follower.getPose().getX());
