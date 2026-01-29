@@ -47,7 +47,7 @@ public class LimelightSubsystem extends SubsystemBase {
         // TODO: Uncomment this if you want to use MegaTag2D
         // imu = hwMap.get(IMU.class, "imu");
 
-        limelight.setPollRateHz(10);
+        limelight.setPollRateHz(50);
     }
 
     public void init() {

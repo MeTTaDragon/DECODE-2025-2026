@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
 @Autonomous(name = "Blue close 12 ball", group = "Auto")
 public class BlueClose12ball extends CommandOpMode {
@@ -110,7 +111,7 @@ public class BlueClose12ball extends CommandOpMode {
     }
 
     // --- Sequences ---
-    public Command launchSequence() {
+    private Command launchSequence() {
         return new SequentialCommandGroup(
                 // Spin up launcher and aim turret simultaneously
                 new ParallelCommandGroup(
@@ -121,6 +122,7 @@ public class BlueClose12ball extends CommandOpMode {
                 new WaitUntilCommand(() -> launcher.isVelocityReached()),
                 // Targeting
                 setLimelightMode(LimelightSubsystem.LimelightMode.BASKET),
+                setTurretState(Turret.TurretState.FULL_LIMELIGHT),
                 // Release the stopper
                 setStopperPose(stopperOpen),
                 // Wait for stopper to clear
@@ -130,7 +132,7 @@ public class BlueClose12ball extends CommandOpMode {
         );
     }
 
-    public Command stopLaunchSequence() {
+    private Command stopLaunchSequence() {
         return new ParallelCommandGroup(
                 // FIXED: Combined Launcher actions into one command
                 new InstantCommand(() -> {
@@ -141,6 +143,12 @@ public class BlueClose12ball extends CommandOpMode {
                 setTurretState(Turret.TurretState.IDLE),
                 intakeState(Intake.IntakeState.IDLE),
                 setLimelightMode(LimelightSubsystem.LimelightMode.PAUSE)
+        );
+    }
+
+    private Command savePoseCommand() {
+        return new InstantCommand(() ->
+            lastAutoPose = follower.getPose()
         );
     }
 
@@ -157,45 +165,55 @@ public class BlueClose12ball extends CommandOpMode {
         intake = new Intake(hardwareMap);
         limelight = new LimelightSubsystem(hardwareMap);
 
+        register(turret, launcher, intake, limelight);
+
         buildPaths();
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
                 new FollowPathCommand(follower, path1),
+                savePoseCommand(),
                 launchSequence(),
                 new WaitCommand(2000),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
                 new FollowPathCommand(follower, path2),
+                savePoseCommand(),
                 new WaitCommand(500),
                 intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path3),
+                savePoseCommand(),
                 launchSequence(),
                 new WaitCommand(2000),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
                 new FollowPathCommand(follower, path4),
+                savePoseCommand(),
                 new WaitCommand(500),
                 intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path5),
+                savePoseCommand(),
                 launchSequence(),
                 new WaitCommand(2000),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
                 new FollowPathCommand(follower, path6),
+                savePoseCommand(),
                 new WaitCommand(500),
                 intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path7),
+                savePoseCommand(),
                 launchSequence(),
                 new WaitCommand(2000),
                 stopLaunchSequence(),
 
-                new FollowPathCommand(follower, path8)
+                new FollowPathCommand(follower, path8),
+                savePoseCommand()
         );
 
         schedule(autonomousSequence);
@@ -205,14 +223,7 @@ public class BlueClose12ball extends CommandOpMode {
     public void run() {
         super.run();
 
-        if (follower.getPose().getY() < launcher.middle_Y) {
-            launcher.setHoodPose(launcher.farHoodPose);
-        } else {
-            launcher.setHoodPose(launcher.closeHoodPose);
-        }
-
-        launcher.targetVelocity = Math.pow(launcher.getDistance(), 0.4768327) * 183.7126 + 25; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda
-         follower.update();
+        follower.update();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());

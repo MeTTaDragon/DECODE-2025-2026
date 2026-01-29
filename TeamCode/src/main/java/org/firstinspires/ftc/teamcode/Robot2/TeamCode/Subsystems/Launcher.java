@@ -43,9 +43,10 @@ public class Launcher extends SubsystemBase {
     // --- TUNING VARIABLES (Edit in FTC Dashboard) ---
     // F (Feedforward): Base power to hold speed. Start small (0.0001 - 0.0005)
     // P (Proportional): "Snap" power to fix errors.
-    public static double F = 0.00036239;
+    public static double F = 0.0003;
     public static double P = 0.01;
     public static double D = 0;
+    public static double I = 0;
 
     //vel far zone: 1940
     //vel close middle: 1200
@@ -89,6 +90,10 @@ public class Launcher extends SubsystemBase {
     }
 
     public void setCurrentLauncherState(LauncherState currentLauncherState) {
+        if(this.currentLauncherState != currentLauncherState){
+            launcherController.reset();
+        }
+
         this.currentLauncherState = currentLauncherState;
     }
 
@@ -117,14 +122,15 @@ public class Launcher extends SubsystemBase {
         // If the robot shoots backward, remove this REVERSE or move it to followerMotor.
         masterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        launcherController = new PIDFController(P, 0, D, F);
+        launcherController = new PIDFController(P, I, D, F);
 
         goalPose = (alliance == Alliance.RED) ? redGoalPose : blueGoalPose;
     }
 
 
     void updateLauncherState(){
-        launcherController.setPIDF(P, 0, D, F);
+
+        launcherController.setPIDF(P, I, D, F);
 
         switch (currentLauncherState){
             case IDLE:
@@ -142,10 +148,12 @@ public class Launcher extends SubsystemBase {
                 // 2. CALCULATE Error
                 double error = targetVelocity - currentVel;
 
+                launcherController.setSetPoint(targetVelocity);
+
                 // 3. CALCULATE Power (PF Controller)
                 // Feedforward (F): Base power to maintain target
                 // Proportional (P): Correction power based on error
-                double power = launcherController.calculate(0, error);
+                double power = launcherController.calculate(currentVel);
 
 
                 // 5. APPLY the SAME calculated power to BOTH motors
@@ -155,7 +163,7 @@ public class Launcher extends SubsystemBase {
                     followerMotor.setPower(power);
                     lastPower = power;
                 }
-                launcherController.clearTotalError();
+
                 break;
         }
     }
@@ -246,8 +254,8 @@ public class Launcher extends SubsystemBase {
         }
 
         //completeaza cu functia de distanta
-        if(Manual_shooting == false && !currentLauncherState.equals(LauncherState.IDLE)) {
-            targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + 25; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda
+        if(!currentLauncherState.equals(LauncherState.IDLE)) {
+            targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + 25; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda -> OK, mersi!-Dragos
         }
     }
 }

@@ -26,11 +26,15 @@ public class Turret extends SubsystemBase {
     double robotAngle;
     double power;
 
+
+
+    double targetHeading;
+
     // PID Coefficients
     // Note: Since we are using Radians, the error is small (e.g., 0.5 rads).
     // You might need a higher P than 0.35 if it's sluggish.
     // Try P = 0.8 or higher if it doesn't move fast enough.
-    public static double P = 0.8, I = 0, D = 0.03, F = 0;
+    public static double P = 1, I = 0, D = 0.03, F = 0;
 
     // Hardware Constants
     double gearRatio = 5.75;
@@ -83,14 +87,14 @@ public class Turret extends SubsystemBase {
             case FULL_LIMELIGHT:
                 turretController.setSetPoint(0);
 
-                power = turretController.calculate(lltx);
+                power = turretController.calculate(Math.toRadians(lltx));
 
                 if(turretController.atSetPoint()){
                     motorTureta.setPower(0);
                     turretController.clearTotalError();
                 }
                 else{
-                    motorTureta.setPower(-power);
+                    motorTureta.setPower(power);
                 }
                 break;
 
@@ -105,7 +109,7 @@ public class Turret extends SubsystemBase {
                 // 3. Calculate "Target Local Heading"
                 // This is where the turret needs to be relative to the robot chassis.
                 // Formula: Field_Angle - Robot_Body_Angle
-                double targetLocalHeading = targetFieldHeading - robotPose.getHeading();
+                targetHeading = targetFieldHeading - robotPose.getHeading();
 
                 // 4. Get "Current Local Heading" from Encoder
                 double currentLocalHeading = getTurretHeading(); // returns Radians
@@ -113,7 +117,7 @@ public class Turret extends SubsystemBase {
                 // 5. Calculate the Error (Shortest Path)
                 // This helper function handles the -180 to 180 wrap automatically.
                 // If the error is 350 degrees, it converts it to -10 degrees.
-                double error = angleWrap(targetLocalHeading - currentLocalHeading);
+                double error = angleWrap(targetHeading - currentLocalHeading);
 
                 // 6. PID Calculation
                 // We calculate power to drive 'error' to 0.
@@ -152,10 +156,17 @@ public class Turret extends SubsystemBase {
         }
         return angle;
     }
+    public double getTargetHeading() {
+        return targetHeading;
+    }
+
 
     @Override
     public void periodic() {
         robotAngle = follower.getPose().getHeading();
+
+
+
         update();
     }
 }

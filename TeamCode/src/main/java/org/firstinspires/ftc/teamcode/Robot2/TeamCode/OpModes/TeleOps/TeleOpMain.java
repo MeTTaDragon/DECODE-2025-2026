@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.OpModes.TeleOps;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.message.redux.ReceiveGamepadState;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
@@ -22,9 +21,7 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
-import com.seattlesolvers.solverslib.util.Timing;
 
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoLaunch;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
@@ -43,8 +40,7 @@ public class TeleOpMain extends CommandOpMode {
     private static double veltarget =1940;
     public static double ledcolor = 0.278;
     GamepadEx controller;
-    // LED Value for White (Adjust this based on your specific LED controller, 1.0 is standard for many)
-    public static double ledWhite = 1.0;
+
 
     // --- Triangle Zone Coordinates (PEDRO PATHING COORDINATES: 0-144 inches) ---
     // You must change these numbers to match the actual field triangles
@@ -60,7 +56,8 @@ public class TeleOpMain extends CommandOpMode {
     private final Pose2d backC = new Pose2d(45, 0, 0);
 
     Follower follower;
-    Servo led;
+    Servo ledAlliance;
+    Servo ledShooter;
 
     Turret turret;
     Launcher launcher;
@@ -94,7 +91,8 @@ public class TeleOpMain extends CommandOpMode {
 
         super.reset();
 
-        led = hardwareMap.get(Servo.class, "led");
+        ledAlliance = hardwareMap.get(Servo.class, "ledAlliance");
+        ledShooter = hardwareMap.get(Servo.class, "ledShooter");
         turret = new Turret(hardwareMap, follower);
         launcher = new Launcher(hardwareMap, follower);
         intake = new Intake(hardwareMap);
@@ -161,7 +159,10 @@ public class TeleOpMain extends CommandOpMode {
                             turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
                         }),
                         new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET)),
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET)),
+                                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT))
+                        ),
                         new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
                         new WaitCommand(500),
                         new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
@@ -169,7 +170,7 @@ public class TeleOpMain extends CommandOpMode {
         );
         leftTrigger.whenInactive(
                 new InstantCommand(() -> {
-                    launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
+                    launcher.stop();
                     turret.setTurretState(Turret.TurretState.IDLE);
                     launcher.setStopperPose(stopperClose);
                     intake.setIntakeState(Intake.IntakeState.IDLE);
@@ -196,10 +197,10 @@ public class TeleOpMain extends CommandOpMode {
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
                             launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING);
-                            turret.setTurretState(Turret.TurretState.IDLE);
+                            limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
+                            turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT);
                         }),
                         new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET)),
                         new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
                         new WaitCommand(500),
                         new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
@@ -207,10 +208,11 @@ public class TeleOpMain extends CommandOpMode {
         );
         controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenInactive(
                 new InstantCommand(() -> {
+                    turret.setTurretState(Turret.TurretState.IDLE);
                     launcher.setStopperPose(stopperClose);
                     launcher.stop();
-                   limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
-                   intake.setIntakeState(Intake.IntakeState.IDLE);
+                    limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
+                    intake.setIntakeState(Intake.IntakeState.IDLE);
                 })
         );
 
@@ -242,7 +244,7 @@ public class TeleOpMain extends CommandOpMode {
         );
 
 
-        register(turret, launcher, intake);
+        register(turret, launcher, intake, limelight);
     }
     /**
      * Updates the LED color based on Robot Position and Alliance
@@ -258,18 +260,22 @@ public class TeleOpMain extends CommandOpMode {
 
         if (inFront || inBack) {
             // Force WHITE if inside a launch triangle
-            led.setPosition(ledWhite);
+            ledShooter.setPosition(0.5);
+        }
+        else{
+            ledShooter.setPosition(1);
+        }
+
+
+        if (alliance == Alliance.RED) {
+            ledAlliance.setPosition(0.28);
+        } else if (alliance == Alliance.BLUE) {
+            ledAlliance.setPosition(0.61);
         } else {
-            // Standard Alliance Colors
-            if (alliance == Alliance.RED) {
-                led.setPosition(0.28);
-            } else if (alliance == Alliance.BLUE) {
-                led.setPosition(0.61);
-            } else {
-                led.setPosition(0);
-            }
+            ledAlliance.setPosition(0);
         }
     }
+
 
     /**
      * Math Helper: Checks if point P is inside Triangle ABC
@@ -298,6 +304,9 @@ public class TeleOpMain extends CommandOpMode {
 
         updateLEDs();
 
+        if(follower.getPose().getX() < 0 || follower.getPose().getX() > 144 || follower.getPose().getY() < 0 || follower.getPose().getY() > 144){
+            gamepad1.runRumbleEffect(customRumbleEffect);
+        }
 
 
         telemetry.addData("Current velocity", launcher.getVelocity());
@@ -306,6 +315,7 @@ public class TeleOpMain extends CommandOpMode {
         telemetry.addData("Robot Y", follower.getPose().getY());
         telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
+        telemetry.addData("turret target heading", Math.toDegrees(turret.getTargetHeading()));
         telemetry.addData("distance", launcher.getDistance());
         telemetry.addData("alliance", alliance);
         telemetry.addData("limelight mode", limelight.getCurrentMode());
