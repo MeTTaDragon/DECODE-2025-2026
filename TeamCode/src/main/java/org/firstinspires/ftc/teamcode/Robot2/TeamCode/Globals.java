@@ -15,7 +15,7 @@ public class Globals {
     public static double llta;
     public static double llpower;
 
-    public static Alliance alliance = Alliance.BLUE;
+    public static Alliance alliance = Alliance.RED;
     public static Pose lastAutoPose = new Pose(72, 7.5, Math.toRadians(90));
 
     public static Pose blueGoalPose = new Pose(0, 142, Math.toRadians(0));
