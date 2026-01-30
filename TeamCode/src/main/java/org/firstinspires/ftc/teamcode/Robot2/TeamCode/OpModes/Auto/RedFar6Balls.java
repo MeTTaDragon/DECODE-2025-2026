@@ -39,24 +39,30 @@ public class RedFar6Balls extends CommandOpMode {
     // Blue X: 65.000 -> Red X: 144 - 65 = 79.000
     // Y remains 7.5
     // Heading 180 (Left) -> 0 (Right)
-    private final Pose startPose = new Pose(79.000, 7.5, Math.toRadians(0));
+    private final Pose startPose = new Pose(81.000, 7.5, Math.toRadians(0));
 
     private Paths paths;
 
     // --- Inner Class for Paths ---
     public static class Paths {
+        public PathChain Path0;
         public PathChain Path1;
         public PathChain Path2;
         public PathChain Path3;
 
         public Paths(Follower follower) {
+            Path0 = follower.pathBuilder().addPath(
+                    new BezierLine(
+                            new Pose(81.000, 7.500), new Pose(81.000, 20.0)
+                    )
+            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
             // Path 1: Go to Intake Position
             // Blue Start: (63, 7.5) -> Red X: 144-63 = 81
             // Blue Control: (61.854, 36.305) -> Red X: 144-61.854 = 82.146
             // Blue End: (21, 37.5) -> Red X: 144-21 = 123
             Path1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(81.000, 7.5),
+                                    new Pose(81.000, 20),
                                     new Pose(82.146, 36.305),
                                     new Pose(123.000, 37.5)
                             )
@@ -69,7 +75,7 @@ public class RedFar6Balls extends CommandOpMode {
             Path2 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(123.000, 37.5),
-                                    new Pose(81.000, 7.5)
+                                    new Pose(81.000, 20.000)
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -80,8 +86,8 @@ public class RedFar6Balls extends CommandOpMode {
             // Blue End: (35, 10) -> Red X: 144-35 = 109
             Path3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(79.000, 9.000),
-                                    new Pose(109.000, 10.000)
+                                    new Pose(81.000, 20.000),
+                                    new Pose(109.000, 20.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
                     .build();
@@ -168,6 +174,8 @@ public class RedFar6Balls extends CommandOpMode {
         paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
+                new FollowPathCommand(follower, paths.Path0),
+                savePoseCommand(),
                 // 1. Launch Preload immediately on start
                 launchSequence(),
                 new WaitCommand(1800),

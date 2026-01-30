@@ -67,8 +67,10 @@ public class TeleOpMain extends CommandOpMode {
     List<LynxModule> allHubs;
     ElapsedTime timer;
     Gamepad.RumbleEffect customRumbleEffect;
+    boolean rumbled = false;
     private static double totallooptime=0;
     private static double loops=0;
+
 
 
     @Override
@@ -220,6 +222,7 @@ public class TeleOpMain extends CommandOpMode {
         controller.getGamepadButton(GamepadKeys.Button.TOUCHPAD).whenPressed(
                 new InstantCommand(() ->  {
                     follower.setPose(new Pose(72, 7.5, Math.toRadians(90)));
+                    rumbled = false;
                     telemetry.addData("Status", "Pose Reset Triggered");
                 }
                 )
@@ -304,7 +307,8 @@ public class TeleOpMain extends CommandOpMode {
 
         updateLEDs();
 
-        if(follower.getPose().getX() < 0 || follower.getPose().getX() > 144 || follower.getPose().getY() < 0 || follower.getPose().getY() > 144){
+        if((follower.getPose().getX() < 0 || follower.getPose().getX() > 144 || follower.getPose().getY() < 0 || follower.getPose().getY() > 144) && !rumbled){
+            rumbled = true;
             gamepad1.runRumbleEffect(customRumbleEffect);
         }
 

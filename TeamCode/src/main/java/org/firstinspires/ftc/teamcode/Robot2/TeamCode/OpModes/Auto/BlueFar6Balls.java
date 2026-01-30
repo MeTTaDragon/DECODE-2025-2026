@@ -36,20 +36,27 @@ public class BlueFar6Balls extends CommandOpMode {
     private Follower follower;
 
     // Start Pose inferred from Path9: (65, 9) facing 90 degrees
-    private final Pose startPose = new Pose(65.000, 7.5, Math.toRadians(180));
+    private final Pose startPose = new Pose(63.000, 7.5, Math.toRadians(180));
 
     private Paths paths;
 
     // --- Inner Class for Paths ---
     public static class Paths {
+        public PathChain Path0;
         public PathChain Path1;
         public PathChain Path2;
         public PathChain Path3;
 
         public Paths(Follower follower) {
+            Path0 = follower.pathBuilder().addPath(
+                    new BezierLine(
+                            new Pose(65.000, 7.500), new Pose(63.000, 20.0)
+                    )
+            ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
+
             Path1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(63.000, 7.5),
+                                    new Pose(63.000, 20.0),
                                     new Pose(61.854, 36.305),
                                     new Pose(21.000, 37.5)
                             )
@@ -59,7 +66,7 @@ public class BlueFar6Balls extends CommandOpMode {
             Path2 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(21.000, 37.5),
-                                    new Pose(63.000, 7.5)
+                                    new Pose(63.000, 20)
                             )
                     )
                     // Fixed 'undefined' to 90 degrees to maintain heading
@@ -68,8 +75,8 @@ public class BlueFar6Balls extends CommandOpMode {
 
             Path3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(65.000, 9.000),
-                                    new Pose(35.000, 10.000)
+                                    new Pose(63.000, 20),
+                                    new Pose(35.000, 20.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
@@ -155,6 +162,8 @@ public class BlueFar6Balls extends CommandOpMode {
         paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
+                new FollowPathCommand(follower, paths.Path0),
+                savePoseCommand(),
                 // 1. Launch Preload immediately on start
                 launchSequence(),
                 new WaitCommand(1800),
