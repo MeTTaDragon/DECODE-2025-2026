@@ -14,8 +14,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 import static java.lang.Math.abs;
 
@@ -33,9 +31,9 @@ public class Launcher extends SubsystemBase {
     private final Servo stopper;
     public static double farHoodPose = 0.1;
     public static double closeHoodPose = 0.28;
-    public static double veryCloseHoodPose = 0.5;
+    public static double veryCloseHoodPose = 0.55;
     public static double middle_Y = 60;
-
+    public double targetvelocity_compensate = 0;
     public static double stopperClose = 0.25;
     public static double stopperOpen = 0.6;
 
@@ -250,19 +248,22 @@ public class Launcher extends SubsystemBase {
 
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
+            targetvelocity_compensate = 75;
         } else {
             if(getDistance() <=58 )
             {
                 setHoodPose(veryCloseHoodPose);
+                targetvelocity_compensate = 100;//cand e foarte aproape da ft incet
             } else{
                 setHoodPose(closeHoodPose);
+                targetvelocity_compensate = 25;
             }
 
         }
 
         //completeaza cu functia de distanta
         if(!currentLauncherState.equals(LauncherState.IDLE)) {
-            targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + 25; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda -> OK, mersi!-Dragos
+            targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + targetvelocity_compensate; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda -> OK, mersi!-Dragos
         }
     }
 }
