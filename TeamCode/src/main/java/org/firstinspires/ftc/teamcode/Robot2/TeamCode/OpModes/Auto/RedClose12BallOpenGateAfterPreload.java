@@ -56,7 +56,7 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
             // Red X: 144-27=117 -> 144-62=82. Y stays same.
             Path1 = follower.pathBuilder().addPath(
                     new BezierLine(new Pose(117.000, 126.534), new Pose(82.000, 84.000))
-            ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0)).build();
+            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
             // Path 2: Back off for approach
             // Blue: (62, 84) -> (21, 84.5)

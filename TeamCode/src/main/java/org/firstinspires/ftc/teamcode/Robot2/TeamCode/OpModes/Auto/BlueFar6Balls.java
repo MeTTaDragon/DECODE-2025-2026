@@ -50,7 +50,7 @@ public class BlueFar6Balls extends CommandOpMode {
         public Paths(Follower follower) {
             Path0 = follower.pathBuilder().addPath(
                     new BezierLine(
-                            new Pose(65.000, 7.500), new Pose(63.000, 20.0)
+                            new Pose(63.000, 7.500), new Pose(63.000, 20.0)
                     )
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 

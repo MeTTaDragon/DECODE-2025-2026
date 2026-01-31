@@ -47,13 +47,13 @@ public class BlueClose12ball extends CommandOpMode {
 
         // Path 2
         path2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(62.000, 84.000), new Pose(24.000, 84.000)))
+                .addPath(new BezierLine(new Pose(62.000, 84.000), new Pose(21.000, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 3
         path3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(24.000, 84.000), new Pose(62.000, 84.000)))
+                .addPath(new BezierLine(new Pose(21.000, 84.000), new Pose(62.000, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 

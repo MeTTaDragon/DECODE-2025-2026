@@ -49,6 +49,7 @@ public class RedFarHumanBalls extends CommandOpMode {
         public PathChain Path1;
         public PathChain Path2;
         public PathChain Path3;
+        public PathChain Path4;
 
         public Paths(Follower follower) {
             Path0 = follower.pathBuilder().addPath(
@@ -61,12 +62,11 @@ public class RedFarHumanBalls extends CommandOpMode {
             // Blue Control: (61.854, 36.305) -> Red X: 144-61.854 = 82.146
             // Blue End: (21, 37.5) -> Red X: 144-21 = 123
             Path1 = follower.pathBuilder().addPath(
-                            new BezierCurve(
+                            new BezierLine(
                                     new Pose(81.000, 20),
-                                    new Pose(82.146, 36.305),
-                                    new Pose(123.000, 37.5)
+                                    new Pose(137, 22)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
                     .build();
 
             // Path 2: Return to Shoot
@@ -74,23 +74,33 @@ public class RedFarHumanBalls extends CommandOpMode {
             // Blue End: (63, 7.5) -> Red X: 81
             Path2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(123.000, 37.5),
-                                    new Pose(81.000, 20.000)
+                                    new Pose(137, 22),
+                                    new Pose(137, 10.000)
                             )
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setConstantHeadingInterpolation(Math.toRadians(-90))
+                    .build();
+
+            Path3 = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(137, 10.000),
+                                    new Pose(81, 20.000)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0))
                     .build();
 
             // Path 3: Park
             // Blue Start: (65, 9) -> Red X: 144-65 = 79
             // Blue End: (35, 10) -> Red X: 144-35 = 109
-            Path3 = follower.pathBuilder().addPath(
+            Path4 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(81.000, 20.000),
                                     new Pose(109.000, 20.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
                     .build();
+
+
         }
     }
 
@@ -185,22 +195,24 @@ public class RedFarHumanBalls extends CommandOpMode {
                 intakeState(Intake.IntakeState.REVERSE),
                 new FollowPathCommand(follower, paths.Path1),
                 savePoseCommand(),
-
-                // 3. Intake On for 1.8 seconds (Wait 700ms then idle per blue code)
-                new WaitCommand(700),
-                intakeState(Intake.IntakeState.IDLE),
-
-                // 4. Return to Shoot (Path 2)
                 new FollowPathCommand(follower, paths.Path2),
                 savePoseCommand(),
 
+                // 3. Intake On for 1.8 seconds
+                // Assuming FORWARD intakes from field
+                new WaitCommand(700),
+
+                // 4. Return to Shoot (Path 2)
+                new FollowPathCommand(follower, paths.Path3),
+                savePoseCommand(),
+                intakeState(Intake.IntakeState.IDLE),
                 // 5. Launch Second Shot
                 launchSequence(),
                 new WaitCommand(1800),
                 stopLaunchSequence(),
 
                 // 6. Park (Path 3)
-                new FollowPathCommand(follower, paths.Path3),
+                new FollowPathCommand(follower, paths.Path4),
                 savePoseCommand()
         );
 

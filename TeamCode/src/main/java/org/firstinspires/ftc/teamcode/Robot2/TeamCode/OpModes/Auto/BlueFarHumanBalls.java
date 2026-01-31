@@ -36,7 +36,7 @@ public class BlueFarHumanBalls extends CommandOpMode {
     private Follower follower;
 
     // Start Pose inferred from Path9: (65, 9) facing 90 degrees
-    private final Pose startPose = new Pose(63.000, 7.5, Math.toRadians(-90));
+    private final Pose startPose = new Pose(63.000, 7.5, Math.toRadians(180));
 
     private Paths paths;
 
@@ -46,11 +46,12 @@ public class BlueFarHumanBalls extends CommandOpMode {
         public PathChain Path1;
         public PathChain Path2;
         public PathChain Path3;
+        public PathChain Path4;
 
         public Paths(Follower follower) {
             Path0 = follower.pathBuilder().addPath(
                     new BezierLine(
-                            new Pose(65.000, 7.500), new Pose(63.000, 20.0)
+                            new Pose(63.000, 7.500), new Pose(63.000, 20.0)
                     )
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 
@@ -58,30 +59,37 @@ public class BlueFarHumanBalls extends CommandOpMode {
             Path1 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(63, 20),
-                                    new Pose(7, 32)
+                                    new Pose(7, 22)
+                            )
+                    )
+                    // Fixed 'undefined' to 90 degrees to maintain heading
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-90))
+                    .build();
+
+            Path2 = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(7, 22),
+                                    new Pose(7, 10)
                             )
                     )
                     // Fixed 'undefined' to 90 degrees to maintain heading
                     .setConstantHeadingInterpolation(Math.toRadians(-90))
                     .build();
 
-            Path2 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(7, 11),
-                                    new Pose(63.000, 20)
-                            )
-                    )
-                    // Fixed 'undefined' to 90 degrees to maintain heading
-                    .setConstantHeadingInterpolation(Math.toRadians(180))
-                    .build();
-
             Path3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(63.000, 20),
-                                    new Pose(35.000, 20.000)
+                                    new Pose(7, 10),
+                                    new Pose(63, 20.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(180))
                     .build();
+
+            Path4 = follower.pathBuilder().addPath(
+                    new BezierLine(
+                            new Pose(63, 20),
+                            new Pose(35, 20)
+                    )
+            ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
         }
     }
 
@@ -175,23 +183,24 @@ public class BlueFarHumanBalls extends CommandOpMode {
                 intakeState(Intake.IntakeState.REVERSE),
                 new FollowPathCommand(follower, paths.Path1),
                 savePoseCommand(),
+                new FollowPathCommand(follower, paths.Path2),
+                savePoseCommand(),
 
                 // 3. Intake On for 1.8 seconds
                 // Assuming FORWARD intakes from field
                 new WaitCommand(700),
-                intakeState(Intake.IntakeState.IDLE),
 
                 // 4. Return to Shoot (Path 2)
-                new FollowPathCommand(follower, paths.Path2),
+                new FollowPathCommand(follower, paths.Path3),
                 savePoseCommand(),
-
+                intakeState(Intake.IntakeState.IDLE),
                 // 5. Launch Second Shot
                 launchSequence(),
                 new WaitCommand(1800),
                 stopLaunchSequence(),
 
                 // 6. Park (Path 3)
-                new FollowPathCommand(follower, paths.Path3),
+                new FollowPathCommand(follower, paths.Path4),
                 savePoseCommand()
         );
 

@@ -49,7 +49,7 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder().addPath(
                     new BezierLine(new Pose(27.000, 126.534), new Pose(62.000, 84.000))
-            ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180)).build();
+            ).setConstantHeadingInterpolation( Math.toRadians(180)).build();
 
             Path2 = follower.pathBuilder().addPath(
                     new BezierLine(new Pose(62.000, 84.000), new Pose(21.000, 84.500))
