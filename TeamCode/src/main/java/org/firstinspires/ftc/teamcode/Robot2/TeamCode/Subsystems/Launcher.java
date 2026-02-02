@@ -29,12 +29,12 @@ public class Launcher extends SubsystemBase {
     Follower follower;
     private final Servo hoodServo;
     private final Servo stopper;
-    public static double farHoodPose = 0.1;
+    public static double farHoodPose = 0.25;
     public static double closeHoodPose = 0.28;
     public static double veryCloseHoodPose = 0.55;
     public static double middle_Y = 60;
-    public double targetvelocity_compensate = 0;
-    public static double stopperClose = 0.25;
+    public static double targetvelocity_compensate = 0;
+    public static double stopperClose = 0.3;
     public static double stopperOpen = 0.6;
 
 
@@ -54,6 +54,8 @@ public class Launcher extends SubsystemBase {
     public boolean Manual_shooting = false;
     public static double minPowerDiff = 0.0001;
     public static double lastPower = 0.0;
+
+    public static boolean useLimelight = true;
 
     private PIDFController launcherController;
 
@@ -248,22 +250,25 @@ public class Launcher extends SubsystemBase {
 
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
-            targetvelocity_compensate = 75;
+            //targetvelocity_compensate = 75;
         } else {
             if(getDistance() <=58 )
             {
                 setHoodPose(veryCloseHoodPose);
-                targetvelocity_compensate = 100;//cand e foarte aproape da ft incet
+                //targetvelocity_compensate = 100;//cand e foarte aproape da ft incet
             } else{
                 setHoodPose(closeHoodPose);
-                targetvelocity_compensate = 25;
+                //targetvelocity_compensate = 25;
             }
 
         }
 
         //completeaza cu functia de distanta
-        if(!currentLauncherState.equals(LauncherState.IDLE)) {
+        if(!currentLauncherState.equals(LauncherState.IDLE) && !useLimelight) {
             targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + targetvelocity_compensate; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda -> OK, mersi!-Dragos
+        }
+        else if(!currentLauncherState.equals(LauncherState.IDLE) && useLimelight){
+            targetVelocity = Math.pow(llta, -0.1772) * 1682.163 + targetvelocity_compensate;
         }
     }
 }

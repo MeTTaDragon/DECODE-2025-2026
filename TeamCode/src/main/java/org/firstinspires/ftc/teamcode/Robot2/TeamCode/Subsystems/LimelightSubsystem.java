@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -16,6 +17,7 @@ import java.util.List;
 public class LimelightSubsystem extends SubsystemBase {
     private Limelight3A limelight;
     private IMU imu;
+    Follower follower;
 
     private LLResult result;
 
@@ -39,13 +41,9 @@ public class LimelightSubsystem extends SubsystemBase {
     }
     private static LimelightMode currentMode;
 
-    public LimelightSubsystem(HardwareMap hwMap) {
+    public LimelightSubsystem(HardwareMap hwMap, Follower follower) {
         limelight = hwMap.get(Limelight3A.class, "limelight");
-
-        // FIX: Initialize the servo to prevent NullPointerException
-
-        // TODO: Uncomment this if you want to use MegaTag2D
-        // imu = hwMap.get(IMU.class, "imu");
+        this.follower = follower;
 
         limelight.setPollRateHz(50);
     }
@@ -97,9 +95,9 @@ public class LimelightSubsystem extends SubsystemBase {
             llta = ta;
         } else {
             // Optional: Reset values if no target is found to prevent ghost data
-            lltx = 0;
-            llty = 0;
-            llta = 0;
+//            lltx = 0;
+//            llty = 0;
+//            llta = 0;
         }
     }
 
@@ -107,9 +105,9 @@ public class LimelightSubsystem extends SubsystemBase {
 
     public void MegaTag2D() {
         // Added safety check for IMU
-        if (imu == null) return;
+        if (follower == null) return;
 
-        double robotYaw = imu.getRobotYawPitchRollAngles().getYaw();
+        double robotYaw = follower.getHeading();
         limelight.updateRobotOrientation(robotYaw);
         if (result != null && result.isValid()) {
             Pose3D botpose_mt2 = result.getBotpose_MT2();
@@ -117,6 +115,13 @@ public class LimelightSubsystem extends SubsystemBase {
                 robotCoordsX = botpose_mt2.getPosition().x;
                 robotCoordsY = botpose_mt2.getPosition().y;
                 robotCoordsZ = botpose_mt2.getPosition().z;
+
+                llRx = robotCoordsX;
+                llRy = robotCoordsY;
+            }
+            else {
+//                llRx = 0;
+//                llRy = 0;
             }
         }
     }
@@ -157,6 +162,6 @@ public class LimelightSubsystem extends SubsystemBase {
         getBasicResults();
 
         // 3. Update pose if needed (Optional, only if IMU is active)
-        // MegaTag2D();
+        MegaTag2D();
     }
 }

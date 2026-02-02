@@ -176,7 +176,7 @@ public class RedFarHumanBalls extends CommandOpMode {
         turret = new Turret(hardwareMap, follower);
         launcher = new Launcher(hardwareMap, follower);
         intake = new Intake(hardwareMap);
-        limelight = new LimelightSubsystem(hardwareMap);
+        limelight = new LimelightSubsystem(hardwareMap, follower);
 
         register(turret, launcher, intake, limelight);
 

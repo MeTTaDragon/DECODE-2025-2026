@@ -98,7 +98,7 @@ public class TeleOpMain extends CommandOpMode {
         turret = new Turret(hardwareMap, follower);
         launcher = new Launcher(hardwareMap, follower);
         intake = new Intake(hardwareMap);
-        limelight = new LimelightSubsystem(hardwareMap);
+        limelight = new LimelightSubsystem(hardwareMap, follower);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         //telemetry.setMsTransmissionInterval(250);
@@ -132,11 +132,10 @@ public class TeleOpMain extends CommandOpMode {
         );
         //scade velocity
         controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new InstantCommand(() -> veltarget-=25)
+                new InstantCommand(() -> launcher.useLimelight = false)
         );
-        //creste velocity
         controller.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
-                new InstantCommand(() -> veltarget+=25)
+                new InstantCommand(() -> launcher.useLimelight = true)
         );
         //open stopper
         controller.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
@@ -156,15 +155,13 @@ public class TeleOpMain extends CommandOpMode {
 
         leftTrigger.whileActiveOnce(
                 new SequentialCommandGroup(
-                        new InstantCommand(() -> {
-                            launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING);
-                            turret.setTurretState(Turret.TurretState.FULL_PINPOINT);
-                        }),
-                        new WaitUntilCommand(() -> launcher.isVelocityReached()),
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET)),
-                                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT))
+                                new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
+                                new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
+                                new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
                         ),
+                        new WaitUntilCommand(() -> launcher.isVelocityReached()),
+                        new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
                         new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
                         new WaitCommand(500),
                         new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
@@ -315,14 +312,15 @@ public class TeleOpMain extends CommandOpMode {
 
         telemetry.addData("Current velocity", launcher.getVelocity());
         telemetry.addData("Target velocity", launcher.getTargetVelocity());
-        telemetry.addData("Robot X", follower.getPose().getX());
-        telemetry.addData("Robot Y", follower.getPose().getY());
-        telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));
-        telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
-        telemetry.addData("turret target heading", Math.toDegrees(turret.getTargetHeading()));
+//        telemetry.addData("Robot X", follower.getPose().getX());
+//        telemetry.addData("Robot Y", follower.getPose().getY());
+//        telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));
+//        telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
+//        telemetry.addData("turret target heading", Math.toDegrees(turret.getTargetHeading()));
         telemetry.addData("distance", launcher.getDistance());
-        telemetry.addData("alliance", alliance);
+//        telemetry.addData("alliance", alliance);
         telemetry.addData("limelight mode", limelight.getCurrentMode());
+        telemetry.addData("llta", llta);
         telemetry.addData("tx", lltx);
         telemetry.addData("ty", llty);
 

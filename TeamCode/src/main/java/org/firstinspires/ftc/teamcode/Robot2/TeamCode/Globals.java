@@ -13,6 +13,8 @@ public class Globals {
     public static double lltx;
     public static double llty;
     public static double llta;
+    public static double llRx;
+    public static double llRy;
     public static double llpower;
 
     public static Alliance alliance = Alliance.RED;
