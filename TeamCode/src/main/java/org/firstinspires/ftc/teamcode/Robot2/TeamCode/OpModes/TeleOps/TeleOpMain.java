@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.OpModes.TeleOps;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -34,13 +33,19 @@ import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperOpen;
 
 import java.util.List;
+
 @Config
 @TeleOp(name = "TeleOp Main Robo2", group = "Main")
 public class TeleOpMain extends CommandOpMode {
-    private static double veltarget =1940;
+    private static double veltarget = 1940;
     public static double ledcolor = 0.278;
     GamepadEx controller;
 
+    // --- Robot Dimensions & LED Constants ---
+    private final double ROBOT_WIDTH = 17.32;
+    private final double ROBOT_LENGTH = 13.4;
+    private final double LED_GREEN = 0.5;
+    private final double LED_WHITE = 1.0;
 
     // --- Triangle Zone Coordinates (PEDRO PATHING COORDINATES: 0-144 inches) ---
     // You must change these numbers to match the actual field triangles
@@ -68,10 +73,8 @@ public class TeleOpMain extends CommandOpMode {
     ElapsedTime timer;
     Gamepad.RumbleEffect customRumbleEffect;
     boolean rumbled = false;
-    private static double totallooptime=0;
-    private static double loops=0;
-
-
+    private static double totallooptime = 0;
+    private static double loops = 0;
 
     @Override
     public void initialize() {
@@ -105,8 +108,6 @@ public class TeleOpMain extends CommandOpMode {
 
         follower.startTeleopDrive(true);
 
-
-
         turret.setTurretState(Turret.TurretState.IDLE);
         limelight.init();
         launcher.init();
@@ -130,7 +131,7 @@ public class TeleOpMain extends CommandOpMode {
                     launcher.setHoodPose(closeHoodPose);
                 })
         );
-        //scade velocity
+
         controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
                 new InstantCommand(() -> launcher.useLimelight = false)
         );
@@ -147,8 +148,6 @@ public class TeleOpMain extends CommandOpMode {
                     launcher.setStopperPose(stopperClose);
                 })
         );
-
-
 
         Trigger rightTrigger = new Trigger(() -> gamepad1.right_trigger > 0.1);
         Trigger leftTrigger = new Trigger(() -> gamepad1.left_trigger > 0.1);
@@ -246,27 +245,28 @@ public class TeleOpMain extends CommandOpMode {
 
         register(turret, launcher, intake, limelight);
     }
+
     /**
-     * Updates the LED color based on Robot Position and Alliance
+     * Updates the LED color based on Robot Position (checking intersection of corners AND edges) and Alliance
      */
     public void updateLEDs() {
-        // Get current robot position from Pedro Pathing
         Pose currentPose = follower.getPose();
-        Pose2d robotPoint = new Pose2d(currentPose.getX(), currentPose.getY(), 0);
 
-        // Check if robot is inside either triangle
-        boolean inFront = isPointInTriangle(robotPoint, frontA, frontB, frontC);
-        boolean inBack  = isPointInTriangle(robotPoint, backA, backB, backC);
+        // Check intersection with Front Triangle (Robot touching or inside)
+        boolean touchingFront = isRobotTouchingTriangle(currentPose, frontA, frontB, frontC);
 
-        if (inFront || inBack) {
-            // Force WHITE if inside a launch triangle
-            ledShooter.setPosition(0.5);
+        // Check intersection with Back Triangle (Robot touching or inside)
+        boolean touchingBack = isRobotTouchingTriangle(currentPose, backA, backB, backC);
+
+        if (touchingFront || touchingBack) {
+            // If ANY part touches, turn GREEN
+            ledShooter.setPosition(LED_GREEN);
+        } else {
+            // Otherwise stay WHITE
+            ledShooter.setPosition(LED_WHITE);
         }
-        else{
-            ledShooter.setPosition(1);
-        }
 
-
+        // Alliance Color Logic
         if (alliance == Alliance.RED) {
             ledAlliance.setPosition(0.28);
         } else if (alliance == Alliance.BLUE) {
@@ -276,6 +276,126 @@ public class TeleOpMain extends CommandOpMode {
         }
     }
 
+    public void run() {
+        timer.reset();
+
+        /*if(alliance == Alliance.RED){
+            follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
+        } else{
+            follower.setTeleOpDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
+        }*/
+        follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        follower.update();
+
+        updateLEDs();
+
+        if ((follower.getPose().getX() < 0 || follower.getPose().getX() > 144 || follower.getPose().getY() < 0 || follower.getPose().getY() > 144) && !rumbled) {
+            rumbled = true;
+            gamepad1.runRumbleEffect(customRumbleEffect);
+        }
+
+        telemetry.addData("Current velocity", launcher.getVelocity());
+        telemetry.addData("Target velocity", launcher.getTargetVelocity());
+        telemetry.addData("Robot X", follower.getPose().getX());
+        telemetry.addData("Robot Y", follower.getPose().getY());
+        telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
+        telemetry.addData("turret target heading", Math.toDegrees(turret.getTargetHeading()));
+        telemetry.addData("distance", launcher.getDistance());
+        telemetry.addData("alliance", alliance);
+        telemetry.addData("limelight mode", limelight.getCurrentMode());
+        telemetry.addData("llta", llta);
+        telemetry.addData("tx", lltx);
+        telemetry.addData("ty", llty);
+
+        telemetry.addData("Loop Time", 1 / timer.seconds());
+        totallooptime += 1 / timer.seconds();
+        loops++;
+        telemetry.addData("Average Looptime", totallooptime / loops);
+
+        timer.reset();
+
+        super.run();
+        telemetry.update();
+        for (LynxModule hub : allHubs) {
+            hub.clearBulkCache();
+        }
+    }
+
+    // =========================================================================
+    // ====================== GEOMETRY HELPER METHODS ==========================
+    // =========================================================================
+
+    /**
+     * Master check: returns true if the Robot (Rectangle) overlaps with the Triangle
+     * Checks both corners inside triangle AND edges crossing triangle edges.
+     */
+    private boolean isRobotTouchingTriangle(Pose robotPose, Pose2d tA, Pose2d tB, Pose2d tC) {
+        // 1. Get the 4 corners of the robot
+        Pose2d[] robotCorners = getRobotCorners(robotPose);
+
+        // 2. Check if any Robot Corner is INSIDE the triangle
+        for (Pose2d corner : robotCorners) {
+            if (isPointInTriangle(corner, tA, tB, tC)) return true;
+        }
+
+        // 3. Check for Edge Intersections (The "Crossing" Case)
+        // Robot Edges: [0-1], [1-3], [3-2], [2-0] (Indices based on getRobotCorners)
+        // Triangle Edges: [A-B], [B-C], [C-A]
+
+        Pose2d[] triCorners = {tA, tB, tC};
+
+        // Indices for robot edges (0->1, 1->3, 3->2, 2->0)
+        // Note: My corner generation is FL, FR, BL, BR.
+        // So edges are: Front(0-1), Right(1-3), Back(3-2), Left(2-0).
+        int[] rIdx = {0, 1, 3, 2};
+
+        for (int i = 0; i < 4; i++) {
+            Pose2d r1 = robotCorners[rIdx[i]];
+            Pose2d r2 = robotCorners[rIdx[(i + 1) % 4]];
+
+            for (int j = 0; j < 3; j++) {
+                Pose2d t1 = triCorners[j];
+                Pose2d t2 = triCorners[(j + 1) % 3]; // Wrap around
+
+                if (doLinesIntersect(r1, r2, t1, t2)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Calculates the coordinates of the 4 robot corners based on current pose and dimensions.
+     */
+    private Pose2d[] getRobotCorners(Pose pose) {
+        Pose2d[] corners = new Pose2d[4];
+        double heading = pose.getHeading();
+        double x = pose.getX();
+        double y = pose.getY();
+
+        // Half dimensions
+        double dx = ROBOT_LENGTH / 2.0;
+        double dy = ROBOT_WIDTH / 2.0;
+
+        double cos = Math.cos(heading);
+        double sin = Math.sin(heading);
+
+        // Calculate 4 corners:
+        // 0: Front Left (+x, +y)
+        // 1: Front Right (+x, -y)
+        // 2: Back Left (-x, +y)
+        // 3: Back Right (-x, -y)
+
+        corners[0] = new Pose2d(x + (dx * cos - dy * sin), y + (dx * sin + dy * cos), 0);
+        corners[1] = new Pose2d(x + (dx * cos - (-dy) * sin), y + (dx * sin + (-dy) * cos), 0);
+        corners[2] = new Pose2d(x + (-dx * cos - dy * sin), y + (-dx * sin + dy * cos), 0);
+        corners[3] = new Pose2d(x + (-dx * cos - (-dy) * sin), y + (-dx * sin + (-dy) * cos), 0);
+
+        return corners;
+    }
 
     /**
      * Math Helper: Checks if point P is inside Triangle ABC
@@ -289,53 +409,43 @@ public class TeleOpMain extends CommandOpMode {
         return (w1 >= 0.0) && (w2 >= 0.0) && ((w1 + w2) <= 1.0);
     }
 
+    /**
+     * Checks if Line Segment (p1, q1) intersects Line Segment (p2, q2)
+     */
+    private boolean doLinesIntersect(Pose2d p1, Pose2d q1, Pose2d p2, Pose2d q2) {
+        int o1 = orientation(p1, q1, p2);
+        int o2 = orientation(p1, q1, q2);
+        int o3 = orientation(p2, q2, p1);
+        int o4 = orientation(p2, q2, q1);
 
-    public void run() {
-        timer.reset();
+        // General case
+        if (o1 != o2 && o3 != o4) return true;
 
-        /*if(alliance == Alliance.RED){
-            follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
-        } else{
-            follower.setTeleOpDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
-        }*/
-        follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
-        follower.update();
+        // Special Cases (collinear)
+        if (o1 == 0 && onSegment(p1, p2, q1)) return true;
+        if (o2 == 0 && onSegment(p1, q2, q1)) return true;
+        if (o3 == 0 && onSegment(p2, p1, q2)) return true;
+        if (o4 == 0 && onSegment(p2, q1, q2)) return true;
 
+        return false;
+    }
 
-        updateLEDs();
+    /**
+     * Helper to find orientation of ordered triplet (p, q, r).
+     * 0 = collinear, 1 = clockwise, 2 = counterclockwise
+     */
+    private int orientation(Pose2d p, Pose2d q, Pose2d r) {
+        double val = (q.getY() - p.getY()) * (r.getX() - q.getX()) -
+                (q.getX() - p.getX()) * (r.getY() - q.getY());
+        if (val == 0) return 0;
+        return (val > 0) ? 1 : 2;
+    }
 
-        if((follower.getPose().getX() < 0 || follower.getPose().getX() > 144 || follower.getPose().getY() < 0 || follower.getPose().getY() > 144) && !rumbled){
-            rumbled = true;
-            gamepad1.runRumbleEffect(customRumbleEffect);
-        }
-
-
-        telemetry.addData("Current velocity", launcher.getVelocity());
-        telemetry.addData("Target velocity", launcher.getTargetVelocity());
-//        telemetry.addData("Robot X", follower.getPose().getX());
-//        telemetry.addData("Robot Y", follower.getPose().getY());
-//        telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));
-//        telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
-//        telemetry.addData("turret target heading", Math.toDegrees(turret.getTargetHeading()));
-        telemetry.addData("distance", launcher.getDistance());
-//        telemetry.addData("alliance", alliance);
-        telemetry.addData("limelight mode", limelight.getCurrentMode());
-        telemetry.addData("llta", llta);
-        telemetry.addData("tx", lltx);
-        telemetry.addData("ty", llty);
-
-        telemetry.addData("Loop Time", 1/timer.seconds());
-        totallooptime+=1/timer.seconds();
-        loops++;
-        telemetry.addData("Average Looptime", totallooptime/loops);
-
-
-        timer.reset();
-
-        super.run();
-        telemetry.update();
-        for (LynxModule hub : allHubs) {
-            hub.clearBulkCache();
-        }
+    /**
+     * Helper to check if point q lies on segment pr
+     */
+    private boolean onSegment(Pose2d p, Pose2d q, Pose2d r) {
+        return q.getX() <= Math.max(p.getX(), r.getX()) && q.getX() >= Math.min(p.getX(), r.getX()) &&
+                q.getY() <= Math.max(p.getY(), r.getY()) && q.getY() >= Math.min(p.getY(), r.getY());
     }
 }
