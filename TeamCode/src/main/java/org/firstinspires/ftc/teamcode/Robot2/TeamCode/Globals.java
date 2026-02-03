@@ -17,6 +17,8 @@ public class Globals {
     public static double llRy;
     public static double llpower;
 
+    public static double imuHeading = 0;
+
     public static Alliance alliance = Alliance.RED;
     public static Pose lastAutoPose = new Pose(72, 7.5, Math.toRadians(90));
 

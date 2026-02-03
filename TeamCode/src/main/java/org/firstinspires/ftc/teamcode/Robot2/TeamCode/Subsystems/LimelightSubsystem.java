@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.FTCCoordinates;
+import com.pedropathing.geometry.PedroCoordinates;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -8,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
@@ -32,6 +36,8 @@ public class LimelightSubsystem extends SubsystemBase {
     static double robotCoordsZ;
     static int id;
 
+    Pose llPose;
+
 
     public enum LimelightMode {
         READ_PATTERN,
@@ -43,9 +49,10 @@ public class LimelightSubsystem extends SubsystemBase {
 
     public LimelightSubsystem(HardwareMap hwMap, Follower follower) {
         limelight = hwMap.get(Limelight3A.class, "limelight");
+        imu = hwMap.get(IMU.class, "imu");
         this.follower = follower;
 
-        limelight.setPollRateHz(50);
+        limelight.setPollRateHz(70);
     }
 
     public void init() {
@@ -107,17 +114,19 @@ public class LimelightSubsystem extends SubsystemBase {
         // Added safety check for IMU
         if (follower == null) return;
 
-        double robotYaw = follower.getHeading();
+        double robotYaw = Math.toDegrees(follower.getHeading());
+        //double robotYaw = imu.getRobotYawPitchRollAngles().getYaw();
         limelight.updateRobotOrientation(robotYaw);
         if (result != null && result.isValid()) {
             Pose3D botpose_mt2 = result.getBotpose_MT2();
             if (botpose_mt2 != null) {
-                robotCoordsX = botpose_mt2.getPosition().x;
-                robotCoordsY = botpose_mt2.getPosition().y;
-                robotCoordsZ = botpose_mt2.getPosition().z;
+                robotCoordsX = botpose_mt2.getPosition().toUnit(DistanceUnit.INCH).x;
+                robotCoordsY = botpose_mt2.getPosition().toUnit(DistanceUnit.INCH).y;
 
-                llRx = robotCoordsX;
-                llRy = robotCoordsY;
+                llPose = new Pose(robotCoordsX, robotCoordsY, robotYaw, FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE);
+
+                llRx = llPose.getX();
+                llRy = llPose.getY();
             }
             else {
 //                llRx = 0;
