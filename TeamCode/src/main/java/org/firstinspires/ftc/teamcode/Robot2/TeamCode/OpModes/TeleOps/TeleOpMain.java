@@ -155,15 +155,15 @@ public class TeleOpMain extends CommandOpMode {
         leftTrigger.whileActiveOnce(
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
-                                new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING))
-                                //new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
-                                //new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
-                        )
-//                        new WaitUntilCommand(() -> launcher.isVelocityReached()),
-//                        new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
-//                        new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
-//                        new WaitCommand(500),
-//                        new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
+                                new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
+                                new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
+                                new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
+                        ),
+                        new WaitUntilCommand(() -> launcher.isVelocityReached()),
+                        new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
+                        new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
+                        new WaitCommand(500),
+                        new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
                 )
         );
         leftTrigger.whenInactive(

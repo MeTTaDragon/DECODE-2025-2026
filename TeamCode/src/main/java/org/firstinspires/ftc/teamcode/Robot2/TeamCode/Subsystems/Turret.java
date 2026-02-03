@@ -34,7 +34,7 @@ public class Turret extends SubsystemBase {
     // Note: Since we are using Radians, the error is small (e.g., 0.5 rads).
     // You might need a higher P than 0.35 if it's sluggish.
     // Try P = 0.8 or higher if it doesn't move fast enough.
-    public static double P = 1.1, I = 0, D = 0.03, F = 0;
+    public static double P = 0.9, I = 0, D = 0.03, F = 0;
 
     // Hardware Constants
     double gearRatio = 5.75;
