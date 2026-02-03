@@ -24,7 +24,6 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
-@Autonomous(name = "Blue Far 6 Balls", group = "Auto")
 public class BlueFar6Balls extends CommandOpMode {
     Intake intake;
     Launcher launcher;

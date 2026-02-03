@@ -24,7 +24,6 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
-@Autonomous(name = "Red close 12 ball-open gate after preload", group = "Auto")
 public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
     Intake intake;
     Launcher launcher;
