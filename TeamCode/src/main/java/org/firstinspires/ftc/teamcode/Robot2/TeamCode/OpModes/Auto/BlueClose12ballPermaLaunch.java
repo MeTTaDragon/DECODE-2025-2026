@@ -68,7 +68,7 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
 
         // Path 4
         path4 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(73.000, 55.000), new Pose(23.000, 58.000)))
+                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(73.000, 55.000), new Pose(25.000, 58.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
@@ -139,7 +139,7 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
                 // Release the stopper
                 setStopperPose(stopperOpen),
                 // Wait for stopper to clear
-                new WaitCommand(500),
+                new WaitCommand(800),
                 // Feed the balls
                 intakeState(Intake.IntakeState.REVERSE)
         );
@@ -205,14 +205,14 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
                 new FollowPathCommand(follower, path3),
                 savePoseCommand(),
                 launchSequence(),
-                new WaitCommand(1800),
+                new WaitCommand(500),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
                 new FollowPathCommand(follower, path4),
                 savePoseCommand(),
                 new WaitCommand(500),
-                //intakeState(Intake.IntakeState.IDLE),
+                intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path4_1),
                 savePoseCommand(),
@@ -221,19 +221,19 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
                 new FollowPathCommand(follower, path5),
                 savePoseCommand(),
                 launchSequence(),
-                new WaitCommand(1800),
+                new WaitCommand(700),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
                 new FollowPathCommand(follower, path6),
                 savePoseCommand(),
-                new WaitCommand(1800),
-                //intakeState(Intake.IntakeState.IDLE),
+                new WaitCommand(500),
+                intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path7, 0.9),
                 savePoseCommand(),
                 launchSequence(),
-                new WaitCommand(1800),
+                new WaitCommand(500),
                 stopLaunchSequence(),
 
                 new FollowPathCommand(follower, path8, 0.9),
