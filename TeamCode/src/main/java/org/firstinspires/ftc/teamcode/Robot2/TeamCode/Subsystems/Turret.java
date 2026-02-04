@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -27,15 +28,14 @@ public class Turret extends SubsystemBase {
     double power;
 
 
-
     double targetHeading;
 
     // PID Coefficients
     // Note: Since we are using Radians, the error is small (e.g., 0.5 rads).
     // You might need a higher P than 0.35 if it's sluggish.
     // Try P = 0.8 or higher if it doesn't move fast enough.
-    public static double P = 0.9, I = 0, D = 0.03, F = 0;
-
+    public static double P = 0.09, I = 0, D = 0.001, F = 0.8;
+    public static double ll_P = 0.09, ll_I = 0, ll_D = 0, ll_F = 0.8;
     // Hardware Constants
     double gearRatio = 5.75;
     double TicksPerRev = 145.1; // Motor internal PPR
@@ -54,6 +54,7 @@ public class Turret extends SubsystemBase {
         // CHECK THIS: Ensure Positive Power = Counter-Clockwise rotation
         motorTureta.setDirection(DcMotorSimple.Direction.REVERSE);
         motorTureta.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        motorTureta.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         turretController = new PIDFController(P, I, D, F);
 
@@ -62,6 +63,8 @@ public class Turret extends SubsystemBase {
         follower = flwr;
 
         targetGoalPose = new Pose2d(this.goalPose.getX(), this.goalPose.getY(), 0);
+
+        turretController.setTolerance(0);
     }
 
     public void setTurretState(TurretState state) {
@@ -75,19 +78,29 @@ public class Turret extends SubsystemBase {
         return power;}
 
     void update() {
-        // Update PID coefficients from Dashboard
-        turretController.setPIDF(P, I, D, F);
+
 
         switch (currentTurretState){
             case IDLE:
+                turretController.setPIDF(0.8, 0, 0.003, 0);
+                lltx = 0;
+                llty = 0;
+                llta = 0;
                 power = turretController.calculate(getTurretHeading(), 0);
                 motorTureta.setPower(power);
                 break;
 
             case FULL_LIMELIGHT:
-                turretController.setSetPoint(0);
+                if(lltx < 5){
+                    turretController.setPIDF(0,0,0,1.5);
+                }
+                else{
+                    turretController.setPIDF(ll_P, ll_I, ll_D, ll_F);
+                }
 
-                power = turretController.calculate(Math.toRadians(lltx));
+                turretController.setSetPoint(Math.toRadians(-lltx));
+
+                power = turretController.calculate(0);
 
                 if(turretController.atSetPoint()){
                     motorTureta.setPower(0);
@@ -99,6 +112,7 @@ public class Turret extends SubsystemBase {
                 break;
 
             case FULL_PINPOINT:
+                turretController.setPIDF(P, I, D, F);
                 // 1. Get Robot Position & Heading from Pedro
                 Pose robotPose = follower.getPose();
 

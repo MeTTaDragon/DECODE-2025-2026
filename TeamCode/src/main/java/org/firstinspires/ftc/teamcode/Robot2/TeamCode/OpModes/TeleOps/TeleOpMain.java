@@ -209,7 +209,7 @@ public class TeleOpMain extends CommandOpMode {
                     turret.setTurretState(Turret.TurretState.IDLE);
                     launcher.setStopperPose(stopperClose);
                     launcher.stop();
-                    limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
+                    limelight.setMode(LimelightSubsystem.LimelightMode.PAUSE);
                     intake.setIntakeState(Intake.IntakeState.IDLE);
                 })
         );
