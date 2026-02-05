@@ -209,7 +209,7 @@ public class TeleOpMain extends CommandOpMode {
                     turret.setTurretState(Turret.TurretState.IDLE);
                     launcher.setStopperPose(stopperClose);
                     launcher.stop();
-                    limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
+                    limelight.setMode(LimelightSubsystem.LimelightMode.PAUSE);
                     intake.setIntakeState(Intake.IntakeState.IDLE);
                 })
         );
@@ -304,9 +304,12 @@ public class TeleOpMain extends CommandOpMode {
         telemetry.addData("distance", launcher.getDistance());
         telemetry.addData("alliance", alliance);
         telemetry.addData("limelight mode", limelight.getCurrentMode());
-        telemetry.addData("llta", llta);
+        telemetry.addData("ta", llta);
         telemetry.addData("tx", lltx);
         telemetry.addData("ty", llty);
+        telemetry.addData("llRx", llRx);
+        telemetry.addData("llRy", llRy);
+        telemetry.addData("imu heading", imuHeading);
 
         telemetry.addData("Loop Time", 1 / timer.seconds());
         totallooptime += 1 / timer.seconds();

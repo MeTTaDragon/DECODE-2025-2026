@@ -88,9 +88,9 @@ public class Constants {
             0.1,
             0.009,
             50,
-            1.1,
+            0.9,
             10,
-            0.9
+            1.1
     );
 
     //Add custom localizers or drivetrains here

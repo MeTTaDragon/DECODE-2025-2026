@@ -131,14 +131,12 @@ public class Launcher extends SubsystemBase {
 
     void updateLauncherState(){
 
-        launcherController.setPIDF(P, I, D, F);
 
         switch (currentLauncherState){
             case IDLE:
-                if(lastPower != 0){
+                if(targetVelocity != 0){
                     setTargetVelocity(0);
                     setManualVelocity(0);
-                    lastPower = 0;
                 }
 
                 break;
@@ -159,11 +157,9 @@ public class Launcher extends SubsystemBase {
 
                 // 5. APPLY the SAME calculated power to BOTH motors
                 // This ensures they stay synced, driven by motorDreapta's encoder data.
-                if(abs(power - lastPower) >= minPowerDiff){
-                    masterMotor.setPower(power);
-                    followerMotor.setPower(power);
-                    lastPower = power;
-                }
+
+                masterMotor.setPower(power);
+                followerMotor.setPower(power);
 
                 break;
         }
@@ -197,8 +193,8 @@ public class Launcher extends SubsystemBase {
      * Sets the target velocity for the flywheel in Ticks Per Second.
      */
     public void setManualVelocity(double velocity) {
-        masterMotor.setVelocity(velocity);
-        followerMotor.setVelocity(velocity);
+        masterMotor.setPower(velocity);
+        followerMotor.setPower(velocity);
     }
 
     public double getTargetVelocity(){
@@ -233,7 +229,7 @@ public class Launcher extends SubsystemBase {
     }
 
     public boolean isVelocityReached() {
-        return getVelocity() > targetVelocity - 100;
+        return getVelocity() > targetVelocity - 50;
     }
 
     public boolean isStopperOpen(){
@@ -268,7 +264,7 @@ public class Launcher extends SubsystemBase {
             targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + targetvelocity_compensate; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda -> OK, mersi!-Dragos
         }
         else if(!currentLauncherState.equals(LauncherState.IDLE) && useLimelight){
-            targetVelocity = Math.pow(llta, -0.1772) * 1682.163 + targetvelocity_compensate;
+            targetVelocity = Math.pow(llta, -0.1870895) * 1654.104 + targetvelocity_compensate;
         }
     }
 }
