@@ -48,11 +48,11 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
 
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(27.000, 126.534), new Pose(62.000, 84.000))
+                    new BezierLine(new Pose(27.000, 126.534), new Pose(55, 84.000))
             ).setConstantHeadingInterpolation( Math.toRadians(180)).build();
 
             Path2 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(62.000, 84.000), new Pose(21.000, 84.500))
+                    new BezierLine(new Pose(55, 84.000), new Pose(21.000, 84.500))
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 
             Path3 = follower.pathBuilder().addPath(
@@ -60,27 +60,27 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 
             Path4 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(15, 70), new Pose(62.000, 84.000))
+                    new BezierLine(new Pose(15, 70), new Pose(55, 84.000))
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 
             Path5 = follower.pathBuilder().addPath(
-                    new BezierCurve(new Pose(62.000, 84.000), new Pose(62.000, 57.000), new Pose(20, 59))
+                    new BezierCurve(new Pose(55, 84.000), new Pose(55, 57.000), new Pose(20, 59))
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 
             Path6 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(20, 59), new Pose(62.000, 84.000))
+                    new BezierLine(new Pose(20, 59), new Pose(55, 84.000))
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 
             Path7 = follower.pathBuilder().addPath(
-                    new BezierCurve(new Pose(62.000, 84.000), new Pose(62.000, 32.000), new Pose(21.000, 35.000))
+                    new BezierCurve(new Pose(55, 84.000), new Pose(55, 32.000), new Pose(21.000, 35.000))
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 
             Path8 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(21.000, 35.000), new Pose(62.000, 84.000))
+                    new BezierLine(new Pose(21.000, 35.000), new Pose(55, 84.000))
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 
             Path9 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(62.000, 84.000), new Pose(21.000, 84.000))
+                    new BezierLine(new Pose(55, 84.000), new Pose(21.000, 84.000))
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
         }
     }
@@ -109,22 +109,16 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
     // --- Sequences ---
     private Command launchSequence() {
         return new SequentialCommandGroup(
-                // Spin up launcher and aim turret simultaneously
                 new ParallelCommandGroup(
-                        setLauncherState(Launcher.LauncherState.SHOOTING),
-                        setTurretState(Turret.TurretState.FULL_PINPOINT)
+                        new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
+                        new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
+                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
                 ),
-                // Wait for flywheel velocity
                 new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                // Targeting
-                setLimelightMode(LimelightSubsystem.LimelightMode.BASKET),
-                setTurretState(Turret.TurretState.FULL_LIMELIGHT),
-                // Release the stopper
-                setStopperPose(stopperOpen),
-                // Wait for stopper to clear
+                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
+                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
                 new WaitCommand(500),
-                // Feed the balls
-                intakeState(Intake.IntakeState.REVERSE)
+                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
         );
     }
 

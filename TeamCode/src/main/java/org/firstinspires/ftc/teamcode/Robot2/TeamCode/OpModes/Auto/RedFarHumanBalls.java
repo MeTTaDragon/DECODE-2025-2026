@@ -128,22 +128,16 @@ public class RedFarHumanBalls extends CommandOpMode {
     // --- Sequences ---
     private Command launchSequence() {
         return new SequentialCommandGroup(
-                // Spin up launcher and aim turret
                 new ParallelCommandGroup(
-                        setLauncherState(Launcher.LauncherState.SHOOTING),
-                        setTurretState(Turret.TurretState.FULL_PINPOINT)
+                        new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
+                        new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
+                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
                 ),
-                // Wait for flywheel velocity
                 new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                // Targeting
-                setLimelightMode(LimelightSubsystem.LimelightMode.BASKET),
-                setTurretState(Turret.TurretState.FULL_LIMELIGHT),
-                // Release the stopper
-                setStopperPose(stopperOpen),
-                // Wait for stopper to clear
+                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
+                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
                 new WaitCommand(500),
-                // Feed the balls
-                intakeState(Intake.IntakeState.REVERSE)
+                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
         );
     }
 

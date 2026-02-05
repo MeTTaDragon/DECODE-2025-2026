@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsys
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperOpen;
 
 @Autonomous(name = "Red close 12 ball-open gate after preload", group = "Auto")
 public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
@@ -55,14 +56,14 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
             // Blue: (27, 126.5) -> (62, 84)
             // Red X: 144-27=117 -> 144-62=82. Y stays same.
             Path1 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(117.000, 126.534), new Pose(82.000, 84.000))
+                    new BezierLine(new Pose(117.000, 126.534), new Pose(88.000, 84.000))
             ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
             // Path 2: Back off for approach
             // Blue: (62, 84) -> (21, 84.5)
             // Red X: 144-62=82 -> 144-21=123.
             Path2 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(82.000, 84.000), new Pose(123.000, 84.500))
+                    new BezierLine(new Pose(88.000, 84.000), new Pose(123.000, 84.500))
             ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
             // Path 3: Curve to Intake Sample 1
@@ -75,37 +76,37 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
             // Path 4: Go to Score Sample 1
             // Red End X: 144-62=82
             Path4 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(129.000, 71.000), new Pose(82.000, 84.000))
+                    new BezierLine(new Pose(129.000, 71.000), new Pose(88.000, 84.000))
             ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
             // Path 5: Curve to Intake Sample 2
             // Blue Control: (62, 57) -> Red X: 144-62=82
             // Blue End: (20, 59) -> Red X: 144-20=124
             Path5 = follower.pathBuilder().addPath(
-                    new BezierCurve(new Pose(82.000, 84.000), new Pose(82.000, 57.000), new Pose(124.000, 59.000))
+                    new BezierCurve(new Pose(88.000, 84.000), new Pose(88.000, 57.000), new Pose(124.000, 59.000))
             ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
             // Path 6: Go to Score Sample 2
             Path6 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(124.000, 59.000), new Pose(82.000, 84.000))
+                    new BezierLine(new Pose(124.000, 59.000), new Pose(88.000, 84.000))
             ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
             // Path 7: Curve to Intake Sample 3
             // Blue Control: (62, 32) -> Red X: 144-62=82
             // Blue End: (21, 35) -> Red X: 144-21=123
             Path7 = follower.pathBuilder().addPath(
-                    new BezierCurve(new Pose(82.000, 84.000), new Pose(82.000, 32.000), new Pose(123.000, 35.000))
+                    new BezierCurve(new Pose(88.000, 84.000), new Pose(88.000, 32.000), new Pose(123.000, 35.000))
             ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
             // Path 8: Go to Score Sample 3
             Path8 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(123.000, 35.000), new Pose(82.000, 84.000))
+                    new BezierLine(new Pose(123.000, 35.000), new Pose(88.000, 84.000))
             ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
             // Path 9: Park
             // Blue End: (21, 84) -> Red X: 144-21=123
             Path9 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(82.000, 84.000), new Pose(123.000, 84.000))
+                    new BezierLine(new Pose(88.000, 84.000), new Pose(123.000, 84.000))
             ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
         }
     }
@@ -134,22 +135,16 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
     // --- Sequences ---
     private Command launchSequence() {
         return new SequentialCommandGroup(
-                // Spin up launcher and aim turret simultaneously
                 new ParallelCommandGroup(
-                        setLauncherState(Launcher.LauncherState.SHOOTING),
-                        setTurretState(Turret.TurretState.FULL_PINPOINT)
+                        new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
+                        new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
+                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
                 ),
-                // Wait for flywheel velocity
                 new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                // Targeting
-                setLimelightMode(LimelightSubsystem.LimelightMode.BASKET),
-                setTurretState(Turret.TurretState.FULL_LIMELIGHT),
-                // Release the stopper
-                setStopperPose(stopperOpen),
-                // Wait for stopper to clear
+                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
+                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
                 new WaitCommand(500),
-                // Feed the balls
-                intakeState(Intake.IntakeState.REVERSE)
+                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
         );
     }
 

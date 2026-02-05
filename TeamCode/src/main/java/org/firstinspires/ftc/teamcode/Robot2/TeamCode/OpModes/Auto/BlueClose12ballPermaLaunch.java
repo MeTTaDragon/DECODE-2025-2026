@@ -50,25 +50,25 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
     public void buildPaths() {
         // Path 1
         path1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(27.000, 126.534), new Pose(62.000, 84.000)))
+                .addPath(new BezierLine(new Pose(27.000, 126.534), new Pose(55, 84.000)))
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
         // Path 2
         path2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(62.000, 84.000), new Pose(21.000, 84.000)))
+                .addPath(new BezierLine(new Pose(55, 84.000), new Pose(21.000, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 3
         path3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(21.000, 84.000), new Pose(62.000, 84.000)))
+                .addPath(new BezierLine(new Pose(21.000, 84.000), new Pose(55, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 4
         path4 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(73.000, 55.000), new Pose(25.000, 58.000)))
+                .addPath(new BezierCurve(new Pose(55, 84.000), new Pose(73.000, 55.000), new Pose(25.000, 58.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
@@ -79,25 +79,25 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
 
         // Path 5
         path5 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(17, 69), new Pose(62.000, 84.000)))
+                .addPath(new BezierLine(new Pose(17, 69), new Pose(55, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 6
         path6 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(62.000, 84.000), new Pose(72.000, 32.000), new Pose(23.000, 35.000)))
+                .addPath(new BezierCurve(new Pose(55, 84.000), new Pose(72.000, 32.000), new Pose(23.000, 35.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 7
         path7 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(23.000, 35.000), new Pose(62.000, 84.000)))
+                .addPath(new BezierLine(new Pose(23.000, 35.000), new Pose(55, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 8
         path8 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(62.000, 84.000), new Pose(32.854, 82.732)))
+                .addPath(new BezierLine(new Pose(55, 84.000), new Pose(32.854, 82.732)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
     }
@@ -204,6 +204,7 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
 
                 new FollowPathCommand(follower, path3),
                 savePoseCommand(),
+                new WaitCommand(300),
                 launchSequence(),
                 new WaitCommand(500),
                 stopLaunchSequence(),
@@ -220,6 +221,7 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
 
                 new FollowPathCommand(follower, path5),
                 savePoseCommand(),
+                new WaitCommand(300),
                 launchSequence(),
                 new WaitCommand(700),
                 stopLaunchSequence(),
@@ -232,6 +234,7 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
 
                 new FollowPathCommand(follower, path7, 0.9),
                 savePoseCommand(),
+                new WaitCommand(300),
                 launchSequence(),
                 new WaitCommand(500),
                 stopLaunchSequence(),

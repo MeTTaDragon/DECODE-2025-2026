@@ -310,6 +310,8 @@ public class TeleOpMain extends CommandOpMode {
         telemetry.addData("llRx", llRx);
         telemetry.addData("llRy", llRy);
         telemetry.addData("imu heading", imuHeading);
+        telemetry.addData("Intake Target Vel " , intake.getTargetVelocity());
+        telemetry.addData("Intake Current Vel " , intake.getCurrentVelocity());
 
         telemetry.addData("Loop Time", 1 / timer.seconds());
         totallooptime += 1 / timer.seconds();
