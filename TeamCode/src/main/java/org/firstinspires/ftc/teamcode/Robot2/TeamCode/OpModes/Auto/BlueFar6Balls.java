@@ -66,7 +66,7 @@ public class BlueFar6Balls extends CommandOpMode {
             Path2 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(21.000, 37.5),
-                                    new Pose(63.000, 20)
+                                    new Pose(54, 10)
                             )
                     )
                     // Fixed 'undefined' to 90 degrees to maintain heading
@@ -75,7 +75,7 @@ public class BlueFar6Balls extends CommandOpMode {
 
             Path3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(63.000, 20),
+                                    new Pose(54, 10),
                                     new Pose(35.000, 20.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
@@ -114,8 +114,8 @@ public class BlueFar6Balls extends CommandOpMode {
                 ),
                 new WaitUntilCommand(() -> launcher.isVelocityReached()),
                 new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
-                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
-                new WaitCommand(500),
+                new InstantCommand(() -> launcher.setStopperPose(Launcher.stopperOpen)),
+                new WaitCommand(650),
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
         );
     }
@@ -124,8 +124,9 @@ public class BlueFar6Balls extends CommandOpMode {
         return new ParallelCommandGroup(
                 new InstantCommand(() -> {
                     launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
-                    launcher.setStopperPose(stopperClose);
+                    launcher.setStopperPose(Launcher.stopperClose);
                 }, launcher),
+
                 setTurretState(Turret.TurretState.IDLE),
                 intakeState(Intake.IntakeState.IDLE),
                 setLimelightMode(LimelightSubsystem.LimelightMode.PAUSE)

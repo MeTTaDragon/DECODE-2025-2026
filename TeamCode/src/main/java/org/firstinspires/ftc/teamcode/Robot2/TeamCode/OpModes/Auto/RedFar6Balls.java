@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
-@Autonomous(name = "Red Far 6 Balls", group = "Auto")
+@Autonomous(name = "Red Far 6 Balls", group = "Auto red")
 public class RedFar6Balls extends CommandOpMode {
     Intake intake;
     Launcher launcher;
@@ -39,7 +39,7 @@ public class RedFar6Balls extends CommandOpMode {
     // Blue X: 65.000 -> Red X: 144 - 65 = 79.000
     // Y remains 7.5
     // Heading 180 (Left) -> 0 (Right)
-    private final Pose startPose = new Pose(81.000, 7.5, Math.toRadians(0));
+    private final Pose startPose = new Pose(83, 7.5, Math.toRadians(0));
 
     private Paths paths;
 
@@ -53,7 +53,7 @@ public class RedFar6Balls extends CommandOpMode {
         public Paths(Follower follower) {
             Path0 = follower.pathBuilder().addPath(
                     new BezierLine(
-                            new Pose(81.000, 7.500), new Pose(81.000, 20.0)
+                            new Pose(83, 7.500), new Pose(83, 20.0)
                     )
             ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
             // Path 1: Go to Intake Position
@@ -62,7 +62,7 @@ public class RedFar6Balls extends CommandOpMode {
             // Blue End: (21, 37.5) -> Red X: 144-21 = 123
             Path1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(81.000, 20),
+                                    new Pose(83, 20),
                                     new Pose(82.146, 36.305),
                                     new Pose(123.000, 37.5)
                             )
@@ -75,7 +75,7 @@ public class RedFar6Balls extends CommandOpMode {
             Path2 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(123.000, 37.5),
-                                    new Pose(81.000, 20.000)
+                                    new Pose(89, 10.000)
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -86,7 +86,7 @@ public class RedFar6Balls extends CommandOpMode {
             // Blue End: (35, 10) -> Red X: 144-35 = 109
             Path3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(81.000, 20.000),
+                                    new Pose(89, 10.000),
                                     new Pose(109.000, 20.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
@@ -125,8 +125,8 @@ public class RedFar6Balls extends CommandOpMode {
                 ),
                 new WaitUntilCommand(() -> launcher.isVelocityReached()),
                 new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
-                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
-                new WaitCommand(500),
+                new InstantCommand(() -> launcher.setStopperPose(Launcher.stopperOpen)),
+                new WaitCommand(650),
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
         );
     }
@@ -135,8 +135,9 @@ public class RedFar6Balls extends CommandOpMode {
         return new ParallelCommandGroup(
                 new InstantCommand(() -> {
                     launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
-                    launcher.setStopperPose(stopperClose);
+                    launcher.setStopperPose(Launcher.stopperClose);
                 }, launcher),
+
                 setTurretState(Turret.TurretState.IDLE),
                 intakeState(Intake.IntakeState.IDLE),
                 setLimelightMode(LimelightSubsystem.LimelightMode.PAUSE)

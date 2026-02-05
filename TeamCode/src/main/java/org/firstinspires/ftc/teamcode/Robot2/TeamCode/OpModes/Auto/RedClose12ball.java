@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
-@Autonomous(name = "Red close 12 ball", group = "Auto")
+@Autonomous(name = "Red close 12 ball", group = "Auto red")
 public class RedClose12ball extends CommandOpMode {
 
     Intake intake;
@@ -36,13 +36,13 @@ public class RedClose12ball extends CommandOpMode {
     public static double stopperOpen = 0.65; // Ensure this is defined
     private Follower follower;
 
-    private final Pose startPose = new Pose(116, 126.534, Math.toRadians(0));
+    private final Pose startPose = new Pose(117, 126.534, Math.toRadians(0));
     private PathChain path1, path2, path3, path4, path4_1, path5, path6, path7, path8;
 
     public void buildPaths() {
         // Path 1
         path1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(116, 126.534), new Pose(88.000, 84.000)))
+                .addPath(new BezierLine(new Pose(117, 126.534), new Pose(88.000, 84.000)))
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
 
@@ -125,18 +125,17 @@ public class RedClose12ball extends CommandOpMode {
                 ),
                 new WaitUntilCommand(() -> launcher.isVelocityReached()),
                 new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
-                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
-                new WaitCommand(500),
+                new InstantCommand(() -> launcher.setStopperPose(Launcher.stopperOpen)),
+                new WaitCommand(650),
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
         );
     }
 
     private Command stopLaunchSequence() {
         return new ParallelCommandGroup(
-                // FIXED: Combined Launcher actions into one command
                 new InstantCommand(() -> {
                     launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
-                    launcher.setStopperPose(stopperClose);
+                    launcher.setStopperPose(Launcher.stopperClose);
                 }, launcher),
 
                 setTurretState(Turret.TurretState.IDLE),

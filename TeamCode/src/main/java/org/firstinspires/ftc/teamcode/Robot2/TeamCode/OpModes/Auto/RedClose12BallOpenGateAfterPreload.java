@@ -25,15 +25,14 @@ import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperOpen;
 
-@Autonomous(name = "Red close 12 ball-open gate after preload", group = "Auto")
+@Autonomous(name = "Red close 12 ball-open gate after preload", group = "Auto red")
 public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
     Intake intake;
     Launcher launcher;
     Turret turret;
     LimelightSubsystem limelight;
 
-    public static double stopperClose = 0.25;
-    public static double stopperOpen = 0.65;
+
     private Follower follower;
 
     // MIRROR CALCULATION (X only):
@@ -142,8 +141,8 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
                 ),
                 new WaitUntilCommand(() -> launcher.isVelocityReached()),
                 new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
-                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
-                new WaitCommand(500),
+                new InstantCommand(() -> launcher.setStopperPose(Launcher.stopperOpen)),
+                new WaitCommand(650),
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
         );
     }
@@ -152,7 +151,7 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
         return new ParallelCommandGroup(
                 new InstantCommand(() -> {
                     launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
-                    launcher.setStopperPose(stopperClose);
+                    launcher.setStopperPose(Launcher.stopperClose);
                 }, launcher),
 
                 setTurretState(Turret.TurretState.IDLE),
@@ -197,11 +196,11 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
                 // --- Sample 1 ---
                 new FollowPathCommand(follower, paths.Path2),
                 // Turn on intake during the curve approach (Path3)
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
                 new FollowPathCommand(follower, paths.Path3),
                 savePoseCommand(),
-                new WaitCommand(325),
                 intakeState(Intake.IntakeState.IDLE), // Ensure hold
+                new WaitCommand(325),
 
                 new FollowPathCommand(follower, paths.Path4), // Score Sample 1
                 savePoseCommand(),

@@ -79,14 +79,14 @@ public class BlueFarHumanBalls extends CommandOpMode {
             Path3 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(7, 10),
-                                    new Pose(63, 20.000)
+                                    new Pose(54, 10.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(180))
                     .build();
 
             Path4 = follower.pathBuilder().addPath(
                     new BezierLine(
-                            new Pose(63, 20),
+                            new Pose(54, 10),
                             new Pose(35, 20)
                     )
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
@@ -124,8 +124,8 @@ public class BlueFarHumanBalls extends CommandOpMode {
                 ),
                 new WaitUntilCommand(() -> launcher.isVelocityReached()),
                 new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
-                new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
-                new WaitCommand(500),
+                new InstantCommand(() -> launcher.setStopperPose(Launcher.stopperOpen)),
+                new WaitCommand(650),
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
         );
     }
@@ -134,8 +134,9 @@ public class BlueFarHumanBalls extends CommandOpMode {
         return new ParallelCommandGroup(
                 new InstantCommand(() -> {
                     launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
-                    launcher.setStopperPose(stopperClose);
+                    launcher.setStopperPose(Launcher.stopperClose);
                 }, launcher),
+
                 setTurretState(Turret.TurretState.IDLE),
                 intakeState(Intake.IntakeState.IDLE),
                 setLimelightMode(LimelightSubsystem.LimelightMode.PAUSE)

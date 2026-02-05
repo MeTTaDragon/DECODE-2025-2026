@@ -40,8 +40,7 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
     Turret turret;
     LimelightSubsystem limelight;
 
-    public static double stopperClose = 0.25;
-    public static double stopperOpen = 0.65; // Ensure this is defined
+     // Ensure this is defined
     private Follower follower;
 
     private final Pose startPose = new Pose(27.000, 126.534, Math.toRadians(180));
@@ -137,7 +136,7 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
                 // Targeting
                 //setTurretState(Turret.TurretState.FULL_LIMELIGHT),
                 // Release the stopper
-                setStopperPose(stopperOpen),
+                setStopperPose(Launcher.stopperOpen),
                 // Wait for stopper to clear
                 new WaitCommand(800),
                 // Feed the balls
@@ -150,7 +149,7 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
                 // FIXED: Combined Launcher actions into one command
                 new InstantCommand(() -> {
                     //launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
-                    launcher.setStopperPose(stopperClose);
+                    launcher.setStopperPose(Launcher.stopperClose);
                 }, launcher),
 
                 setTurretState(Turret.TurretState.IDLE),
