@@ -33,7 +33,7 @@ public class Launcher extends SubsystemBase {
     public static double closeHoodPose = 0.28;
     public static double veryCloseHoodPose = 0.55;
     public static double middle_Y = 60;
-    public static double targetvelocity_compensate = 0;
+    public static double targetvelocity_compensate = -100;
     public static double stopperClose = 0.37;
     public static double stopperOpen = 0.7;
 
@@ -246,15 +246,15 @@ public class Launcher extends SubsystemBase {
 
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
-            //targetvelocity_compensate = 75;
+            targetvelocity_compensate = -100;
         } else {
             if(getDistance() <=58 )
             {
                 setHoodPose(veryCloseHoodPose);
-                //targetvelocity_compensate = 100;//cand e foarte aproape da ft incet
+                targetvelocity_compensate = 0;//cand e foarte aproape da ft incet
             } else{
                 setHoodPose(closeHoodPose);
-                //targetvelocity_compensate = 25;
+                targetvelocity_compensate = -100;
             }
 
         }
