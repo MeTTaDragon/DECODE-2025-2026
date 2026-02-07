@@ -52,11 +52,11 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
             ).setConstantHeadingInterpolation( Math.toRadians(180)).build();
 
             Path2 = follower.pathBuilder().addPath(
-                    new BezierLine(new Pose(55, 84.000), new Pose(21.000, 84.500))
+                    new BezierLine(new Pose(55, 84.000), new Pose(17, 84.500))
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 
             Path3 = follower.pathBuilder().addPath(
-                    new BezierCurve(new Pose(21.000, 84.500), new Pose(25.000, 69.5), new Pose(15, 70))
+                    new BezierCurve(new Pose(17.000, 84.500), new Pose(25.000, 69.5), new Pose(15, 70))
             ).setConstantHeadingInterpolation(Math.toRadians(180)).build();
 
             Path4 = follower.pathBuilder().addPath(
@@ -110,6 +110,7 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
     private Command launchSequence() {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
+                        new InstantCommand(() ->intakeState(Intake.IntakeState.IDLE)),
                         new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
                         new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
                         new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
@@ -176,7 +177,7 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
                 new FollowPathCommand(follower, paths.Path3),
                 savePoseCommand(),
                 new WaitCommand(325),
-                intakeState(Intake.IntakeState.IDLE), // Ensure hold
+                //intakeState(Intake.IntakeState.IDLE), // Ensure hold
 
                 new FollowPathCommand(follower, paths.Path4), // Score Sample 1
                 savePoseCommand(),
@@ -190,7 +191,7 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
                 new FollowPathCommand(follower, paths.Path5),
                 savePoseCommand(),
                 new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, paths.Path6), // Score Sample 2
                 savePoseCommand(),
@@ -204,8 +205,7 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
                 new FollowPathCommand(follower, paths.Path7),
                 savePoseCommand(),
                 new WaitCommand(700),
-
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, paths.Path8), // Score Sample 3
                 savePoseCommand(),

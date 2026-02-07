@@ -119,6 +119,7 @@ public class RedClose12ball extends CommandOpMode {
     private Command launchSequence() {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
+                        new InstantCommand(() ->intakeState(Intake.IntakeState.IDLE)),
                         new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
                         new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
                         new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
@@ -178,7 +179,7 @@ public class RedClose12ball extends CommandOpMode {
                 new FollowPathCommand(follower, path2),
                 savePoseCommand(),
                 new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path3),
                 savePoseCommand(),
@@ -190,7 +191,7 @@ public class RedClose12ball extends CommandOpMode {
                 new FollowPathCommand(follower, path4),
                 savePoseCommand(),
                 new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path4_1),
                 savePoseCommand(),
@@ -207,7 +208,7 @@ public class RedClose12ball extends CommandOpMode {
                 new FollowPathCommand(follower, path6),
                 savePoseCommand(),
                 new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path7),
                 savePoseCommand(),

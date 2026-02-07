@@ -47,13 +47,13 @@ public class BlueClose12ball extends CommandOpMode {
 
         // Path 2
         path2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(55, 84.000), new Pose(21.000, 84.000)))
+                .addPath(new BezierLine(new Pose(55, 84.000), new Pose(17.000, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 3
         path3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(21.000, 84.000), new Pose(55, 84.000)))
+                .addPath(new BezierLine(new Pose(17.000, 84.000), new Pose(55, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
@@ -118,6 +118,7 @@ public class BlueClose12ball extends CommandOpMode {
     private Command launchSequence() {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
+                        new InstantCommand(() ->intakeState(Intake.IntakeState.IDLE)),
                         new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
                         new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
                         new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
@@ -177,7 +178,7 @@ public class BlueClose12ball extends CommandOpMode {
                 new FollowPathCommand(follower, path2),
                 savePoseCommand(),
                 new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path3),
                 savePoseCommand(),
@@ -189,7 +190,7 @@ public class BlueClose12ball extends CommandOpMode {
                 new FollowPathCommand(follower, path4),
                 savePoseCommand(),
                 new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path4_1),
                 savePoseCommand(),
@@ -205,7 +206,7 @@ public class BlueClose12ball extends CommandOpMode {
                 new FollowPathCommand(follower, path6),
                 savePoseCommand(),
                 new WaitCommand(1800),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path7),
                 savePoseCommand(),

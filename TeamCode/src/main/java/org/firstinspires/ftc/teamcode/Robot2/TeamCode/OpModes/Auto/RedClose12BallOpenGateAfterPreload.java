@@ -135,6 +135,7 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
     private Command launchSequence() {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
+                        new InstantCommand(() ->intakeState(Intake.IntakeState.IDLE)),
                         new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
                         new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
                         new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
@@ -199,7 +200,7 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
                 //intakeState(Intake.IntakeState.IDLE),
                 new FollowPathCommand(follower, paths.Path3),
                 savePoseCommand(),
-                intakeState(Intake.IntakeState.IDLE), // Ensure hold
+                //intakeState(Intake.IntakeState.IDLE), // Ensure hold
                 new WaitCommand(325),
 
                 new FollowPathCommand(follower, paths.Path4), // Score Sample 1
@@ -213,7 +214,7 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
                 new FollowPathCommand(follower, paths.Path5),
                 savePoseCommand(),
                 new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, paths.Path6), // Score Sample 2
                 savePoseCommand(),
@@ -227,7 +228,7 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
                 savePoseCommand(),
                 new WaitCommand(700),
 
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, paths.Path8), // Score Sample 3
                 savePoseCommand(),

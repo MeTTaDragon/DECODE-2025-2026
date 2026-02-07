@@ -155,6 +155,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
     private Command launchSequence() {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
+                        new InstantCommand(() ->intakeState(Intake.IntakeState.IDLE)),
                         new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
                         new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
                         new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
@@ -215,7 +216,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                 intakeState(Intake.IntakeState.REVERSE),
                 new FollowPathCommand(follower, paths.Path1),
                 new WaitCommand(400),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
                 //3. Go shoot man
                 new FollowPathCommand(follower, paths.Path2),
                 savePoseCommand(),
@@ -227,7 +228,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                 new FollowPathCommand(follower, paths.Path3),
                 savePoseCommand(),
                 new WaitCommand(400),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
                //4. Go shoot again man
                 new FollowPathCommand(follower, paths.Path4),
                 savePoseCommand(),
@@ -239,7 +240,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                 new FollowPathCommand(follower, paths.Path5),
                 savePoseCommand(),
                 new WaitCommand(400),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
                 //6. Go shoot again man
                 new FollowPathCommand(follower, paths.Path6),
                 savePoseCommand(),

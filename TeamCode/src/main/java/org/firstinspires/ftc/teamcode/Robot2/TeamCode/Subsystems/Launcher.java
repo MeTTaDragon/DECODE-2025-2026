@@ -264,7 +264,7 @@ public class Launcher extends SubsystemBase {
             targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + targetvelocity_compensate; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda -> OK, mersi!-Dragos
         }
         else if(!currentLauncherState.equals(LauncherState.IDLE) && useLimelight){
-            targetVelocity = Math.pow(llta, -0.17) * 1618.302 + targetvelocity_compensate;
+            targetVelocity = Math.pow(llta, -0.17   ) * 1618.302 + targetvelocity_compensate;
         }
     }
 }
