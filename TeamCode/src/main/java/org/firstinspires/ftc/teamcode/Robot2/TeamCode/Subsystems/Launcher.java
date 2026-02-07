@@ -57,6 +57,8 @@ public class Launcher extends SubsystemBase {
 
     public static boolean useLimelight = true;
 
+    public static double add_comp = 0;
+
     private PIDFController launcherController;
 
     Pose goalPose;
@@ -246,7 +248,7 @@ public class Launcher extends SubsystemBase {
 
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
-            targetvelocity_compensate = -100;
+            targetvelocity_compensate = 0 + add_comp;
         } else {
             if(getDistance() <=58 )
             {

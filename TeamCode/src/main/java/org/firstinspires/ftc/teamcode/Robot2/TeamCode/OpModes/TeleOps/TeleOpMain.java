@@ -133,10 +133,10 @@ public class TeleOpMain extends CommandOpMode {
         );
 
         controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new InstantCommand(() -> launcher.useLimelight = false)
+                new InstantCommand(() -> launcher.add_comp += 25)
         );
         controller.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
-                new InstantCommand(() -> launcher.useLimelight = true)
+                new InstantCommand(() -> launcher.add_comp -= 25)
         );
         //open stopper
         controller.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
