@@ -81,7 +81,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                             new BezierLine(
                                     new Pose(89, 10),
 
-                                    new Pose(134.000, 8.500)
+                                    new Pose(132.000, 8.500)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
 
@@ -89,7 +89,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
 
             Path4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(134.000, 8.500),
+                                    new Pose(132.000, 8.500),
 
                                     new Pose(89, 10)
                             )
@@ -101,7 +101,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                             new BezierLine(
                                     new Pose(89, 10),
 
-                                    new Pose(134.000, 8.500)
+                                    new Pose(132.000, 8.500)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
 
@@ -109,7 +109,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
 
             Path6 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(134.000, 8.500),
+                                    new Pose(132.000, 8.500),
 
                                     new Pose(89, 10.000)
                             )
@@ -155,7 +155,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
     private Command launchSequence() {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
-                        new InstantCommand(() ->intakeState(Intake.IntakeState.IDLE)),
+                        intakeState(Intake.IntakeState.IDLE),
                         new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
                         new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
                         new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))

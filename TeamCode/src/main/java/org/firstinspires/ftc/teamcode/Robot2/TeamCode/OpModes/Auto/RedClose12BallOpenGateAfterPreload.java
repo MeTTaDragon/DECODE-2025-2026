@@ -135,7 +135,7 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
     private Command launchSequence() {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
-                        new InstantCommand(() ->intakeState(Intake.IntakeState.IDLE)),
+                        intakeState(Intake.IntakeState.IDLE),
                         new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
                         new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
                         new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))

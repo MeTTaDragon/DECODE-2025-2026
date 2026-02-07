@@ -61,8 +61,8 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
             Path1 = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     new Pose(63, 7.500),
-                                    new Pose(72.214, 37.537),
-                                    new Pose(22.000, 35.500)
+                                    new Pose(70.9, 39.8),
+                                    new Pose(21.700, 35.700)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -82,7 +82,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
                             new BezierLine(
                                     new Pose(54, 10),
 
-                                    new Pose(8.500, 8.500)
+                                    new Pose(10, 8.500)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -90,7 +90,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
 
             Path4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(8.500, 8.500),
+                                    new Pose(10, 8.500),
 
                                     new Pose(54, 10)
                             )
@@ -102,7 +102,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
                             new BezierLine(
                                     new Pose(54, 10),
 
-                                    new Pose(8.500, 8.500)
+                                    new Pose(10, 8.500)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -110,7 +110,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
 
             Path6 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(8.500, 8.500),
+                                    new Pose(10, 8.500),
 
                                     new Pose(54, 10)
                             )
@@ -157,7 +157,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
     private Command launchSequence() {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
-                        new InstantCommand(() ->intakeState(Intake.IntakeState.IDLE)),
+                        intakeState(Intake.IntakeState.IDLE),
                         new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
                         new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
                         new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))

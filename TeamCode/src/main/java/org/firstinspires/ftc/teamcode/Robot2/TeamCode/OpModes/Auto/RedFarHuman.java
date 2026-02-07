@@ -61,7 +61,7 @@ public class RedFarHuman extends CommandOpMode {
                             new BezierLine(
                                     new Pose(83, 7.5),
 
-                                    new Pose(134.000, 8.5)
+                                    new Pose(132.000, 8.5)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -69,7 +69,7 @@ public class RedFarHuman extends CommandOpMode {
 
             Path2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(134.000, 8.500),
+                                    new Pose(132.000, 8.500),
 
                                     new Pose(89, 10)
                             )
@@ -81,7 +81,7 @@ public class RedFarHuman extends CommandOpMode {
                             new BezierLine(
                                     new Pose(89, 10),
 
-                                    new Pose(134.000, 8.500)
+                                    new Pose(132.000, 8.500)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -89,7 +89,7 @@ public class RedFarHuman extends CommandOpMode {
 
             Path4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(134.000, 8.500),
+                                    new Pose(132.000, 8.500),
 
                                     new Pose(89, 10)
                             )
@@ -101,7 +101,7 @@ public class RedFarHuman extends CommandOpMode {
                             new BezierLine(
                                     new Pose(89, 10),
 
-                                    new Pose(134.000, 8.500)
+                                    new Pose(132.000, 8.500)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -109,7 +109,7 @@ public class RedFarHuman extends CommandOpMode {
 
             Path6 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(134.000, 8.500),
+                                    new Pose(132.000, 8.500),
 
                                     new Pose(89, 10)
                             )
