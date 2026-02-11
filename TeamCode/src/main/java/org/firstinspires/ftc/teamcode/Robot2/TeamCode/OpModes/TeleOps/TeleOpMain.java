@@ -21,6 +21,12 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.FullLaunchCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightLaunchCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
@@ -37,8 +43,6 @@ import java.util.List;
 @Config
 @TeleOp(name = "TeleOp Main Robo2", group = "Main")
 public class TeleOpMain extends CommandOpMode {
-    private static double veltarget = 1940;
-    public static double ledcolor = 0.278;
     GamepadEx controller;
 
     // --- Robot Dimensions & LED Constants ---
@@ -75,6 +79,7 @@ public class TeleOpMain extends CommandOpMode {
     boolean rumbled = false;
     private static double totallooptime = 0;
     private static double loops = 0;
+    boolean mixedAim = true;
 
     @Override
     public void initialize() {
@@ -112,9 +117,6 @@ public class TeleOpMain extends CommandOpMode {
         limelight.init();
         launcher.init();
 
-        controller.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.IDLE), turret)
-        );
 
         controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_PINPOINT), turret)
@@ -153,75 +155,39 @@ public class TeleOpMain extends CommandOpMode {
         Trigger leftTrigger = new Trigger(() -> gamepad1.left_trigger > 0.1);
 
         leftTrigger.whileActiveOnce(
-                new SequentialCommandGroup(
-                        new ParallelCommandGroup(
-                                new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
-                                new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
-                                new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
-                        ),
-                        new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                        new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
-                        new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
-                        new WaitCommand(500),
-                        new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
-                )
+                new SpoolUpCommand(launcher, limelight)
+        ).whenInactive(
+                new StopLaunchCommand(launcher, turret, intake, limelight)
         );
-        leftTrigger.whenInactive(
-                new InstantCommand(() -> {
-                    launcher.stop();
-                    turret.setTurretState(Turret.TurretState.IDLE);
-                    launcher.setStopperPose(stopperClose);
-                    intake.setIntakeState(Intake.IntakeState.IDLE);
-                    limelight.setMode(LimelightSubsystem.LimelightMode.PAUSE);
-                })
-        );
+
         //intake trage
         rightTrigger.whileActiveOnce(
-                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE), intake)
+                new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
+        ).whenInactive(
+                new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
-        rightTrigger.whenInactive(
-                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.IDLE), intake)
-        );
+
 
         //intake scuipa
         controller.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.FORWARD), intake)
-        );
-        controller.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenReleased(
+        ).whenReleased(
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.IDLE), intake)
         );
 
         controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenHeld(
-                new SequentialCommandGroup(
-                        new InstantCommand(() -> {
-                            launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING);
-                            limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
-                            turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT);
-                        }),
-                        new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                        new InstantCommand(() -> launcher.setStopperPose(stopperOpen)),
-                        new WaitCommand(500),
-                        new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
-                )
-        );
-        controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenInactive(
-                new InstantCommand(() -> {
-                    turret.setTurretState(Turret.TurretState.IDLE);
-                    launcher.setStopperPose(stopperClose);
-                    launcher.stop();
-                    limelight.setMode(LimelightSubsystem.LimelightMode.PAUSE);
-                    intake.setIntakeState(Intake.IntakeState.IDLE);
-                })
+                new ShootCommand(launcher, limelight, turret, intake, mixedAim)
+        ).whenInactive(
+                new StopLaunchCommand(launcher, turret, intake, limelight)
         );
 
         //reset position odometrie
         controller.getGamepadButton(GamepadKeys.Button.TOUCHPAD).whenPressed(
                 new InstantCommand(() ->  {
                     follower.setPose(new Pose(72, 7.5, Math.toRadians(90)));
+                    mixedAim = true;
                     rumbled = false;
-                    telemetry.addData("Status", "Pose Reset Triggered");
-                }
-                )
+                })
         );
         //setare manuala alianta albastra
         controller.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
@@ -278,20 +244,29 @@ public class TeleOpMain extends CommandOpMode {
 
     public void run() {
         timer.reset();
+        follower.update();
 
         /*if(alliance == Alliance.RED){
             follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         } else{
             follower.setTeleOpDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         }*/
-        follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
-        follower.update();
+        if(gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0){
+            follower.holdPoint(follower.getPose());
+        }
+        else{
+            follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        }
 
         updateLEDs();
 
         if ((follower.getPose().getX() < 0 || follower.getPose().getX() > 144 || follower.getPose().getY() < 0 || follower.getPose().getY() > 144) && !rumbled) {
             rumbled = true;
             gamepad1.runRumbleEffect(customRumbleEffect);
+        }
+
+        if(gamepad1.triangleWasPressed()){
+            mixedAim = !mixedAim;
         }
 
         telemetry.addData("Current velocity", launcher.getVelocity());

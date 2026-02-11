@@ -20,6 +20,13 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.IntakeDrive;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.SpoolDriveShoot;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
@@ -130,68 +137,12 @@ public class BlueFarHuman extends CommandOpMode {
     }
 
 
-
-
-    // --- Helper Methods ---
-    private InstantCommand setLauncherState(Launcher.LauncherState state) {
-        return new InstantCommand(() -> launcher.setCurrentLauncherState(state), launcher);
-    }
-
-    private InstantCommand setTurretState(Turret.TurretState state) {
-        return new InstantCommand(() -> turret.setTurretState(state), turret);
-    }
-
-    private InstantCommand setLimelightMode(LimelightSubsystem.LimelightMode mode) {
-        return new InstantCommand(() -> limelight.setMode(mode), limelight);
-    }
-
-    private InstantCommand setStopperPose(double pose) {
-        return new InstantCommand(() -> launcher.setStopperPose(pose), launcher);
-    }
-
-    private InstantCommand intakeState(Intake.IntakeState state) {
-        return new InstantCommand(() -> intake.setIntakeState(state), intake);
-    }
-
-    // --- Sequences ---
-    private Command launchSequence() {
-        return new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                        new InstantCommand(() ->intake.setIntakeState(Intake.IntakeState.IDLE)),
-                        new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
-                        new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
-                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
-                ),
-                new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
-                new InstantCommand(() -> launcher.setStopperPose(Launcher.stopperOpen)),
-                new WaitCommand(650),
-                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
-        );
-    }
-
-    private Command stopLaunchSequence() {
-        return new ParallelCommandGroup(
-                new InstantCommand(() -> {
-                    launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
-                    launcher.setStopperPose(Launcher.stopperClose);
-                }, launcher),
-
-                setTurretState(Turret.TurretState.IDLE),
-                intakeState(Intake.IntakeState.IDLE),
-                setLimelightMode(LimelightSubsystem.LimelightMode.PAUSE)
-        );
-    }
-
-    private Command savePoseCommand() {
-        return new InstantCommand(() -> lastAutoPose = follower.getPose());
-    }
-
     @Override
     public void initialize() {
         super.reset();
-        // CHANGED TO RED
         alliance = Alliance.BLUE;
+
+        boolean mixedAim = true;
 
         // Initialize Follower and Subsystems
         follower = Constants.createFollower(hardwareMap);
@@ -209,49 +160,40 @@ public class BlueFarHuman extends CommandOpMode {
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
 
-                savePoseCommand(),
+                new SavePoseCommand(follower),
                 // 1. Launch Preload immediately on start
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
+                new SpoolUpCommand(launcher, limelight),
+                new WaitCommand(1000),
+                new ShootCommand(launcher, limelight, turret, intake, mixedAim),
+                new WaitCommand(800),
+                new StopLaunchCommand(launcher, turret, intake, limelight),
+
                 // 2. Go to pickup spike
-                intakeState(Intake.IntakeState.REVERSE),
-                new FollowPathCommand(follower, paths.Path1),
-                new WaitCommand(200),
-                //intakeState(Intake.IntakeState.IDLE),
+                new IntakeDrive(follower, paths.Path1, intake, 400),
+
                 //3. Go shoot man
-                new FollowPathCommand(follower, paths.Path2),
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                //3. Go pick up from human man
-                intakeState(Intake.IntakeState.REVERSE),
-                new FollowPathCommand(follower, paths.Path3),
-                savePoseCommand(),
-                new WaitCommand(200),
-                //intakeState(Intake.IntakeState.IDLE),
-               //4. Go shoot again man
-                new FollowPathCommand(follower, paths.Path4),
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                //5. Go human player again man
-                intakeState(Intake.IntakeState.REVERSE),
-                new FollowPathCommand(follower, paths.Path5),
-                savePoseCommand(),
-                new WaitCommand(200),
-                //intakeState(Intake.IntakeState.IDLE),
-                //6. Go shoot again man
-                new FollowPathCommand(follower, paths.Path6),
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                //7. leave launch zone man
+                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, mixedAim),
+
+
+                //4. Go pick up from human man
+                new IntakeDrive(follower, paths.Path3, intake, 400),
+
+
+                //5. Go shoot again man
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, mixedAim),
+
+
+                //6. Go human player again man
+                new IntakeDrive(follower, paths.Path5, intake, 400),
+
+
+                //7. Go shoot again man
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight, mixedAim),
+
+
+                //8. leave launch zone man
                 new FollowPathCommand(follower, paths.Path7),
-                savePoseCommand()
+                new SavePoseCommand(follower)
         );
 
         schedule(autonomousSequence);

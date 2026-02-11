@@ -61,7 +61,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                             new BezierCurve(
                                     new Pose(83, 7.5),
                                     new Pose(72.249, 35.325),
-                                    new Pose(124.000, 35.500)
+                                    new Pose(127.000, 36)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
 
@@ -69,7 +69,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
 
             Path2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(124.000, 35.500),
+                                    new Pose(127.000, 36.0),
 
                                     new Pose(89, 10)
                             )

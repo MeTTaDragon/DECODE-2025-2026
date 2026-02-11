@@ -1,15 +1,5 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.OpModes.Auto;
 
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.Alliance;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.alliance;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.imuHeading;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.lastAutoPose;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.llRx;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.llRy;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.llta;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.lltx;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.llty;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
@@ -32,15 +22,17 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
-@Autonomous(name = "Blue close 12 ball perma launch", group = "Auto")
-public class BlueClose12ballPermaLaunch extends CommandOpMode {
+@Autonomous(name = "Blue close no gate", group = "Auto")
+public class BlueCloseNoGate extends CommandOpMode {
     Intake intake;
     Launcher launcher;
     Turret turret;
     LimelightSubsystem limelight;
 
-     // Ensure this is defined
+    public static double stopperClose = 0.25;
+    public static double stopperOpen = 0.65; // Ensure this is defined
     private Follower follower;
 
     private final Pose startPose = new Pose(27.000, 126.534, Math.toRadians(180));
@@ -55,30 +47,136 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
 
         // Path 2
         path2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(55, 84.000), new Pose(21.000, 84.000)))
+                .addPath(new BezierLine(new Pose(55, 84.000), new Pose(16
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        , 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 3
         path3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(21.000, 84.000), new Pose(55, 84.000)))
+                .addPath(new BezierLine(new Pose(16, 84.000), new Pose(55, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         // Path 4
         path4 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(55, 84.000), new Pose(73.000, 55.000), new Pose(25.000, 58.000)))
+                .addPath(new BezierCurve(new Pose(55, 84.000), new Pose(73.000, 55.000), new Pose(23.000, 58.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
-        path4_1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(73, 55.000), new Pose(17, 69)))
-                .setConstantHeadingInterpolation(Math.toRadians(225))
-                .build();
+//        path4_1 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Pose(73, 55.000), new Pose(17, 69)))
+//                .setConstantHeadingInterpolation(Math.toRadians(225))
+//                .build();
 
         // Path 5
         path5 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(17, 69), new Pose(55, 84.000)))
+                .addPath(new BezierLine(new Pose(23, 58), new Pose(55, 84.000)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
@@ -125,30 +223,24 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
     // --- Sequences ---
     private Command launchSequence() {
         return new SequentialCommandGroup(
-                // Spin up launcher and aim turret simultaneously
                 new ParallelCommandGroup(
-                        //setLauncherState(Launcher.LauncherState.SHOOTING),
-                        //setLimelightMode(LimelightSubsystem.LimelightMode.BASKET),
-                        setTurretState(Turret.TurretState.FULL_PINPOINT)
+                        intakeState(Intake.IntakeState.IDLE),
+                        new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
+                        new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
+                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
                 ),
-                // Wait for flywheel velocity
                 new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                // Targeting
-                //setTurretState(Turret.TurretState.FULL_LIMELIGHT),
-                // Release the stopper
-                setStopperPose(Launcher.stopperOpen),
-                // Wait for stopper to clear
-                new WaitCommand(800),
-                // Feed the balls
-                intakeState(Intake.IntakeState.REVERSE)
+                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
+                new InstantCommand(() -> launcher.setStopperPose(Launcher.stopperOpen)),
+                new WaitCommand(650),
+                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
         );
     }
 
     private Command stopLaunchSequence() {
         return new ParallelCommandGroup(
-                // FIXED: Combined Launcher actions into one command
                 new InstantCommand(() -> {
-                    //launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
+                    launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
                     launcher.setStopperPose(Launcher.stopperClose);
                 }, launcher),
 
@@ -157,15 +249,10 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
                 setLimelightMode(LimelightSubsystem.LimelightMode.PAUSE)
         );
     }
-    private Command stopperPose(double x) {
-        return new InstantCommand(() -> {
-            launcher.setStopperPose(x);
-        }, launcher);
-    }
 
     private Command savePoseCommand() {
         return new InstantCommand(() ->
-            lastAutoPose = follower.getPose()
+                lastAutoPose = follower.getPose()
         );
     }
 
@@ -187,8 +274,6 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
         buildPaths();
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-                new InstantCommand(() -> Launcher.useLimelight = false),
-                new InstantCommand(() -> launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
                 new FollowPathCommand(follower, path1),
                 savePoseCommand(),
                 launchSequence(),
@@ -199,48 +284,44 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
                 new FollowPathCommand(follower, path2),
                 savePoseCommand(),
                 new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
                 new FollowPathCommand(follower, path3),
                 savePoseCommand(),
-                new WaitCommand(300),
                 launchSequence(),
-                new WaitCommand(500),
+                new WaitCommand(1800),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
                 new FollowPathCommand(follower, path4),
                 savePoseCommand(),
                 new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
+                //intakeState(Intake.IntakeState.IDLE),
 
-                new FollowPathCommand(follower, path4_1),
-                savePoseCommand(),
-                new WaitCommand(325),
+//                new FollowPathCommand(follower, path4_1),
+//                savePoseCommand(),
+//                new WaitCommand(325),
 
                 new FollowPathCommand(follower, path5),
                 savePoseCommand(),
-                new WaitCommand(300),
                 launchSequence(),
-                new WaitCommand(700),
+                new WaitCommand(1800),
                 stopLaunchSequence(),
                 intakeState(Intake.IntakeState.REVERSE),
 
                 new FollowPathCommand(follower, path6),
                 savePoseCommand(),
-                new WaitCommand(500),
-                intakeState(Intake.IntakeState.IDLE),
+                new WaitCommand(1800),
+                //intakeState(Intake.IntakeState.IDLE),
 
-                new FollowPathCommand(follower, path7, 0.9),
+                new FollowPathCommand(follower, path7),
                 savePoseCommand(),
-                new WaitCommand(300),
                 launchSequence(),
-                new WaitCommand(500),
+                new WaitCommand(1800),
                 stopLaunchSequence(),
 
-                new FollowPathCommand(follower, path8, 0.9),
-                savePoseCommand(),
-                new InstantCommand(() -> launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE))
+                new FollowPathCommand(follower, path8),
+                savePoseCommand()
         );
 
         schedule(autonomousSequence);
@@ -252,22 +333,10 @@ public class BlueClose12ballPermaLaunch extends CommandOpMode {
 
         follower.update();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        telemetry.addData("Current velocity", launcher.getVelocity());
-        telemetry.addData("Target velocity", launcher.getTargetVelocity());
-        telemetry.addData("Robot X", follower.getPose().getX());
-        telemetry.addData("Robot Y", follower.getPose().getY());
-        telemetry.addData("Robot Heading", Math.toDegrees(follower.getPose().getHeading()));
-        telemetry.addData("turret heading", Math.toDegrees(turret.getTurretHeading()));
-        telemetry.addData("turret target heading", Math.toDegrees(turret.getTargetHeading()));
-        telemetry.addData("distance", launcher.getDistance());
-        telemetry.addData("alliance", alliance);
-        telemetry.addData("limelight mode", limelight.getCurrentMode());
-        telemetry.addData("ta", llta);
-        telemetry.addData("tx", lltx);
-        telemetry.addData("ty", llty);
-        telemetry.addData("llRx", llRx);
-        telemetry.addData("llRy", llRy);
-        telemetry.addData("imu heading", imuHeading);
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("Busy", follower.isBusy());
         telemetry.update();
     }
 }

@@ -100,11 +100,6 @@ public class LimelightSubsystem extends SubsystemBase {
             lltx = tx;
             llty = ty;
             llta = ta;
-        } else {
-            // Optional: Reset values if no target is found to prevent ghost data
-//            lltx = 0;
-//            llty = 0;
-//            llta = 0;
         }
     }
 
@@ -127,10 +122,6 @@ public class LimelightSubsystem extends SubsystemBase {
 
                 llRx = llPose.getX();
                 llRy = llPose.getY();
-            }
-            else {
-//                llRx = 0;
-//                llRy = 0;
             }
         }
     }
@@ -164,6 +155,8 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     @Override
     public void periodic() {
+        if(currentMode == LimelightMode.PAUSE) return;
+
         // 1. Fetch latest result
         result = limelight.getLatestResult();
 

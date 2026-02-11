@@ -72,7 +72,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
                             new BezierLine(
                                     new Pose(22.000, 35.500),
 
-                                    new Pose(54, 10)
+                                    new Pose(57, 11)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -80,7 +80,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
 
             Path3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(54, 10),
+                                    new Pose(57, 11),
 
                                     new Pose(10, 8.500)
                             )
