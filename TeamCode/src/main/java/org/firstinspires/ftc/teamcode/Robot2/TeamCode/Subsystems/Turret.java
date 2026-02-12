@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -10,8 +11,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
+import com.seattlesolvers.solverslib.geometry.Translation2d;
+import com.seattlesolvers.solverslib.geometry.Vector2d;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
+
+import androidx.core.view.VelocityTrackerCompat;
 
 @Config
 public class Turret extends SubsystemBase {
@@ -22,6 +28,9 @@ public class Turret extends SubsystemBase {
 
     public Pose goalPose;
     public Pose2d targetGoalPose;
+
+
+    Vector2d targetPosition;
 
     // Variables for logic
     double robotAngle;
@@ -116,14 +125,23 @@ public class Turret extends SubsystemBase {
                 // 1. Get Robot Position & Heading from Pedro
                 Pose robotPose = follower.getPose();
 
-                // 2. Calculate the "Field Heading" (Angle from Robot to Goal globally)
-                double targetFieldHeading = Math.atan2(targetGoalPose.getY() - robotPose.getY(),
-                        targetGoalPose.getX() - robotPose.getX());
 
-                // 3. Calculate "Target Local Heading"
-                // This is where the turret needs to be relative to the robot chassis.
-                // Formula: Field_Angle - Robot_Body_Angle
-                targetHeading = targetFieldHeading - robotPose.getHeading();
+
+
+                targetPosition = new Vector2d(targetGoalPose.getX() - robotPose.getX(),
+                        targetGoalPose.getY() - robotPose.getY());
+
+
+                double distance = targetPosition.magnitude();
+
+                Vector2d targetVector = targetPosition.div(distance).times(targetVelocity);
+                Vector2d robotVelocity = new Vector2d(follower.getVelocity().getXComponent(), follower.getVelocity().getYComponent());
+
+                Vector2d shotVector = targetVector.minus(robotVelocity);
+
+                targetHeading = Math.toDegrees(shotVector.angle());
+                requiredSpeed = shotVector.magnitude();
+
 
                 // 4. Get "Current Local Heading" from Encoder
                 double currentLocalHeading = getTurretHeading(); // returns Radians
@@ -178,8 +196,6 @@ public class Turret extends SubsystemBase {
     @Override
     public void periodic() {
         robotAngle = follower.getPose().getHeading();
-
-
 
         update();
     }

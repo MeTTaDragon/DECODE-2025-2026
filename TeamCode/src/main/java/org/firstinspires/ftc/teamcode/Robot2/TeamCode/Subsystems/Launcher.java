@@ -50,7 +50,6 @@ public class Launcher extends SubsystemBase {
     //vel far zone: 1940
     //vel close middle: 1200
     //vel next to goal:
-    public static double targetVelocity = 0.0;
     public boolean Manual_shooting = false;
     public static double minPowerDiff = 0.0001;
     public static double lastPower = 0.0;
@@ -136,7 +135,7 @@ public class Launcher extends SubsystemBase {
         switch (currentLauncherState){
             case IDLE:
                 if(targetVelocity != 0){
-                    setTargetVelocity(0);
+                    //setTargetVelocity(0);
                     setManualVelocity(0);
                 }
 
@@ -146,9 +145,9 @@ public class Launcher extends SubsystemBase {
                 double currentVel = getVelocity();
 
                 // 2. CALCULATE Error
-                double error = targetVelocity - currentVel;
+                double error = requiredSpeed - currentVel;
 
-                launcherController.setSetPoint(targetVelocity);
+                launcherController.setSetPoint(requiredSpeed);
 
                 // 3. CALCULATE Power (PF Controller)
                 // Feedforward (F): Base power to maintain target
@@ -201,9 +200,9 @@ public class Launcher extends SubsystemBase {
     public double getTargetVelocity(){
         return targetVelocity;
     }
-    public static void setTargetVelocity(double targetVelocity) {
-        Launcher.targetVelocity = targetVelocity;
-    }
+//    public static void setTargetVelocity(double targetVelocity) {
+//        Launcher.targetVelocity = targetVelocity;
+//    }
     /**
      * Stops the flywheel.
      */
@@ -230,7 +229,7 @@ public class Launcher extends SubsystemBase {
     }
 
     public boolean isVelocityReached() {
-        return getVelocity() > targetVelocity - 50;
+        return getVelocity() > requiredSpeed - 50;
     }
 
     public boolean isStopperOpen(){
