@@ -159,8 +159,6 @@ public class BlueFarHuman extends CommandOpMode {
         paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-
-                new SavePoseCommand(follower),
                 // 1. Launch Preload immediately on start
                 new SpoolUpCommand(launcher, limelight),
                 new WaitCommand(1000),

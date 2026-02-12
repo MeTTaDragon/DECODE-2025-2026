@@ -17,6 +17,9 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.IntakeDrive;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.SpoolDriveShoot;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
@@ -94,66 +97,15 @@ public class RedCloseNoGate extends CommandOpMode {
                 .build();
     }
 
-    // --- Helper Methods ---
-    private InstantCommand setLauncherState(Launcher.LauncherState state) {
-        return new InstantCommand(() -> launcher.setCurrentLauncherState(state), launcher);
-    }
 
-    private InstantCommand setTurretState(Turret.TurretState state) {
-        return new InstantCommand(() -> turret.setTurretState(state), turret);
-    }
-
-    private InstantCommand setLimelightMode(LimelightSubsystem.LimelightMode mode) {
-        return new InstantCommand(() -> limelight.setMode(mode), limelight);
-    }
-
-    private InstantCommand setStopperPose(double pose) {
-        return new InstantCommand(() -> launcher.setStopperPose(pose), launcher);
-    }
-
-    private InstantCommand intakeState(Intake.IntakeState state) {
-        return new InstantCommand(() -> intake.setIntakeState(state), intake);
-    }
-
-    // --- Sequences ---
-    private Command launchSequence() {
-        return new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                        intakeState(Intake.IntakeState.IDLE),
-                        new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
-                        new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
-                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
-                ),
-                new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
-                new InstantCommand(() -> launcher.setStopperPose(Launcher.stopperOpen)),
-                new WaitCommand(650),
-                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
-        );
-    }
-
-    private Command stopLaunchSequence() {
-        return new ParallelCommandGroup(
-                new InstantCommand(() -> {
-                    launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
-                    launcher.setStopperPose(Launcher.stopperClose);
-                }, launcher),
-
-                setTurretState(Turret.TurretState.IDLE),
-                intakeState(Intake.IntakeState.IDLE),
-                setLimelightMode(LimelightSubsystem.LimelightMode.PAUSE)
-        );
-    }
-
-    private Command savePoseCommand() {
-        return new InstantCommand(() ->
-                lastAutoPose = follower.getPose()
-        );
-    }
 
     @Override
     public void initialize() {
         super.reset();
+
+        alliance = Alliance.RED;
+
+        boolean mixedAim = true;
 
         // Initialize Follower and Subsystems
         follower = Constants.createFollower(hardwareMap);
@@ -169,55 +121,22 @@ public class RedCloseNoGate extends CommandOpMode {
         buildPaths();
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-                new FollowPathCommand(follower, path1),
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                intakeState(Intake.IntakeState.REVERSE),
+                new SpoolDriveShoot(follower, path1, launcher, turret, intake, limelight, mixedAim),
 
-                new FollowPathCommand(follower, path2),
-                savePoseCommand(),
-                new WaitCommand(500),
-                //intakeState(Intake.IntakeState.IDLE),
+                new IntakeDrive(follower, path2, intake, 500),
 
-                new FollowPathCommand(follower, path3),
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                intakeState(Intake.IntakeState.REVERSE),
+                new SpoolDriveShoot(follower, path3, launcher, turret, intake, limelight, mixedAim),
 
-                new FollowPathCommand(follower, path4),
-                savePoseCommand(),
-                new WaitCommand(500),
-                //intakeState(Intake.IntakeState.IDLE),
+                new IntakeDrive(follower, path4, intake, 500),
 
-//                new FollowPathCommand(follower, path4_1),
-//                savePoseCommand(),
-//                new WaitCommand(250),
+                new SpoolDriveShoot(follower, path5, launcher, turret, intake, limelight, mixedAim),
 
+                new IntakeDrive(follower, path6, intake, 500),
 
-                new FollowPathCommand(follower, path5),
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                intakeState(Intake.IntakeState.REVERSE),
-
-                new FollowPathCommand(follower, path6),
-                savePoseCommand(),
-                new WaitCommand(500),
-                //intakeState(Intake.IntakeState.IDLE),
-
-                new FollowPathCommand(follower, path7),
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
+                new SpoolDriveShoot(follower, path7, launcher, turret, intake, limelight, mixedAim),
 
                 new FollowPathCommand(follower, path8),
-                savePoseCommand()
+                new SavePoseCommand(follower)
         );
 
         schedule(autonomousSequence);

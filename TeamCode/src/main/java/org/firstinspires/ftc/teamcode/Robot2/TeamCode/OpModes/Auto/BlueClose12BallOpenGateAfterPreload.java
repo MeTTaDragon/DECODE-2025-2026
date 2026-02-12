@@ -17,6 +17,9 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.IntakeDrive;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.SpoolDriveShoot;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
@@ -85,67 +88,14 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
         }
     }
 
-    // --- Helper Methods ---
-    private InstantCommand setLauncherState(Launcher.LauncherState state) {
-        return new InstantCommand(() -> launcher.setCurrentLauncherState(state), launcher);
-    }
-
-    private InstantCommand setTurretState(Turret.TurretState state) {
-        return new InstantCommand(() -> turret.setTurretState(state), turret);
-    }
-
-    private InstantCommand setLimelightMode(LimelightSubsystem.LimelightMode mode) {
-        return new InstantCommand(() -> limelight.setMode(mode), limelight);
-    }
-
-    private InstantCommand setStopperPose(double pose) {
-        return new InstantCommand(() -> launcher.setStopperPose(pose), launcher);
-    }
-
-    private InstantCommand intakeState(Intake.IntakeState state) {
-        return new InstantCommand(() -> intake.setIntakeState(state), intake);
-    }
-
-    // --- Sequences ---
-    private Command launchSequence() {
-        return new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                        intakeState(Intake.IntakeState.IDLE),
-                        new InstantCommand(() ->launcher.setCurrentLauncherState(Launcher.LauncherState.SHOOTING)),
-                        new InstantCommand(() ->turret.setTurretState(Turret.TurretState.FULL_PINPOINT)),
-                        new InstantCommand(() -> limelight.setMode(LimelightSubsystem.LimelightMode.BASKET))
-                ),
-                new WaitUntilCommand(() -> launcher.isVelocityReached()),
-                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_LIMELIGHT)),
-                new InstantCommand(() -> launcher.setStopperPose(Launcher.stopperOpen)),
-                new WaitCommand(650),
-                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE))
-        );
-    }
-
-    private Command stopLaunchSequence() {
-        return new ParallelCommandGroup(
-                new InstantCommand(() -> {
-                    launcher.setCurrentLauncherState(Launcher.LauncherState.IDLE);
-                    launcher.setStopperPose(Launcher.stopperClose);
-                }, launcher),
-
-                setTurretState(Turret.TurretState.IDLE),
-                intakeState(Intake.IntakeState.IDLE),
-                setLimelightMode(LimelightSubsystem.LimelightMode.PAUSE)
-        );
-    }
-
-    private Command savePoseCommand() {
-        return new InstantCommand(() ->
-                lastAutoPose = follower.getPose()
-        );
-    }
 
     @Override
     public void initialize() {
         super.reset();
         alliance = Alliance.BLUE;
+
+        boolean mixedAim = true;
+
         // Initialize Follower and Subsystems
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
@@ -162,60 +112,32 @@ public class BlueClose12BallOpenGateAfterPreload extends CommandOpMode {
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
                 // --- Preload ---
-                new FollowPathCommand(follower, paths.Path1),
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                intakeState(Intake.IntakeState.REVERSE),
+                new SpoolDriveShoot(follower, paths.Path1, launcher, turret, intake, limelight, mixedAim),
 
                 // --- Sample 1 ---
                 // New Trajectory split: Path2 (Approach) + Path3 (Curve to Intake)
                 new FollowPathCommand(follower, paths.Path2),
                 // Turn on intake during the curve approach (Path3)
-                //intakeState(Intake.IntakeState.IDLE), // Assuming IDLE means ON based on your code context, or change to FORWARD if needed
-                new FollowPathCommand(follower, paths.Path3),
-                savePoseCommand(),
-                new WaitCommand(325),
-                //intakeState(Intake.IntakeState.IDLE), // Ensure hold
+                new IntakeDrive(follower, paths.Path3, intake, 500),
 
-                new FollowPathCommand(follower, paths.Path4), // Score Sample 1
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                intakeState(Intake.IntakeState.REVERSE),
+                // --- Shoot 1 ---
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, mixedAim),
 
                 // --- Sample 2 ---
-                // Path5 handles the full curve from Score to Intake 2
-                new FollowPathCommand(follower, paths.Path5),
-                savePoseCommand(),
-                new WaitCommand(500),
-                //intakeState(Intake.IntakeState.IDLE),
+                new IntakeDrive(follower, paths.Path5, intake, 500),
 
-                new FollowPathCommand(follower, paths.Path6), // Score Sample 2
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
-                intakeState(Intake.IntakeState.REVERSE),
+                // --- Shoot 2 ---
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight, mixedAim),
 
                 // --- Sample 3 ---
-                // Path7 handles the curve from Score to Intake 3
-                new FollowPathCommand(follower, paths.Path7),
-                savePoseCommand(),
-                new WaitCommand(700),
-                //intakeState(Intake.IntakeState.IDLE),
+                new IntakeDrive(follower, paths.Path7, intake, 500),
 
-                new FollowPathCommand(follower, paths.Path8), // Score Sample 3
-                savePoseCommand(),
-                launchSequence(),
-                new WaitCommand(1800),
-                stopLaunchSequence(),
+                // --- Shoot 3 ---
+                new SpoolDriveShoot(follower, paths.Path8, launcher, turret, intake, limelight, mixedAim),
 
                 // --- Park ---
                 new FollowPathCommand(follower, paths.Path9),
-                savePoseCommand()
+                new SavePoseCommand(follower)
         );
 
         schedule(autonomousSequence);
