@@ -76,6 +76,7 @@ public class TeleOpMain extends CommandOpMode {
     private static double totallooptime = 0;
     private static double loops = 0;
 
+
     @Override
     public void initialize() {
         allHubs = hardwareMap.getAll(LynxModule.class);
@@ -276,6 +277,7 @@ public class TeleOpMain extends CommandOpMode {
         }
     }
 
+    @Override
     public void run() {
         timer.reset();
 

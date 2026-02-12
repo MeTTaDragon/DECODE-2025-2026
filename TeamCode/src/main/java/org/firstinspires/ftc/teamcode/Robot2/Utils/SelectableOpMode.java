@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot2.Utils;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.seattlesolvers.solverslib.command.CommandOpMode;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -9,15 +10,15 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class SelectableOpMode extends OpMode {
-    private final Selector<Supplier<OpMode>> selector;
-    private OpMode selectedOpMode;
+    private final Selector<Supplier<CommandOpMode>> selector;
+    private CommandOpMode selectedOpMode;
     private final static String[] MESSAGE = {
             "Use the d-pad to move the cursor.",
             "Press right bumper or d-pad right to select.",
             "Press left bumper or d-pad left to go back."
     };
 
-    public SelectableOpMode(String name, Consumer<SelectScope<Supplier<OpMode>>> opModes) {
+    public SelectableOpMode(String name, Consumer<SelectScope<Supplier<CommandOpMode>>> opModes) {
         selector = Selector.create(name, opModes, MESSAGE);
         selector.onSelect(opModeSupplier -> {
             onSelect();
@@ -40,7 +41,7 @@ public abstract class SelectableOpMode extends OpMode {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-            selectedOpMode.init();
+            selectedOpMode.initialize();
         });
     }
 
@@ -77,22 +78,22 @@ public abstract class SelectableOpMode extends OpMode {
                 telemetry.addLine(line);
             }
             onLog(lines);
-        } else selectedOpMode.init_loop();
+        } else selectedOpMode.run();
     }
 
     @Override
     public final void start() {
         if (selectedOpMode == null) throw new RuntimeException("No OpMode selected!");
-        selectedOpMode.start();
+        selectedOpMode.run();
     }
 
     @Override
     public final void loop() {
-        selectedOpMode.loop();
+        selectedOpMode.run();
     }
 
     @Override
     public final void stop() {
-        if (selectedOpMode != null) selectedOpMode.stop();
+        if (selectedOpMode != null) selectedOpMode.end();
     }
 }
