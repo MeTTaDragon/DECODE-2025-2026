@@ -103,7 +103,21 @@ public class LimelightSubsystem extends SubsystemBase {
         }
     }
 
+    public void Megatag(){
+        if(result != null && result.isValid()){
+            Pose3D botpose = result.getBotpose();
 
+            if(botpose != null){
+                robotCoordsX = botpose.getPosition().toUnit(DistanceUnit.INCH).x;
+                robotCoordsY = botpose.getPosition().toUnit(DistanceUnit.INCH).y;
+
+                llPose = new Pose(robotCoordsX, robotCoordsY, 0);
+
+                llRx = llPose.getX();
+                llRy = llPose.getY();
+            }
+        }
+    }
 
     public void MegaTag2D() {
         // Added safety check for IMU
@@ -164,6 +178,6 @@ public class LimelightSubsystem extends SubsystemBase {
         getBasicResults();
 
         // 3. Update pose if needed (Optional, only if IMU is active)
-        MegaTag2D();
+        Megatag();
     }
 }

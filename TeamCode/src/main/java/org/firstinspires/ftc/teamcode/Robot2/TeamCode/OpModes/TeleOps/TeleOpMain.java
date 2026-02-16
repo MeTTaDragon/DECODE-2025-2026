@@ -41,7 +41,7 @@ import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher
 import java.util.List;
 
 @Config
-@TeleOp(name = "TeleOp Main Robo2", group = "Main")
+@TeleOp(name = "TeleOp Main", group = "Main")
 public class TeleOpMain extends CommandOpMode {
     GamepadEx controller;
 
@@ -111,6 +111,8 @@ public class TeleOpMain extends CommandOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         //telemetry.setMsTransmissionInterval(250);
 
+        register(turret, launcher, intake, limelight);
+
         follower.startTeleopDrive(true);
 
         turret.setTurretState(Turret.TurretState.IDLE);
@@ -162,9 +164,9 @@ public class TeleOpMain extends CommandOpMode {
 
         //intake trage
         rightTrigger.whileActiveOnce(
-                new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
+            new ShootCommand(launcher, limelight, turret, intake, mixedAim)
         ).whenInactive(
-                new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
+            new StopLaunchCommand(launcher, turret, intake, limelight)
         );
 
 
@@ -176,9 +178,9 @@ public class TeleOpMain extends CommandOpMode {
         );
 
         controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenHeld(
-                new ShootCommand(launcher, limelight, turret, intake, mixedAim)
+                new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
         ).whenInactive(
-                new StopLaunchCommand(launcher, turret, intake, limelight)
+                new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
 
         //reset position odometrie
@@ -209,7 +211,6 @@ public class TeleOpMain extends CommandOpMode {
         );
 
 
-        register(turret, launcher, intake, limelight);
     }
 
     /**
@@ -251,12 +252,12 @@ public class TeleOpMain extends CommandOpMode {
         } else{
             follower.setTeleOpDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         }*/
-        if(gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0){
-            follower.holdPoint(follower.getPose());
-        }
-        else{
+//        if(gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0){
+//            follower.holdPoint(follower.getPose());
+//        }
+//        else{
             follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
-        }
+        //}
 
         updateLEDs();
 
