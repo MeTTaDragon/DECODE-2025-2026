@@ -81,6 +81,9 @@ public class LimelightSubsystem extends SubsystemBase {
                 break;
             case PAUSE:
                 limelight.pause();
+                lltx = 0;
+                llty = 0;
+                llta = 0;
                 break;
         }
     }

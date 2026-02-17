@@ -37,7 +37,6 @@ import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.farHoodPose;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperClose;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperOpen;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.targetVelocity;
 
 import java.util.List;
 
@@ -217,7 +216,7 @@ public class TeleOpMain extends CommandOpMode {
             ledShooter.setPosition(LED_WHITE);
         }
 
-        if(launcher.isVelocityReached() && launcher.getTargetVelocity() > 0) {
+        if(launcher.isVelocityReached() ) {
             ledAlliance.setPosition(LED_GREEN);
         }
         else {

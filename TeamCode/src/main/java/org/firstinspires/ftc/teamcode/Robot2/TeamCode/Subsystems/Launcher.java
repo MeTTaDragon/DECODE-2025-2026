@@ -248,13 +248,13 @@ public class Launcher extends SubsystemBase {
             setHoodPose(farHoodPose);
             targetvelocity_compensate = -10 + add_comp;
         } else {
-            if(getDistance() <=58 )
+            if(getDistance() <= 58 )
             {
                 setHoodPose(veryCloseHoodPose);
                 targetvelocity_compensate = 50;//cand e foarte aproape da ft incet
             } else{
                 setHoodPose(closeHoodPose);
-                targetvelocity_compensate = 20;
+                targetvelocity_compensate = 0;
             }
 
         }
