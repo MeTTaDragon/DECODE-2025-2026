@@ -11,7 +11,7 @@ public class LauncherStateCommand extends InstantCommand {
     public LauncherStateCommand(Launcher launcherSubsystem, Launcher.LauncherState state) {
         this.launcher = launcherSubsystem;
         this.state = state;
-        addRequirements(launcherSubsystem);
+        addRequirements(launcher);
     }
 
     //set the parameter as a runnable(a lambda) for custom calls

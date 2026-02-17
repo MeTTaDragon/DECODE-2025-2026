@@ -25,7 +25,7 @@ public class ShootCommand extends SequentialCommandGroup {
     public ShootCommand(Launcher launcher, LimelightSubsystem limelight, Turret turret, Intake intake, boolean mixedAim) {
         addCommands(
                 new MixedAimCommand(turret, limelight, mixedAim),
-                new WaitUntilCommand(() -> lltx < 1 && launcher.isVelocityReached()),
+                new WaitUntilCommand(() -> (!mixedAim || lltx < 2) && launcher.isVelocityReached()),
                 new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
         );
     }

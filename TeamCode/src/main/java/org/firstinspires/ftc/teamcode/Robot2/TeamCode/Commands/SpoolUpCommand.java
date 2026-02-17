@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands;
 
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 
-public class SpoolUpCommand extends ParallelCommandGroup {
+public class SpoolUpCommand extends SequentialCommandGroup {
     public SpoolUpCommand(Launcher launcher, LimelightSubsystem limelight) {
         addCommands(
                 new LauncherStateCommand(launcher, Launcher.LauncherState.SHOOTING),
