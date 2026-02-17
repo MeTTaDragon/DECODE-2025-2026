@@ -37,6 +37,7 @@ import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.farHoodPose;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperClose;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperOpen;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.targetVelocity;
 
 import java.util.List;
 
@@ -120,20 +121,8 @@ public class TeleOpMain extends CommandOpMode {
         launcher.init();
 
 
-        controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> turret.setTurretState(Turret.TurretState.FULL_PINPOINT), turret)
-        );
-        //hood far zone
-        controller.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new InstantCommand(() -> {
-                    launcher.setHoodPose(farHoodPose);
-                })
-        );
-        //hood close zone
-        controller.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new InstantCommand(() -> {
-                    launcher.setHoodPose(closeHoodPose);
-                })
+        controller.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                new InstantCommand(() -> mixedAim = !mixedAim)
         );
 
         controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
@@ -148,9 +137,7 @@ public class TeleOpMain extends CommandOpMode {
         );
         //close stopper
         controller.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> {
-                    launcher.setStopperPose(stopperClose);
-                })
+                new InstantCommand(() -> launcher.setStopperPose(stopperClose))
         );
 
         Trigger rightTrigger = new Trigger(() -> gamepad1.right_trigger > 0.1);
@@ -164,7 +151,7 @@ public class TeleOpMain extends CommandOpMode {
 
         //intake trage
         rightTrigger.whileActiveOnce(
-            new ShootCommand(launcher, limelight, turret, intake, mixedAim)
+                new ShootCommand(launcher, limelight, turret, intake, mixedAim)
         ).whenInactive(
             new StopLaunchCommand(launcher, turret, intake, limelight)
         );
@@ -187,7 +174,6 @@ public class TeleOpMain extends CommandOpMode {
         controller.getGamepadButton(GamepadKeys.Button.TOUCHPAD).whenPressed(
                 new InstantCommand(() ->  {
                     follower.setPose(new Pose(72, 7.5, Math.toRadians(90)));
-                    mixedAim = true;
                     rumbled = false;
                 })
         );
@@ -209,8 +195,6 @@ public class TeleOpMain extends CommandOpMode {
                 }
                 )
         );
-
-
     }
 
     /**
@@ -233,14 +217,20 @@ public class TeleOpMain extends CommandOpMode {
             ledShooter.setPosition(LED_WHITE);
         }
 
-        // Alliance Color Logic
-        if (alliance == Alliance.RED) {
-            ledAlliance.setPosition(0.28);
-        } else if (alliance == Alliance.BLUE) {
-            ledAlliance.setPosition(0.61);
-        } else {
-            ledAlliance.setPosition(0);
+        if(launcher.isVelocityReached() && launcher.getTargetVelocity() > 0) {
+            ledAlliance.setPosition(LED_GREEN);
         }
+        else {
+            // Alliance Color Logic
+            if (alliance == Alliance.RED) {
+                ledAlliance.setPosition(0.28);
+            } else if (alliance == Alliance.BLUE) {
+                ledAlliance.setPosition(0.61);
+            } else {
+                ledAlliance.setPosition(0);
+            }
+        }
+
     }
 
     public void run() {
@@ -266,9 +256,6 @@ public class TeleOpMain extends CommandOpMode {
             gamepad1.runRumbleEffect(customRumbleEffect);
         }
 
-        if(gamepad1.triangleWasPressed()){
-            mixedAim = !mixedAim;
-        }
 
         telemetry.addData("Current velocity", launcher.getVelocity());
         telemetry.addData("Target velocity", launcher.getTargetVelocity());
@@ -282,10 +269,8 @@ public class TeleOpMain extends CommandOpMode {
         telemetry.addData("limelight mode", limelight.getCurrentMode());
         telemetry.addData("ta", llta);
         telemetry.addData("tx", lltx);
-        telemetry.addData("ty", llty);
         telemetry.addData("llRx", llRx);
         telemetry.addData("llRy", llRy);
-        telemetry.addData("imu heading", imuHeading);
         telemetry.addData("Intake Target Vel " , intake.getTargetVelocity());
         telemetry.addData("Intake Current Vel " , intake.getCurrentVelocity());
 

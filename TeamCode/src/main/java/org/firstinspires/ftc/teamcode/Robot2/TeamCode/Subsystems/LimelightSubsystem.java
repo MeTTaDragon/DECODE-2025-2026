@@ -111,10 +111,10 @@ public class LimelightSubsystem extends SubsystemBase {
                 robotCoordsX = botpose.getPosition().toUnit(DistanceUnit.INCH).x;
                 robotCoordsY = botpose.getPosition().toUnit(DistanceUnit.INCH).y;
 
-                llPose = new Pose(robotCoordsX, robotCoordsY, 0);
+                llPose = new Pose(robotCoordsX, robotCoordsY, 0, FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE);
 
-                llRx = llPose.getX();
-                llRy = llPose.getY();
+                llRx = llPose.getX() + 72;
+                llRy = llPose.getY() + 72;
             }
         }
     }
@@ -136,6 +136,10 @@ public class LimelightSubsystem extends SubsystemBase {
 
                 llRx = llPose.getX();
                 llRy = llPose.getY();
+
+                if(llRx > 0 && llRx < 144 && llRy > 0 && llRy < 144){
+                    follower.setPose(new Pose(llRx, llRy, follower.getHeading()));
+                }
             }
         }
     }
@@ -179,5 +183,6 @@ public class LimelightSubsystem extends SubsystemBase {
 
         // 3. Update pose if needed (Optional, only if IMU is active)
         Megatag();
+
     }
 }
