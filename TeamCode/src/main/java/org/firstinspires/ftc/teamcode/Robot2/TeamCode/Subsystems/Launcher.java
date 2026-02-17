@@ -60,7 +60,7 @@ public class Launcher extends SubsystemBase {
 
     private PIDFController launcherController;
 
-    Pose goalPose;
+    public Pose goalPose;
 
 
     public enum LauncherState{
@@ -255,7 +255,7 @@ public class Launcher extends SubsystemBase {
                 targetvelocity_compensate = 50;//cand e foarte aproape da ft incet
             } else{
                 setHoodPose(closeHoodPose);
-                targetvelocity_compensate = 20;
+                targetvelocity_compensate = 0;
             }
 
         }
