@@ -33,7 +33,6 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsys
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 
-@Autonomous(name = "Red Far Human x3", group = "Auto red")
 public class RedFarHuman extends CommandOpMode {
     Intake intake;
     Launcher launcher;
@@ -200,6 +199,13 @@ public class RedFarHuman extends CommandOpMode {
         );
 
         schedule(autonomousSequence);
+    }
+
+    @Override
+    public void initialize_loop(){
+        telemetry.addLine(
+                "OpMode selected"
+        );
     }
 
     @Override
