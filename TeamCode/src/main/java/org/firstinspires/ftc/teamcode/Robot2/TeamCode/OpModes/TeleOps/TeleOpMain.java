@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
@@ -25,6 +26,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.FullLaunchCommand
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootOnFlyCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
@@ -80,6 +82,7 @@ public class TeleOpMain extends CommandOpMode {
     private static double totallooptime = 0;
     private static double loops = 0;
     boolean mixedAim = true;
+    boolean shootOnFly = false;
 
     @Override
     public void initialize() {
@@ -111,7 +114,7 @@ public class TeleOpMain extends CommandOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         //telemetry.setMsTransmissionInterval(250);
 
-        register(turret, launcher, intake, limelight);
+        register(launcher, turret, intake, limelight); // launcher before turret: SOF reads Launcher statics
 
         follower.startTeleopDrive(true);
 
@@ -122,6 +125,11 @@ public class TeleOpMain extends CommandOpMode {
 
         controller.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
                 new InstantCommand(() -> mixedAim = !mixedAim)
+        );
+
+        // SQUARE: toggle shoot-on-the-fly mode (vector compensation for moving shots)
+        controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+                new InstantCommand(() -> shootOnFly = !shootOnFly)
         );
 
         controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
@@ -148,9 +156,13 @@ public class TeleOpMain extends CommandOpMode {
                 new StopLaunchCommand(launcher, turret, intake, limelight)
         );
 
-        //intake trage
+        //intake trage — ConditionalCommand evaluates () -> shootOnFly at schedule time (runtime)
         rightTrigger.whileActiveOnce(
-                new ShootCommand(launcher, limelight, turret, intake, mixedAim)
+                new ConditionalCommand(
+                        new ShootOnFlyCommand(launcher, turret, intake),
+                        new ShootCommand(launcher, limelight, turret, intake, mixedAim),
+                        () -> shootOnFly
+                )
         ).whenInactive(
             new StopLaunchCommand(launcher, turret, intake, limelight)
         );
@@ -265,6 +277,9 @@ public class TeleOpMain extends CommandOpMode {
         telemetry.addData("turret target heading", Math.toDegrees(turret.getTargetHeading()));
         telemetry.addData("distance", launcher.getDistance());
         telemetry.addData("alliance", alliance);
+        telemetry.addData("SOF Mode", shootOnFly);
+        telemetry.addData("SOF baseTargetVel", Launcher.baseTargetVelocity);
+        telemetry.addData("SOF requiredSpeed", requiredSpeed);
         telemetry.addData("limelight mode", limelight.getCurrentMode());
         telemetry.addData("ta", llta);
         telemetry.addData("tx", lltx);

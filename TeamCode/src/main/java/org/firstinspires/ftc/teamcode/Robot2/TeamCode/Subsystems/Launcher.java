@@ -47,15 +47,19 @@ public class Launcher extends SubsystemBase {
     public static double D = 0;
     public static double I = 0;
 
-    //vel far zone: 1940
-    //vel close middle: 1200
-    //vel next to goal:
     public boolean Manual_shooting = false;
     public static double minPowerDiff = 0.0001;
     public static double lastPower = 0.0;
 
     public static boolean useLimelight = true;
     public static double add_comp = 0;
+
+    // --- SHOOT-ON-THE-FLY CONSTANTS ---
+    // GoBILDA 5000 series 6000RPM, 28 ticks/rev, 72mm flywheel, 0.45 transfer efficiency
+    // K_LAUNCHER = 0.45 × π × 0.072m × 39.37in/m / 28 ticks/rev ≈ 0.1431 (in/s per tick/s) transforma getvelocity in viteza mingi de iesire totala
+    public static double K_LAUNCHER = 0.1431;
+    public static double currentHoodAngleDeg = 47.0;  // updated every loop, read by Turret
+    public static double baseTargetVelocity  = 0.0;   // uncompensated velocity, read by Turret
 
     private PIDFController launcherController;
 
@@ -241,33 +245,28 @@ public class Launcher extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        //updateStopperState();
         updateLauncherState();
 
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
             targetvelocity_compensate = -10 + add_comp;
+            currentHoodAngleDeg = 47.0;
         } else {
             if(getDistance() <= 58 )
             {
                 setHoodPose(veryCloseHoodPose);
                 targetvelocity_compensate = 50;//cand e foarte aproape da ft incet
+                currentHoodAngleDeg = 31.0;
             } else{
                 setHoodPose(closeHoodPose);
                 targetvelocity_compensate = 0;
+                currentHoodAngleDeg = 38.7;
             }
-
         }
 
-        //completeaza cu functia de distanta
-//        if(!currentLauncherState.equals(LauncherState.IDLE) && !useLimelight) {
-//            targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + targetvelocity_compensate; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda -> OK, mersi!-Dragos
-//        }
-//        else if(!currentLauncherState.equals(LauncherState.IDLE) && useLimelight){
-//            targetVelocity = Math.pow(llta, -0.17) * 1618.302 + targetvelocity_compensate;
-//        }
-
-        targetVelocity = Math.pow(getDistance(), 0.4706919) * 189.0741 + targetvelocity_compensate; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda -> OK, mersi!-Dragos
+        // Base (stationary) velocity — also read by Turret for SOF angle+speed compensation
+        baseTargetVelocity = Math.pow(getDistance(), 0.4706919) * 189.0741 + targetvelocity_compensate;
+        targetVelocity = baseTargetVelocity;
 
     }
 }

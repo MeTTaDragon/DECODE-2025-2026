@@ -45,6 +45,8 @@ public class Turret extends SubsystemBase {
     // Try P = 0.8 or higher if it doesn't move fast enough.
     public static double P = 0.09, I = 0, D = 0.001, F = 0.8;
     public static double ll_P = 0.09, ll_I = 0, ll_D = 0, ll_F = 0.8;
+    public static double PREDICTION_LOOKAHEAD_S = 0.030;  // 30ms control hub latency compensation
+    public static double SOF_TURRET_TOLERANCE_DEG = 3.0;  // "close enough" threshold for isNearSetPoint
     // Hardware Constants
     double gearRatio = 5.75;
     double TicksPerRev = 145.1; // Motor internal PPR
@@ -54,6 +56,7 @@ public class Turret extends SubsystemBase {
         FULL_LIMELIGHT,
         FULL_PINPOINT,
         MIXED,
+        SHOOT_ON_THE_FLY,
     }
     private static TurretState currentTurretState = TurretState.IDLE;
 
@@ -163,6 +166,46 @@ public class Turret extends SubsystemBase {
 
             case MIXED:
                 break;
+
+            case SHOOT_ON_THE_FLY:
+                turretController.setPIDF(P, I, D, F);
+
+                Pose sofPose = follower.getPose();
+                double vRxS = follower.getVelocity().getXComponent();
+                double vRyS = follower.getVelocity().getYComponent();
+
+                // Latency-compensated robot position (accounts for ~30ms control hub loop)
+                double predX = sofPose.getX() + vRxS * PREDICTION_LOOKAHEAD_S;
+                double predY = sofPose.getY() + vRyS * PREDICTION_LOOKAHEAD_S;
+
+                // Direction from predicted position to goal
+                double sofDX = targetGoalPose.getX() - predX;
+                double sofDY = targetGoalPose.getY() - predY;
+                double sofDist = Math.sqrt(sofDX * sofDX + sofDY * sofDY);
+
+                // Ball horizontal exit speed (in/s): K × flywheelTicks/s × cos(hoodAngle)
+                double cosHood = Math.cos(Math.toRadians(Launcher.currentHoodAngleDeg));
+                double vBallH = Launcher.K_LAUNCHER * Launcher.baseTargetVelocity * cosHood;
+
+                // Compensated shot vector: ball must exit at this field-centric velocity
+                // so that (V_shot_robot + V_robot) = V_ideal_to_goal
+                double sofShotX = (sofDX / sofDist) * vBallH - vRxS;
+                double sofShotY = (sofDY / sofDist) * vBallH - vRyS;
+
+                // New turret heading: field-centric angle → local (robot-relative), radians
+                double sofFieldHeading = Math.atan2(sofShotY, sofShotX);
+                targetHeading = sofFieldHeading - sofPose.getHeading();
+                double sofError = angleWrap(targetHeading - getTurretHeading());
+
+                power = turretController.calculate(0, sofError);
+                motorTureta.setPower(power);
+
+                // Flywheel speed compensation: back-convert |V_shot| to ticks/s for launcher PIDF
+                double newBallH = Math.sqrt(sofShotX * sofShotX + sofShotY * sofShotY);
+                if (Launcher.K_LAUNCHER > 0.001 && cosHood > 0.01) {
+                    requiredSpeed = newBallH / (Launcher.K_LAUNCHER * cosHood);
+                }
+                break;
         }
     }
 
@@ -192,6 +235,10 @@ public class Turret extends SubsystemBase {
         return targetHeading;
     }
 
+    public boolean isNearSetPoint() {
+        return Math.abs(angleWrap(targetHeading - getTurretHeading()))
+                < Math.toRadians(SOF_TURRET_TOLERANCE_DEG);
+    }
 
     @Override
     public void periodic() {
