@@ -185,7 +185,7 @@ public class Turret extends SubsystemBase {
 
                 // Ball horizontal exit speed (in/s): K × flywheelTicks/s × cos(hoodAngle)
                 double cosHood = Math.cos(Math.toRadians(Launcher.currentHoodAngleDeg));
-                double vBallH = Launcher.K_LAUNCHER * Launcher.baseTargetVelocity * cosHood;
+                double vBallH = Launcher.K_LAUNCHER * Launcher.baseTargetVelocity * cosHood;//this is the 2d plane orizontal ball exit velocity
 
                 // Compensated shot vector: ball must exit at this field-centric velocity
                 // so that (V_shot_robot + V_robot) = V_ideal_to_goal
