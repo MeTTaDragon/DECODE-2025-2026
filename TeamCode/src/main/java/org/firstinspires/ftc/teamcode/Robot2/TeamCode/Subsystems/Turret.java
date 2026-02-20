@@ -27,6 +27,8 @@ public class Turret extends SubsystemBase {
     double robotAngle;
     double power;
 
+    public static boolean isChoking;
+
 
     double targetHeading;
 
@@ -133,6 +135,8 @@ public class Turret extends SubsystemBase {
                 // If the error is 350 degrees, it converts it to -10 degrees.
                 double error = angleWrap(targetHeading - currentLocalHeading);
 
+
+
                 // 6. PID Calculation
                 // We calculate power to drive 'error' to 0.
                 // Note: PIDFController.calculate(measured, setpoint)
@@ -179,7 +183,10 @@ public class Turret extends SubsystemBase {
     public void periodic() {
         robotAngle = follower.getPose().getHeading();
 
-
+        if(((Math.abs(getTargetHeading() - getTurretHeading())) > 360) && (getCurrentTurretState() == TurretState.FULL_PINPOINT)) {
+            setTurretState(TurretState.IDLE);
+            setTurretState(TurretState.FULL_PINPOINT);
+        }
 
         update();
     }

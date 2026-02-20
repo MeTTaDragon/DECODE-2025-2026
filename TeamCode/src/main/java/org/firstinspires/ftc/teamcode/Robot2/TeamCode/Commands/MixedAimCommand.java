@@ -13,7 +13,7 @@ public class MixedAimCommand extends SequentialCommandGroup {
         if(!mixedAim) {
             addCommands(
                     new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET),
-                    new TurretStateCommand(turret, Turret.TurretState.FULL_LIMELIGHT)
+                    new TurretStateCommand(turret, Turret.TurretState.FULL_PINPOINT)
             );
         }
         else {
