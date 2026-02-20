@@ -36,8 +36,15 @@ public class Turret extends SubsystemBase {
     double robotAngle;
     double power;
 
+    //antistrangulare for always lock on
+     public static boolean isChoking;
+    private long resetStartTime = 0;
+    private boolean isResetting = false;
+    private static TurretState stateBeforeReset;
+
 
     double targetHeading;
+    private double prevLltx = 0.0;  // previous lltx for derivative-based limelight latency prediction
 
     // PID Coefficients
     // Note: Since we are using Radians, the error is small (e.g., 0.5 rads).
@@ -47,6 +54,10 @@ public class Turret extends SubsystemBase {
     public static double ll_P = 0.09, ll_I = 0, ll_D = 0, ll_F = 0.8;
     public static double PREDICTION_LOOKAHEAD_S = 0.030;  // 30ms control hub latency compensation
     public static double SOF_TURRET_TOLERANCE_DEG = 3.0;  // "close enough" threshold for isNearSetPoint
+    public static double LL_SOF_BLEND_FACTOR  = 0.1;    // limelight correction weight (10%); 0=pure SOF, 1=full limelight
+    public static double LL_SOF_THRESHOLD_DEG = 5.0;    // only blend when |lltx| is under this (degrees)
+    public static double LIMELIGHT_LATENCY_S  = 0.050;  // Limelight 3A hardware latency to predict forward
+    public static double LOOP_TIME_S          = 0.020;  // assumed loop period for lltx derivative (seconds)
     // Hardware Constants
     double gearRatio = 5.75;
     double TicksPerRev = 145.1; // Motor internal PPR
@@ -156,6 +167,29 @@ public class Turret extends SubsystemBase {
                 break;
 
             case MIXED:
+                turretController.setPIDF(P, I, D, F);
+
+                // Primary: FULL_PINPOINT odometry heading (same math as FULL_PINPOINT case)
+                Pose mixedPose = follower.getPose();
+                double mixedFieldHeading = Math.atan2(
+                        targetGoalPose.getY() - mixedPose.getY(),
+                        targetGoalPose.getX() - mixedPose.getX());
+                targetHeading = mixedFieldHeading - mixedPose.getHeading();
+
+                // Secondary: limelight fine-trim (10%) on top — no state switch, just nudge
+                if (llta > 0) {
+                    double dlltxPerSec = (lltx - prevLltx) / LOOP_TIME_S;
+                    dlltxPerSec = Math.max(-500, Math.min(500, dlltxPerSec));
+                    double lltxPredicted = lltx + dlltxPerSec * LIMELIGHT_LATENCY_S;
+                    if (Math.abs(lltxPredicted) < LL_SOF_THRESHOLD_DEG) {
+                        targetHeading += Math.toRadians(-lltxPredicted) * LL_SOF_BLEND_FACTOR;
+                    }
+                }
+                prevLltx = lltx;
+
+                double mixedError = angleWrap(targetHeading - getTurretHeading());
+                power = turretController.calculate(0, mixedError);
+                motorTureta.setPower(power);
                 break;
 
             case SHOOT_ON_THE_FLY:
@@ -186,6 +220,21 @@ public class Turret extends SubsystemBase {
                 // New turret heading: field-centric angle → local (robot-relative), radians
                 double sofFieldHeading = Math.atan2(sofShotY, sofShotX);
                 targetHeading = sofFieldHeading - sofPose.getHeading();
+
+                // --- Limelight blend (10%) with latency prediction ---
+                // SOF handles 90% (motion compensation). Limelight trims the remaining 10%
+                // once it locks onto the target, accounting for Limelight 3A hardware latency.
+                if (llta > 0) {  // llta > 0 = limelight actively sees the target
+                    double dlltxPerSec = (lltx - prevLltx) / LOOP_TIME_S;
+                    dlltxPerSec = Math.max(-500, Math.min(500, dlltxPerSec));  // clamp derivative
+                    double lltxPredicted = lltx + dlltxPerSec * LIMELIGHT_LATENCY_S;
+                    if (Math.abs(lltxPredicted) < LL_SOF_THRESHOLD_DEG) {
+                        // positive lltx = target right of camera → turret must rotate left
+                        targetHeading += Math.toRadians(-lltxPredicted) * LL_SOF_BLEND_FACTOR;
+                    }
+                }
+                prevLltx = lltx;  // always update for next loop
+
                 double sofError = angleWrap(targetHeading - getTurretHeading());
 
                 power = turretController.calculate(0, sofError);
@@ -234,6 +283,23 @@ public class Turret extends SubsystemBase {
     @Override
     public void periodic() {
         robotAngle = follower.getPose().getHeading();
+        
+         if (Math.abs(Math.toDegrees(getTurretHeading())) > 170 && !isResetting) {
+            stateBeforeReset = getCurrentTurretState();
+            setTurretState(TurretState.IDLE);
+            //basically wait command 500 ms
+            resetStartTime = System.currentTimeMillis();
+            isResetting = true;
+        }
+
+        // Check if the "wait" is over
+        if (isResetting) {
+            // Wait for 500ms (0.5 seconds) - adjust as needed for cable safety
+            if (System.currentTimeMillis() - resetStartTime > 500) {
+                setTurretState(stateBeforeReset);
+                isResetting = false; // Reset the flag
+            }
+        }
 
         update();
     }

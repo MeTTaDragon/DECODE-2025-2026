@@ -159,7 +159,7 @@ public class TeleOpMain extends CommandOpMode {
         //intake trage — ConditionalCommand evaluates () -> shootOnFly at schedule time (runtime)
         rightTrigger.whileActiveOnce(
                 new ConditionalCommand(
-                        new ShootOnFlyCommand(launcher, turret, intake),
+                        new ShootOnFlyCommand(launcher, turret, intake, limelight),
                         new ShootCommand(launcher, limelight, turret, intake, mixedAim),
                         () -> shootOnFly
                 )
