@@ -28,6 +28,8 @@ public class Turret extends SubsystemBase {
     double power;
 
     public static boolean isChoking;
+    private long resetStartTime = 0;
+    private boolean isResetting = false;
 
 
     double targetHeading;
@@ -168,9 +170,11 @@ public class Turret extends SubsystemBase {
     private double angleWrap(double angle) {
         while (angle > Math.PI) {
             angle -= 2 * Math.PI;
+            isChoking = true;
         }
         while (angle < -Math.PI) {
             angle += 2 * Math.PI;
+            isChoking = true;
         }
         return angle;
     }
@@ -183,9 +187,20 @@ public class Turret extends SubsystemBase {
     public void periodic() {
         robotAngle = follower.getPose().getHeading();
 
-        if(((Math.abs(getTargetHeading() - getTurretHeading())) > 360) && (getCurrentTurretState() == TurretState.FULL_PINPOINT)) {
+        if (Math.abs(Math.toDegrees(getTurretHeading())) > 170 && !isResetting) {
             setTurretState(TurretState.IDLE);
-            setTurretState(TurretState.FULL_PINPOINT);
+            //basically wait command 500 ms
+            resetStartTime = System.currentTimeMillis();
+            isResetting = true;
+        }
+
+        // Check if the "wait" is over
+        if (isResetting) {
+            // Wait for 500ms (0.5 seconds) - adjust as needed for cable safety
+            if (System.currentTimeMillis() - resetStartTime > 500) {
+                setTurretState(TurretState.FULL_PINPOINT);
+                isResetting = false; // Reset the flag
+            }
         }
 
         update();

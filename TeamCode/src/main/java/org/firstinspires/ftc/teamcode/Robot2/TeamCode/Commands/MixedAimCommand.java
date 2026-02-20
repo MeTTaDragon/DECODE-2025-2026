@@ -13,16 +13,16 @@ public class MixedAimCommand extends SequentialCommandGroup {
         if(!mixedAim) {
             addCommands(
                     new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET),
-                    new TurretStateCommand(turret, Turret.TurretState.FULL_PINPOINT)
+                    new TurretStateCommand(turret, Turret.TurretState.FULL_LIMELIGHT)
             );
         }
         else {
             addCommands(
                     new TurretStateCommand(turret, Turret.TurretState.IDLE),
-                    new TurretStateCommand(turret, Turret.TurretState.FULL_PINPOINT),
-                    new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET),
-                    new WaitUntilCommand(() -> lltx != 0),
-                    new TurretStateCommand(turret, Turret.TurretState.FULL_LIMELIGHT)
+                    new TurretStateCommand(turret, Turret.TurretState.FULL_PINPOINT)
+                    //new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET),
+                    //new WaitUntilCommand(() -> lltx != 0),
+                    //new TurretStateCommand(turret, Turret.TurretState.FULL_LIMELIGHT)
             );
         }
     }
