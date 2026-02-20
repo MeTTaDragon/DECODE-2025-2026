@@ -120,8 +120,6 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
         super.reset();
         alliance = Alliance.RED;
 
-        boolean mixedAim = true;
-
         // Initialize Follower and Subsystems
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
@@ -138,7 +136,7 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
                 // --- Preload ---
-                new SpoolDriveShoot(follower, paths.Path1, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, paths.Path1, launcher, turret, intake, limelight),
 
                 // --- Sample 1 ---
                 // New Trajectory split: Path2 (Approach) + Path3 (Curve to Intake)
@@ -147,19 +145,19 @@ public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
                 new IntakeDrive(follower, paths.Path3, intake, 500),
 
                 // --- Shoot 1 ---
-                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight),
 
                 // --- Sample 2 ---
                 new IntakeDrive(follower, paths.Path5, intake, 500),
 
                 // --- Shoot 2 ---
-                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight),
 
                 // --- Sample 3 ---
                 new IntakeDrive(follower, paths.Path7, intake, 500),
 
                 // --- Shoot 3 ---
-                new SpoolDriveShoot(follower, paths.Path8, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, paths.Path8, launcher, turret, intake, limelight),
 
                 // --- Park ---
                 new FollowPathCommand(follower, paths.Path9),

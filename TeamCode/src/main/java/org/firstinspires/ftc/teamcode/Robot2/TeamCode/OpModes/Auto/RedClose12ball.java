@@ -105,8 +105,6 @@ public class RedClose12ball extends CommandOpMode {
 
         alliance = Alliance.RED;
 
-        boolean mixedAim = true;
-
         // Initialize Follower and Subsystems
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
@@ -121,11 +119,11 @@ public class RedClose12ball extends CommandOpMode {
         buildPaths();
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-                new SpoolDriveShoot(follower, path1, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, path1, launcher, turret, intake, limelight),
 
                 new IntakeDrive(follower, path2, intake, 500),
 
-                new SpoolDriveShoot(follower, path3, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, path3, launcher, turret, intake, limelight),
 
                 new IntakeDrive(follower, path4, intake, 500),
 
@@ -133,11 +131,11 @@ public class RedClose12ball extends CommandOpMode {
                 new SavePoseCommand(follower),
                 new WaitCommand(325),
 
-                new SpoolDriveShoot(follower, path5, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, path5, launcher, turret, intake, limelight),
 
                 new IntakeDrive(follower, path6, intake, 500),
 
-                new SpoolDriveShoot(follower, path7, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, path7, launcher, turret, intake, limelight),
 
                 new FollowPathCommand(follower, path8),
                 new SavePoseCommand(follower)

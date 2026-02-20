@@ -24,7 +24,7 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.IntakeDrive;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.SpoolDriveShoot;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
@@ -145,8 +145,6 @@ public class RedFarHuman extends CommandOpMode {
         // CHANGED TO RED
         alliance = Alliance.RED;
 
-        boolean mixedAim = true;
-
         // Initialize Follower and Subsystems
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
@@ -167,7 +165,7 @@ public class RedFarHuman extends CommandOpMode {
                 // 1. Launch Preload immediately on start
                 new SpoolUpCommand(launcher, limelight),
                 new WaitCommand(1000),
-                new ShootCommand(launcher, limelight, turret, intake, mixedAim),
+                new MixedShootCommand(launcher, turret, intake, limelight),
                 new WaitCommand(800),
                 new StopLaunchCommand(launcher, turret, intake, limelight),
 
@@ -175,7 +173,7 @@ public class RedFarHuman extends CommandOpMode {
                 new IntakeDrive(follower, paths.Path1, intake, 400),
 
                 //3. Go shoot man
-                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight),
 
 
                 //4. Go pick up from human man
@@ -183,7 +181,7 @@ public class RedFarHuman extends CommandOpMode {
 
 
                 //5. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight),
 
 
                 //6. Go human player again man
@@ -191,7 +189,7 @@ public class RedFarHuman extends CommandOpMode {
 
 
                 //7. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight, mixedAim),
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight),
 
 
                 //8. leave launch zone man

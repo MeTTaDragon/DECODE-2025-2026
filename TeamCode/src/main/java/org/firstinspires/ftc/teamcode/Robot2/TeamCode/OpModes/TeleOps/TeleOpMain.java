@@ -25,8 +25,10 @@ import com.seattlesolvers.solverslib.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.FullLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightLaunchCommand;
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightModeCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootOnFlyCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.TurretStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
@@ -81,7 +83,6 @@ public class TeleOpMain extends CommandOpMode {
     boolean rumbled = false;
     private static double totallooptime = 0;
     private static double loops = 0;
-    boolean mixedAim = true;
     boolean shootOnFly = false;
 
     @Override
@@ -123,10 +124,6 @@ public class TeleOpMain extends CommandOpMode {
         launcher.init();
 
 
-        controller.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new InstantCommand(() -> mixedAim = !mixedAim)
-        );
-
         // SQUARE: toggle shoot-on-the-fly mode (vector compensation for moving shots)
         controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> shootOnFly = !shootOnFly)
@@ -150,21 +147,35 @@ public class TeleOpMain extends CommandOpMode {
         Trigger rightTrigger = new Trigger(() -> gamepad1.right_trigger > 0.1);
         Trigger leftTrigger = new Trigger(() -> gamepad1.left_trigger > 0.1);
 
+        // Left trigger: full shoot sequence (SOF or MIXED depending on SQUARE toggle)
         leftTrigger.whileActiveOnce(
-                new SpoolUpCommand(launcher, limelight)
+                new ConditionalCommand(
+                        new ShootOnFlyCommand(launcher, turret, intake, limelight),
+                        new MixedShootCommand(launcher, turret, intake, limelight),
+                        () -> shootOnFly
+                )
         ).whenInactive(
                 new StopLaunchCommand(launcher, turret, intake, limelight)
         );
 
-        //intake trage — ConditionalCommand evaluates () -> shootOnFly at schedule time (runtime)
+        // Right trigger: aim only — turret tracks goal + limelight, no spool/shoot
         rightTrigger.whileActiveOnce(
                 new ConditionalCommand(
-                        new ShootOnFlyCommand(launcher, turret, intake, limelight),
-                        new ShootCommand(launcher, limelight, turret, intake, mixedAim),
+                        new ParallelCommandGroup(
+                                new TurretStateCommand(turret, Turret.TurretState.SHOOT_ON_THE_FLY),
+                                new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET)
+                        ),
+                        new ParallelCommandGroup(
+                                new TurretStateCommand(turret, Turret.TurretState.MIXED),
+                                new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET)
+                        ),
                         () -> shootOnFly
                 )
         ).whenInactive(
-            new StopLaunchCommand(launcher, turret, intake, limelight)
+                new ParallelCommandGroup(
+                        new TurretStateCommand(turret, Turret.TurretState.IDLE),
+                        new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.PAUSE)
+                )
         );
 
 
