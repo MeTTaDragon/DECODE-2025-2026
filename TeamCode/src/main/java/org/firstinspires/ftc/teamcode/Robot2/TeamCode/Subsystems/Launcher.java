@@ -268,5 +268,8 @@ public class Launcher extends SubsystemBase {
         baseTargetVelocity = Math.pow(getDistance(), 0.4706919) * 189.0741 + targetvelocity_compensate;
         targetVelocity = baseTargetVelocity;
 
+        // Set requiredSpeed as fallback - SOF mode in Turret will override this with compensated value
+        requiredSpeed = targetVelocity;
+
     }
 }
