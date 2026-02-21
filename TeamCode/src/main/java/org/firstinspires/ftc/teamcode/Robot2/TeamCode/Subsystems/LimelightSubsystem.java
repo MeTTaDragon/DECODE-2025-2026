@@ -9,6 +9,7 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -38,6 +39,8 @@ public class LimelightSubsystem extends SubsystemBase {
 
     Pose llPose;
 
+    // Automatic relocalization rate limiter
+    private ElapsedTime relocalizationCooldown = new ElapsedTime();
 
     public enum LimelightMode {
         READ_PATTERN,
@@ -118,6 +121,14 @@ public class LimelightSubsystem extends SubsystemBase {
 
                 llRx = llPose.getX() + 72;
                 llRy = llPose.getY() + 72;
+
+                // Automatic relocalization with rate limit
+                if(llRx > 0 && llRx < 144 && llRy > 0 && llRy < 144) {
+                    if(relocalizationCooldown.seconds() > 5) {
+                        follower.setPose(new Pose(llRx, llRy, follower.getHeading()));
+                        relocalizationCooldown.reset();
+                    }
+                }
             }
         }
     }
