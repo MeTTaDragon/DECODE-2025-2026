@@ -54,8 +54,7 @@ public class Turret extends SubsystemBase {
     public static double ll_P = 0.09, ll_I = 0, ll_D = 0, ll_F = 0.8;
     public static double PREDICTION_LOOKAHEAD_S = 0.030;  // 30ms control hub latency compensation
     public static double SOF_TURRET_TOLERANCE_DEG = 3.0;  // "close enough" threshold for isNearSetPoint
-    public static double LL_SOF_BLEND_FACTOR  = 0.1;    // limelight correction weight (10%); 0=pure SOF, 1=full limelight
-    public static double LL_SOF_THRESHOLD_DEG = 5.0;    // only blend when |lltx| is under this (degrees)
+    public static double LL_SOF_THRESHOLD_DEG = 25.0;    // only blend when |lltx| is under this (degrees)
     public static double LIMELIGHT_LATENCY_S  = 0.050;  // Limelight 3A hardware latency to predict forward
     public static double LOOP_TIME_S          = 0.020;  // assumed loop period for lltx derivative (seconds)
     // Hardware Constants
@@ -178,14 +177,10 @@ public class Turret extends SubsystemBase {
 
                 // Secondary: limelight fine-trim (10%) on top — no state switch, just nudge
                 if (llta > 0) {
-                    double dlltxPerSec = (lltx - prevLltx) / LOOP_TIME_S;
-                    dlltxPerSec = Math.max(-500, Math.min(500, dlltxPerSec));
-                    double lltxPredicted = lltx + dlltxPerSec * LIMELIGHT_LATENCY_S;
-                    if (Math.abs(lltxPredicted) < LL_SOF_THRESHOLD_DEG) {
-                        targetHeading += Math.toRadians(-lltxPredicted) * LL_SOF_BLEND_FACTOR;
+                    if (Math.abs(lltx) < LL_SOF_THRESHOLD_DEG) {
+                        targetHeading += Math.toRadians(-lltx);
                     }
                 }
-                prevLltx = lltx;
 
                 double mixedError = angleWrap(targetHeading - getTurretHeading());
                 power = turretController.calculate(0, mixedError);
@@ -230,7 +225,7 @@ public class Turret extends SubsystemBase {
                     double lltxPredicted = lltx + dlltxPerSec * LIMELIGHT_LATENCY_S;
                     if (Math.abs(lltxPredicted) < LL_SOF_THRESHOLD_DEG) {
                         // positive lltx = target right of camera → turret must rotate left
-                        targetHeading += Math.toRadians(-lltxPredicted) * LL_SOF_BLEND_FACTOR;
+                        targetHeading += Math.toRadians(-lltxPredicted);
                     }
                 }
                 prevLltx = lltx;  // always update for next loop

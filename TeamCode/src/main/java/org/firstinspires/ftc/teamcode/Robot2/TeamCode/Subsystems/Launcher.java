@@ -28,14 +28,15 @@ public class Launcher extends SubsystemBase {
 
     Follower follower;
     private final Servo hoodServo;
-    private final Servo stopper;
+    private final Servo stopper1;
+    private final Servo stopper2;
     public static double farHoodPose = 0.25;
     public static double closeHoodPose = 0.28;
     public static double veryCloseHoodPose = 0.55;
     public static double middle_Y = 60;
     public static double targetvelocity_compensate = 0;
-    public static double stopperClose = 0.37;
-    public static double stopperOpen = 0.7;
+    public static double stopperClose = 0.2;
+    public static double stopperOpen = 0.52;
 
 
 
@@ -107,9 +108,9 @@ public class Launcher extends SubsystemBase {
         masterMotor = hwMap.get(DcMotorEx.class, "motorDreapta"); // MUST have encoder cable
         followerMotor = hwMap.get(DcMotorEx.class, "motorStanga");// Encoder optional/ignored
         hoodServo = hwMap.get(Servo.class, "hoodServo");
-        stopper = hwMap.get(Servo.class, "stopper");
+        stopper1 = hwMap.get(Servo.class, "stopper1");
+        stopper2 = hwMap.get(Servo.class, "stopper2");
         follower = flwr;
-
 
 
         // 3. Set to RUN_WITHOUT_ENCODER
@@ -225,7 +226,8 @@ public class Launcher extends SubsystemBase {
     }
 
     public void setStopperPose(double pos) {
-        stopper.setPosition(pos);
+        stopper1.setPosition(pos);
+        stopper2.setPosition(pos);
     }
 
     public double getDistance(){
@@ -237,7 +239,7 @@ public class Launcher extends SubsystemBase {
     }
 
     public boolean isStopperOpen(){
-        return stopper.getPosition() == stopperOpen;
+        return stopper1.getPosition() == stopperOpen;
     }
 
     /**

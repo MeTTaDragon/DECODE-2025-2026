@@ -28,6 +28,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightLaunchCo
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightModeCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootOnFlyCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopperPoseCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.TurretStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
@@ -143,6 +144,7 @@ public class TeleOpMain extends CommandOpMode {
         controller.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() -> launcher.setStopperPose(stopperClose))
         );
+
 
         Trigger rightTrigger = new Trigger(() -> gamepad1.right_trigger > 0.1);
         Trigger leftTrigger = new Trigger(() -> gamepad1.left_trigger > 0.1);
