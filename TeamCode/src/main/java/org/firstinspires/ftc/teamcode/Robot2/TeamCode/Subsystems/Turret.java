@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -10,8 +11,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
+import com.seattlesolvers.solverslib.geometry.Translation2d;
+import com.seattlesolvers.solverslib.geometry.Vector2d;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
+
+import androidx.core.view.VelocityTrackerCompat;
 
 @Config
 public class Turret extends SubsystemBase {
@@ -23,10 +29,14 @@ public class Turret extends SubsystemBase {
     public Pose goalPose;
     public Pose2d targetGoalPose;
 
+
+    Vector2d targetPosition;
+
     // Variables for logic
     double robotAngle;
     double power;
 
+    //antistrangulare for always lock on
     public static boolean isChoking;
     private long resetStartTime = 0;
     private boolean isResetting = false;
@@ -34,6 +44,7 @@ public class Turret extends SubsystemBase {
 
 
     double targetHeading;
+    private double prevLltx = 0.0;  // previous lltx for derivative-based limelight latency prediction
 
     // PID Coefficients
     // Note: Since we are using Radians, the error is small (e.g., 0.5 rads).
@@ -41,6 +52,11 @@ public class Turret extends SubsystemBase {
     // Try P = 0.8 or higher if it doesn't move fast enough.
     public static double P = 0.09, I = 0, D = 0.001, F = 0.8;
     public static double ll_P = 0.09, ll_I = 0, ll_D = 0, ll_F = 0.8;
+    public static double PREDICTION_LOOKAHEAD_S = 0.030;  // 30ms control hub latency compensation
+    public static double SOF_TURRET_TOLERANCE_DEG = 3.0;  // "close enough" threshold for isNearSetPoint
+    public static double LL_SOF_THRESHOLD_DEG = 25.0;    // only blend when |lltx| is under this (degrees)
+    public static double LIMELIGHT_LATENCY_S  = 0.050;  // Limelight 3A hardware latency to predict forward
+    public static double LOOP_TIME_S          = 0.020;  // assumed loop period for lltx derivative (seconds)
     // Hardware Constants
     double gearRatio = 5.75;
     double TicksPerRev = 145.1; // Motor internal PPR
@@ -50,6 +66,7 @@ public class Turret extends SubsystemBase {
         FULL_LIMELIGHT,
         FULL_PINPOINT,
         MIXED,
+        SHOOT_ON_THE_FLY,
     }
     private static TurretState currentTurretState = TurretState.IDLE;
 
@@ -151,6 +168,80 @@ public class Turret extends SubsystemBase {
                 break;
 
             case MIXED:
+                turretController.setPIDF(P, I, D, F);
+
+                // Primary: FULL_PINPOINT odometry heading (same math as FULL_PINPOINT case)
+                Pose mixedPose = follower.getPose();
+                double mixedFieldHeading = Math.atan2(
+                        targetGoalPose.getY() - mixedPose.getY(),
+                        targetGoalPose.getX() - mixedPose.getX());
+                targetHeading = mixedFieldHeading - mixedPose.getHeading();
+
+                // Secondary: limelight fine-trim (10%) on top — no state switch, just nudge
+                if (llta > 0) {
+                    if (Math.abs(lltx) < LL_SOF_THRESHOLD_DEG) {
+                        targetHeading += Math.toRadians(-lltx);
+                    }
+                }
+
+                double mixedError = angleWrap(targetHeading - getTurretHeading());
+                power = turretController.calculate(0, mixedError);
+                motorTureta.setPower(power);
+                break;
+
+            case SHOOT_ON_THE_FLY:
+                turretController.setPIDF(P, I, D, F);
+
+                Pose sofPose = follower.getPose();
+                double vRxS = follower.getVelocity().getXComponent();
+                double vRyS = follower.getVelocity().getYComponent();
+
+                // Latency-compensated robot position (accounts for ~30ms control hub loop)
+                double predX = sofPose.getX() + vRxS * PREDICTION_LOOKAHEAD_S;
+                double predY = sofPose.getY() + vRyS * PREDICTION_LOOKAHEAD_S;
+
+                // Direction from predicted position to goal
+                double sofDX = targetGoalPose.getX() - predX;
+                double sofDY = targetGoalPose.getY() - predY;
+                double sofDist = Math.sqrt(sofDX * sofDX + sofDY * sofDY);
+
+                // Ball horizontal exit speed (in/s): K × flywheelTicks/s × cos(hoodAngle)
+                double cosHood = Math.cos(Math.toRadians(Launcher.currentHoodAngleDeg));
+                double vBallH = Launcher.K_LAUNCHER * Launcher.baseTargetVelocity * cosHood;//this is the 2d plane orizontal ball exit velocity
+
+                // Compensated shot vector: ball must exit at this field-centric velocity
+                // so that (V_shot_robot + V_robot) = V_ideal_to_goal
+                double sofShotX = (sofDX / sofDist) * vBallH - vRxS;
+                double sofShotY = (sofDY / sofDist) * vBallH - vRyS;
+
+                // New turret heading: field-centric angle → local (robot-relative), radians
+                double sofFieldHeading = Math.atan2(sofShotY, sofShotX);
+                targetHeading = sofFieldHeading - sofPose.getHeading();
+
+                // --- Limelight blend (10%) with latency prediction ---
+                // SOF handles 90% (motion compensation). Limelight trims the remaining 10%
+                // once it locks onto the target, accounting for Limelight 3A hardware latency.
+                if (llta > 0) {  // llta > 0 = limelight actively sees the target
+                    double dlltxPerSec = (lltx - prevLltx) / LOOP_TIME_S;
+                    dlltxPerSec = Math.max(-500, Math.min(500, dlltxPerSec));  // clamp derivative
+                    double lltxPredicted = lltx + dlltxPerSec * LIMELIGHT_LATENCY_S;
+                    if (Math.abs(lltxPredicted) < LL_SOF_THRESHOLD_DEG) {
+                        // positive lltx = target right of camera → turret must rotate left
+                        targetHeading += Math.toRadians(-lltxPredicted);
+                    }
+                }
+                prevLltx = lltx;  // always update for next loop
+
+                double sofError = angleWrap(targetHeading - getTurretHeading());
+
+                power = turretController.calculate(0, sofError);
+                motorTureta.setPower(power);
+
+                // Flywheel speed compensation: back-convert |V_shot| to ticks/s for launcher PIDF
+                double newBallH = Math.sqrt(sofShotX * sofShotX + sofShotY * sofShotY);
+                if (Launcher.K_LAUNCHER > 0.001 && cosHood > 0.01) {
+                    requiredSpeed = newBallH / (Launcher.K_LAUNCHER * cosHood);
+                }
                 break;
         }
     }
@@ -183,19 +274,23 @@ public class Turret extends SubsystemBase {
         return targetHeading;
     }
 
+    public boolean isNearSetPoint() {
+        return Math.abs(angleWrap(targetHeading - getTurretHeading()))
+                < Math.toRadians(SOF_TURRET_TOLERANCE_DEG);
+    }
 
     @Override
     public void periodic() {
         robotAngle = follower.getPose().getHeading();
-
-
-        if (Math.abs(Math.toDegrees(getTurretHeading())) > 170 && !isResetting) {
+        
+         if (Math.abs(Math.toDegrees(getTurretHeading())) > 170 && !isResetting) {
             stateBeforeReset = getCurrentTurretState();
             setTurretState(TurretState.IDLE);
             //basically wait command 500 ms
             resetStartTime = System.currentTimeMillis();
             isResetting = true;
         }
+
 
         // Check if the "wait" is over
         if (isResetting) {

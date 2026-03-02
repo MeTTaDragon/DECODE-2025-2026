@@ -17,6 +17,9 @@ public class Globals {
     public static double llRy;
     public static double llpower;
 
+    public static double targetVelocity = 0;
+    public static double requiredSpeed = 0;
+
     public static double imuHeading = 0;
 
     public static Alliance alliance = Alliance.RED;

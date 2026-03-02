@@ -28,17 +28,17 @@ public class Launcher extends SubsystemBase {
 
     Follower follower;
     private final Servo hoodServo;
-    private final Servo ramp;
+    private final Servo stopper1;
+    private final Servo stopper2;
     public static double farHoodPose = 0.25;
     public static double closeHoodPose = 0.28;
     public static double veryCloseHoodPose = 0.55;
     public static double middle_Y = 60;
     public static double targetvelocity_compensate = 0;
-    public static double stopperClose = 0.37;
-    public static double stopperOpen = 0.7;
-    public static double shootingRamp = 1;
 
-    public static double openRamp = 0.85;
+    public static double stopperClose = 0.2;
+    public static double stopperOpen = 0.52;
+
 
 
 
@@ -50,16 +50,19 @@ public class Launcher extends SubsystemBase {
     public static double D = 0;
     public static double I = 0;
 
-    //vel far zone: 1940
-    //vel close middle: 1200
-    //vel next to goal:
-    public static double targetVelocity = 0.0;
     public boolean Manual_shooting = false;
     public static double minPowerDiff = 0.0001;
     public static double lastPower = 0.0;
 
     public static boolean useLimelight = true;
     public static double add_comp = 0;
+
+    // --- SHOOT-ON-THE-FLY CONSTANTS ---
+    // GoBILDA 5000 series 6000RPM, 28 ticks/rev, 72mm flywheel, 0.45 transfer efficiency
+    // K_LAUNCHER = 0.45 × π × 0.072m × 39.37in/m / 28 ticks/rev ≈ 0.1431 (in/s per tick/s) transforma getvelocity in viteza mingi de iesire totala
+    public static double K_LAUNCHER = 0.1431;
+    public static double currentHoodAngleDeg = 47.0;  // updated every loop, read by Turret
+    public static double baseTargetVelocity  = 0.0;   // uncompensated velocity, read by Turret
 
     private PIDFController launcherController;
 
@@ -107,9 +110,11 @@ public class Launcher extends SubsystemBase {
         masterMotor = hwMap.get(DcMotorEx.class, "motorDreapta"); // MUST have encoder cable
         followerMotor = hwMap.get(DcMotorEx.class, "motorStanga");// Encoder optional/ignored
         hoodServo = hwMap.get(Servo.class, "hoodServo");
-        ramp = hwMap.get(Servo.class, "stopper1");
-        follower = flwr;
 
+        stopper1 = hwMap.get(Servo.class, "stopper1");
+        stopper2 = hwMap.get(Servo.class, "stopper2");
+
+        follower = flwr;
 
 
         // 3. Set to RUN_WITHOUT_ENCODER
@@ -140,7 +145,7 @@ public class Launcher extends SubsystemBase {
         switch (currentLauncherState){
             case IDLE:
                 if(targetVelocity != 0){
-                    setTargetVelocity(0);
+                    //setTargetVelocity(0);
                     setManualVelocity(0);
                 }
 
@@ -150,9 +155,9 @@ public class Launcher extends SubsystemBase {
                 double currentVel = getVelocity();
 
                 // 2. CALCULATE Error
-                double error = targetVelocity - currentVel;
+                double error = requiredSpeed - currentVel;
 
-                launcherController.setSetPoint(targetVelocity);
+                launcherController.setSetPoint(requiredSpeed);
 
                 // 3. CALCULATE Power (PF Controller)
                 // Feedforward (F): Base power to maintain target
@@ -205,9 +210,9 @@ public class Launcher extends SubsystemBase {
     public double getTargetVelocity(){
         return targetVelocity;
     }
-    public static void setTargetVelocity(double targetVelocity) {
-        Launcher.targetVelocity = targetVelocity;
-    }
+//    public static void setTargetVelocity(double targetVelocity) {
+//        Launcher.targetVelocity = targetVelocity;
+//    }
     /**
      * Stops the flywheel.
      */
@@ -226,7 +231,8 @@ public class Launcher extends SubsystemBase {
     }
 
     public void setStopperPose(double pos) {
-        ramp.setPosition(pos);
+        stopper1.setPosition(pos);
+        stopper2.setPosition(pos);
     }
 
     public double getDistance(){
@@ -234,15 +240,11 @@ public class Launcher extends SubsystemBase {
     }
 
     public boolean isVelocityReached() {
-        return getVelocity() > targetVelocity - 50;
+        return getVelocity() > requiredSpeed - 50;
     }
 
     public boolean isStopperOpen(){
-        return ramp.getPosition() == stopperOpen;
-    }
-
-    public void setRampPos(double x) {
-        ramp.setPosition(x);
+        return stopper1.getPosition() == stopperOpen;
     }
 
     /**
@@ -250,34 +252,31 @@ public class Launcher extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        //updateStopperState();
         updateLauncherState();
 
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
             targetvelocity_compensate = -10 + add_comp;
+            currentHoodAngleDeg = 47.0;
         } else {
-            if(getDistance() <=58 )
+            if(getDistance() <= 58 )
             {
                 setHoodPose(veryCloseHoodPose);
                 targetvelocity_compensate = 50;//cand e foarte aproape da ft incet
+                currentHoodAngleDeg = 31.0;
             } else{
                 setHoodPose(closeHoodPose);
                 targetvelocity_compensate = 0;
+                currentHoodAngleDeg = 38.7;
             }
-
         }
 
+        // Base (stationary) velocity — also read by Turret for SOF angle+speed compensation
+        baseTargetVelocity = Math.pow(getDistance(), 0.4706919) * 189.0741 + targetvelocity_compensate;
+        targetVelocity = baseTargetVelocity;
 
-        //completeaza cu functia de distanta
-//        if(!currentLauncherState.equals(LauncherState.IDLE) && !useLimelight) {
-//            targetVelocity = Math.pow(getDistance(), 0.4768327) * 183.7126 + targetvelocity_compensate; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda -> OK, mersi!-Dragos
-//        }
-//        else if(!currentLauncherState.equals(LauncherState.IDLE) && useLimelight){
-//            targetVelocity = Math.pow(llta, -0.17) * 1618.302 + targetvelocity_compensate;
-//        }
-
-        targetVelocity = Math.pow(getDistance(), 0.4706919) * 189.0741 + targetvelocity_compensate; //de ce +100? -R: pt ca launcher ul nu atinge velocity ul si calculul nu e 100% precise. E nevoie de un supliment-Alda -> OK, mersi!-Dragos
+        // Set requiredSpeed as fallback - SOF mode in Turret will override this with compensated value
+        requiredSpeed = targetVelocity;
 
     }
 }
