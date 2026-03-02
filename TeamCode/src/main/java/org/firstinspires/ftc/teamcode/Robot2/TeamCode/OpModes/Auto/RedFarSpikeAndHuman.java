@@ -21,10 +21,12 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.robotcore.internal.opengl.shaders.ShaderHelper;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.IntakeDrive;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.SpoolDriveShoot;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
@@ -160,7 +162,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                 // 1. Launch Preload immediately on start
                 new SpoolUpCommand(launcher, limelight),
                 new WaitCommand(1000),
-                new MixedShootCommand(launcher, turret, intake, limelight),
+                new ShootCommand(launcher, limelight, turret, intake, true),
                 new WaitCommand(800),
                 new StopLaunchCommand(launcher, turret, intake, limelight),
 
@@ -169,19 +171,19 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                 new IntakeDrive(follower, paths.Path1, intake, 400),
 
                 //3. Go shoot man
-                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight),
+                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, true),
 
                 //3. Go pick up from human man
                 new IntakeDrive(follower, paths.Path3, intake, 400),
 
                 //4. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, true),
 
                 //5. Go human player again man
                 new IntakeDrive(follower, paths.Path5, intake, 400),
 
                 //6. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight),
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight, true),
 
                 //7. leave launch zone man
                 new FollowPathCommand(follower, paths.Path7),

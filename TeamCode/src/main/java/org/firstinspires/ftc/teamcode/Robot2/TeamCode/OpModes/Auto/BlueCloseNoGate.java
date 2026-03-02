@@ -116,19 +116,19 @@ public class BlueCloseNoGate extends CommandOpMode {
         buildPaths();
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-                new SpoolDriveShoot(follower, path1, launcher, turret, intake, limelight),
+                new SpoolDriveShoot(follower, path1, launcher, turret, intake, limelight, true),
 
                 new IntakeDrive(follower, path2, intake, 500),
 
-                new SpoolDriveShoot(follower, path3, launcher, turret, intake, limelight),
+                new SpoolDriveShoot(follower, path3, launcher, turret, intake, limelight, true),
 
                 new IntakeDrive(follower, path4, intake, 500),
 
-                new SpoolDriveShoot(follower, path5, launcher, turret, intake, limelight),
+                new SpoolDriveShoot(follower, path5, launcher, turret, intake, limelight, true),
 
                 new IntakeDrive(follower, path6, intake, 500),
 
-                new SpoolDriveShoot(follower, path7, launcher, turret, intake, limelight),
+                new SpoolDriveShoot(follower, path7, launcher, turret, intake, limelight, true),
 
                 new FollowPathCommand(follower, path8),
                 new SavePoseCommand(follower)

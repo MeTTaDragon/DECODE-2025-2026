@@ -8,6 +8,7 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
@@ -30,13 +31,13 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
      * @param limelight The limelight subsystem.
      * @param mixedAim Whether to use mixed aiming.
      */
-    public SpoolDriveShoot(Follower follower, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight){
+    public SpoolDriveShoot(Follower follower, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, boolean mixedAim){
         addCommands(
                 new FollowPathCommand(follower, path).alongWith(
                         new SpoolUpCommand(launcher, limelight)
                 ),
                 new SavePoseCommand(follower),
-                new MixedShootCommand(launcher, turret, intake, limelight),
+                new ShootCommand(launcher, limelight, turret, intake, mixedAim),
                 new WaitCommand(800),
                 new StopLaunchCommand(launcher, turret, intake, limelight)
         );
@@ -54,13 +55,13 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
      * @param limelight The limelight subsystem.
      * @param mixedAim Whether to use mixed aiming.
      */
-    public SpoolDriveShoot(Follower follower, double maxSpeed, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight){
+    public SpoolDriveShoot(Follower follower, double maxSpeed, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, boolean mixedAim){
         addCommands(
                 new FollowPathCommand(follower, path, maxSpeed).alongWith(
                         new SpoolUpCommand(launcher, limelight)
                 ),
                 new SavePoseCommand(follower),
-                new MixedShootCommand(launcher, turret, intake, limelight),
+                new ShootCommand(launcher, limelight, turret, intake, mixedAim),
                 new WaitCommand(800),
                 new StopLaunchCommand(launcher, turret, intake, limelight)
         );

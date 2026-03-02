@@ -27,7 +27,7 @@ public class IntakeDrive extends SequentialCommandGroup {
     public IntakeDrive(Follower follower, double maxSpeed,  PathChain path, Intake intake, long waitTime) {
         addCommands(
                 new FollowPathCommand(follower, path, maxSpeed).alongWith(
-                        new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
+                        new IntakeStateCommand(intake, Intake.IntakeState.INTAKE)
                 ),
                 new SavePoseCommand(follower),
                 new WaitCommand(waitTime),
@@ -46,7 +46,7 @@ public class IntakeDrive extends SequentialCommandGroup {
     public IntakeDrive(Follower follower, PathChain path, Intake intake, long waitTime) {
         addCommands(
                 new FollowPathCommand(follower, path).alongWith(
-                        new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
+                        new IntakeStateCommand(intake, Intake.IntakeState.INTAKE)
                 ),
                 new SavePoseCommand(follower),
                 new WaitCommand(waitTime),
@@ -66,7 +66,7 @@ public class IntakeDrive extends SequentialCommandGroup {
     public IntakeDrive(Follower follower, PathChain path, Intake intake) {
         addCommands(
                 new FollowPathCommand(follower, path).alongWith(
-                        new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
+                        new IntakeStateCommand(intake, Intake.IntakeState.INTAKE)
                 ),
                 new SavePoseCommand(follower)
         );
@@ -83,7 +83,7 @@ public class IntakeDrive extends SequentialCommandGroup {
     public IntakeDrive(Follower follower, double maxSpeed, PathChain path, Intake intake) {
         addCommands(
                 new FollowPathCommand(follower, path, maxSpeed).alongWith(
-                        new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
+                        new IntakeStateCommand(intake, Intake.IntakeState.INTAKE)
                 ),
                 new SavePoseCommand(follower)
         );

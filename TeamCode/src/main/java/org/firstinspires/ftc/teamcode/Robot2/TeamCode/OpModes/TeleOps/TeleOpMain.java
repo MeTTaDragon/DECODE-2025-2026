@@ -11,25 +11,14 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
-import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
-import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.WaitCommand;
-import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.FullLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightLaunchCommand;
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightModeCommand;
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootOnFlyCommand;
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopperPoseCommand;
-import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.TurretStateCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
@@ -38,8 +27,6 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.closeHoodPose;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.farHoodPose;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperClose;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperOpen;
 
@@ -85,6 +72,7 @@ public class TeleOpMain extends CommandOpMode {
     private static double totallooptime = 0;
     private static double loops = 0;
     boolean shootOnFly = false;
+    boolean mixedAim = true;
 
     @Override
     public void initialize() {
@@ -106,15 +94,17 @@ public class TeleOpMain extends CommandOpMode {
 
         super.reset();
 
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry.setMsTransmissionInterval(250);
+
         ledAlliance = hardwareMap.get(Servo.class, "ledAlliance");
         ledShooter = hardwareMap.get(Servo.class, "ledShooter");
         turret = new Turret(hardwareMap, follower);
         launcher = new Launcher(hardwareMap, follower);
         intake = new Intake(hardwareMap);
-        limelight = new LimelightSubsystem(hardwareMap, follower);
+        limelight = new LimelightSubsystem(hardwareMap, follower, telemetry);
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        //telemetry.setMsTransmissionInterval(250);
+
 
         register(launcher, turret, intake, limelight); // launcher before turret: SOF reads Launcher statics
 
@@ -128,6 +118,9 @@ public class TeleOpMain extends CommandOpMode {
         // SQUARE: toggle shoot-on-the-fly mode (vector compensation for moving shots)
         controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> shootOnFly = !shootOnFly)
+        );
+        controller.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+            new InstantCommand(() -> mixedAim = !mixedAim)
         );
 
         controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
@@ -151,45 +144,47 @@ public class TeleOpMain extends CommandOpMode {
 
         // Left trigger: full shoot sequence (SOF or MIXED depending on SQUARE toggle)
         leftTrigger.whileActiveOnce(
-                new ConditionalCommand(
-                        new ShootOnFlyCommand(launcher, turret, intake, limelight),
-                        new MixedShootCommand(launcher, turret, intake, limelight),
-                        () -> shootOnFly
-                )
+                new SpoolUpCommand(launcher, limelight)
         ).whenInactive(
                 new StopLaunchCommand(launcher, turret, intake, limelight)
         );
 
         // Right trigger: aim only — turret tracks goal + limelight, no spool/shoot
+//        rightTrigger.whileActiveOnce(
+//                new ConditionalCommand(
+//                        new ParallelCommandGroup(
+//                                new TurretStateCommand(turret, Turret.TurretState.SHOOT_ON_THE_FLY),
+//                                new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET)
+//                        ),
+//                        new ParallelCommandGroup(
+//                                new TurretStateCommand(turret, Turret.TurretState.MIXED),
+//                                new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET)
+//                        ),
+//                        () -> shootOnFly
+//                )
+//        ).whenInactive(
+//                new ParallelCommandGroup(
+//                        new TurretStateCommand(turret, Turret.TurretState.IDLE),
+//                        new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.PAUSE)
+//                )
+//        );
+
         rightTrigger.whileActiveOnce(
-                new ConditionalCommand(
-                        new ParallelCommandGroup(
-                                new TurretStateCommand(turret, Turret.TurretState.SHOOT_ON_THE_FLY),
-                                new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET)
-                        ),
-                        new ParallelCommandGroup(
-                                new TurretStateCommand(turret, Turret.TurretState.MIXED),
-                                new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET)
-                        ),
-                        () -> shootOnFly
-                )
+                new ShootCommand(launcher, limelight, turret, intake, mixedAim)
         ).whenInactive(
-                new ParallelCommandGroup(
-                        new TurretStateCommand(turret, Turret.TurretState.IDLE),
-                        new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.PAUSE)
-                )
+                new StopLaunchCommand(launcher, turret, intake, limelight)
         );
 
 
         //intake scuipa
-        controller.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.FORWARD), intake)
+        controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.REVERSE), intake)
         ).whenReleased(
                 new InstantCommand(() -> intake.setIntakeState(Intake.IntakeState.IDLE), intake)
         );
 
-        controller.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenHeld(
-                new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
+        controller.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenHeld(
+                new IntakeStateCommand(intake, Intake.IntakeState.INTAKE)
         ).whenInactive(
                 new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );

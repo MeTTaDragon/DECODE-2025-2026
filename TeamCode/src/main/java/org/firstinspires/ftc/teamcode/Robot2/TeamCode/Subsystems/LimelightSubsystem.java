@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
@@ -20,6 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 public class LimelightSubsystem extends SubsystemBase {
+    private Telemetry telemetry;
     private Limelight3A limelight;
     private IMU imu;
     Follower follower;
@@ -50,6 +52,16 @@ public class LimelightSubsystem extends SubsystemBase {
     }
     private static LimelightMode currentMode;
 
+    public LimelightSubsystem(HardwareMap hwMap, Follower follower, Telemetry telemetry) {
+        limelight = hwMap.get(Limelight3A.class, "limelight");
+        imu = hwMap.get(IMU.class, "imu");
+        this.follower = follower;
+
+        limelight.setPollRateHz(70);
+
+        this.telemetry = telemetry;
+    }
+
     public LimelightSubsystem(HardwareMap hwMap, Follower follower) {
         limelight = hwMap.get(Limelight3A.class, "limelight");
         imu = hwMap.get(IMU.class, "imu");
@@ -60,6 +72,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
     public void init() {
         setMode(LimelightMode.PAUSE);
+        relocalizationCooldown.reset();
     }
 
     public void setMode(LimelightMode mode) {
@@ -107,6 +120,10 @@ public class LimelightSubsystem extends SubsystemBase {
             llty = ty;
             llta = ta;
         }
+        else{
+            lltx = 0;
+            llta = 0;
+        }
     }
 
     public void Megatag(){
@@ -124,7 +141,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
                 // Automatic relocalization with rate limit
                 if(llRx > 0 && llRx < 144 && llRy > 0 && llRy < 144) {
-                    if(relocalizationCooldown.seconds() > 5) {
+                    if(relocalizationCooldown.seconds() > 2) {
                         follower.setPose(new Pose(llRx, llRy, follower.getHeading()));
                         relocalizationCooldown.reset();
                     }
@@ -197,6 +214,8 @@ public class LimelightSubsystem extends SubsystemBase {
 
         // 3. Update pose if needed (Optional, only if IMU is active)
         Megatag();
+
+        if(telemetry != null) telemetry.addData("limelight reset pose timer", relocalizationCooldown.seconds());
 
     }
 }

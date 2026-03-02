@@ -36,8 +36,8 @@ public class Launcher extends SubsystemBase {
     public static double middle_Y = 60;
     public static double targetvelocity_compensate = 0;
 
-    public static double stopperClose = 0.2;
-    public static double stopperOpen = 0.52;
+    public static double stopperClose = 0.53;
+    public static double stopperOpen = 0.68;
 
 
 
@@ -131,7 +131,6 @@ public class Launcher extends SubsystemBase {
         // Check this physically! Usually, flywheels spin opposite ways to shoot forward.
         // If the robot shoots backward, remove this REVERSE or move it to followerMotor.
         masterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        ramp.setPosition(openRamp);
 
         launcherController = new PIDFController(P, I, D, F);
 

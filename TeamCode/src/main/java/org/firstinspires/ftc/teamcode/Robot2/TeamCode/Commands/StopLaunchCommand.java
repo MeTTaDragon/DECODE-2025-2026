@@ -16,8 +16,7 @@ public class StopLaunchCommand extends SequentialCommandGroup {
                 new StopperPoseCommand(launcher, Launcher.stopperClose),
                 new TurretStateCommand(turret, Turret.TurretState.IDLE),
                 new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.PAUSE),
-                new IntakeStateCommand(intake, Intake.IntakeState.IDLE),
-                new InstantCommand(() -> launcher.setRampPos(0.85))
+                new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
     }
 }
