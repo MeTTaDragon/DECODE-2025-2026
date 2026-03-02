@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands;
 
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
+import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 
@@ -26,6 +27,7 @@ public class ShootCommand extends SequentialCommandGroup {
         addCommands(
                 new MixedAimCommand(turret, limelight, mixedAim),
                 new WaitUntilCommand(() -> (!mixedAim || lltx < 2) && launcher.isVelocityReached()),
+                new InstantCommand(() -> launcher.setRampPos(1)),
                 new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
         );
     }
