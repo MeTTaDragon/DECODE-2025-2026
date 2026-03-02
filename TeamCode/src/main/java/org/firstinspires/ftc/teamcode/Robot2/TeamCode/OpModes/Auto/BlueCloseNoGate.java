@@ -27,7 +27,6 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
-@Autonomous(name = "Blue close no gate", group = "Auto")
 public class BlueCloseNoGate extends CommandOpMode {
     Intake intake;
     Launcher launcher;
@@ -137,6 +136,13 @@ public class BlueCloseNoGate extends CommandOpMode {
 
         schedule(autonomousSequence);
     }
+    @Override
+    public void initialize_loop(){
+        telemetry.addLine(
+                "OpMode selected"
+        );
+    }
+
 
     @Override
     public void run() {

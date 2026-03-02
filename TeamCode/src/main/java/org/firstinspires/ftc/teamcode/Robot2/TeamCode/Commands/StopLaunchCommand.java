@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands;
 
+import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
@@ -15,7 +16,8 @@ public class StopLaunchCommand extends SequentialCommandGroup {
                 new StopperPoseCommand(launcher, Launcher.stopperClose),
                 new TurretStateCommand(turret, Turret.TurretState.IDLE),
                 new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.PAUSE),
-                new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
+                new IntakeStateCommand(intake, Intake.IntakeState.IDLE),
+                new InstantCommand(() -> launcher.setRampPos(0.85))
         );
     }
 }

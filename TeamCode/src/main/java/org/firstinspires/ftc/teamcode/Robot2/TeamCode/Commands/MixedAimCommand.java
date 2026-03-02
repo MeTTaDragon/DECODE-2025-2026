@@ -19,10 +19,10 @@ public class MixedAimCommand extends SequentialCommandGroup {
         else {
             addCommands(
                     new TurretStateCommand(turret, Turret.TurretState.IDLE),
-                    new TurretStateCommand(turret, Turret.TurretState.FULL_PINPOINT),
-                    new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET),
-                    new WaitUntilCommand(() -> lltx != 0),
-                    new TurretStateCommand(turret, Turret.TurretState.FULL_LIMELIGHT)
+                    new TurretStateCommand(turret, Turret.TurretState.FULL_PINPOINT)
+                    //new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET),
+                    //new WaitUntilCommand(() -> lltx != 0),
+                    //new TurretStateCommand(turret, Turret.TurretState.FULL_LIMELIGHT)
             );
         }
     }

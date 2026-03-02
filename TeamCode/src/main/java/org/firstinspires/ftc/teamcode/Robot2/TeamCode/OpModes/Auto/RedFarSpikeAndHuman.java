@@ -33,7 +33,6 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsys
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 
-@Autonomous(name = "Red Far Spike and Human x2", group = "Auto red")
 public class RedFarSpikeAndHuman extends CommandOpMode {
     Intake intake;
     Launcher launcher;
@@ -190,6 +189,13 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
         );
 
         schedule(autonomousSequence);
+    }
+
+    @Override
+    public void initialize_loop(){
+        telemetry.addLine(
+                "OpMode selected"
+        );
     }
 
     @Override

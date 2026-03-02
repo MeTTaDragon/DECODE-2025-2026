@@ -37,7 +37,7 @@ public class Turret extends SubsystemBase {
     double power;
 
     //antistrangulare for always lock on
-     public static boolean isChoking;
+    public static boolean isChoking;
     private long resetStartTime = 0;
     private boolean isResetting = false;
     private static TurretState stateBeforeReset;
@@ -155,6 +155,8 @@ public class Turret extends SubsystemBase {
                 // If the error is 350 degrees, it converts it to -10 degrees.
                 double error = angleWrap(targetHeading - currentLocalHeading);
 
+
+
                 // 6. PID Calculation
                 // We calculate power to drive 'error' to 0.
                 // Note: PIDFController.calculate(measured, setpoint)
@@ -260,9 +262,11 @@ public class Turret extends SubsystemBase {
     private double angleWrap(double angle) {
         while (angle > Math.PI) {
             angle -= 2 * Math.PI;
+            isChoking = true;
         }
         while (angle < -Math.PI) {
             angle += 2 * Math.PI;
+            isChoking = true;
         }
         return angle;
     }
@@ -286,6 +290,7 @@ public class Turret extends SubsystemBase {
             resetStartTime = System.currentTimeMillis();
             isResetting = true;
         }
+
 
         // Check if the "wait" is over
         if (isResetting) {

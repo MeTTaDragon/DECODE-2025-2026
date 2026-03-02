@@ -27,7 +27,6 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
-@Autonomous(name = "Red close 12 ball", group = "Auto red")
 public class RedClose12ball extends CommandOpMode {
 
     Intake intake;
@@ -143,6 +142,13 @@ public class RedClose12ball extends CommandOpMode {
 
         schedule(autonomousSequence);
     }
+    @Override
+    public void initialize_loop(){
+        telemetry.addLine(
+                "OpMode selected"
+        );
+    }
+
 
     @Override
     public void run() {

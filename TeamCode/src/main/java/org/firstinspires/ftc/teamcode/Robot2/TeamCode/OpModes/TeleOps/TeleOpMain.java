@@ -207,6 +207,7 @@ public class TeleOpMain extends CommandOpMode {
                     alliance = Alliance.BLUE;
                     turret.goalPose =  blueGoalPose;
                     turret.targetGoalPose = new Pose2d(turret.goalPose.getX(), turret.goalPose.getY(), 0);
+                    launcher.goalPose = blueGoalPose;
                 }
                 )
         );
@@ -216,6 +217,7 @@ public class TeleOpMain extends CommandOpMode {
                     alliance = Alliance.RED;
                     turret.goalPose =  redGoalPose;
                     turret.targetGoalPose = new Pose2d(turret.goalPose.getX(), turret.goalPose.getY(), 0);
+                    launcher.goalPose = redGoalPose;
                 }
                 )
         );
