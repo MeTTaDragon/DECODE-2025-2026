@@ -140,12 +140,12 @@ public class LimelightSubsystem extends SubsystemBase {
                 llRy = llPose.getY() + 72;
 
                 // Automatic relocalization with rate limit
-                if(llRx > 0 && llRx < 144 && llRy > 0 && llRy < 144) {
-                    if(relocalizationCooldown.seconds() > 2) {
-                        follower.setPose(new Pose(llRx, llRy, follower.getHeading()));
-                        relocalizationCooldown.reset();
-                    }
-                }
+//                if(llRx > 0 && llRx < 144 && llRy > 0 && llRy < 144) {
+//                    if(relocalizationCooldown.seconds() > 2) {
+//                        follower.setPose(new Pose(llRx, llRy, follower.getHeading()));
+//                        relocalizationCooldown.reset();
+//                    }
+//                }
             }
         }
     }

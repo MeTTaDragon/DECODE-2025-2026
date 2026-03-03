@@ -61,7 +61,7 @@ public class Intake extends SubsystemBase {
                 targetVelocity = 1;
                 break;
             case INTAKE:
-                targetVelocity = 0.8;
+                targetVelocity = 0.7;
                 break;
             case REVERSE:
                 targetVelocity = -1;

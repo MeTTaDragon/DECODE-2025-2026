@@ -255,23 +255,23 @@ public class Launcher extends SubsystemBase {
 
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
-            targetvelocity_compensate = -10 + add_comp;
+            targetvelocity_compensate = 0 + add_comp;
             currentHoodAngleDeg = 47.0;
         } else {
             if(getDistance() <= 58 )
             {
                 setHoodPose(veryCloseHoodPose);
-                targetvelocity_compensate = 50;//cand e foarte aproape da ft incet
+                targetvelocity_compensate = 0;//cand e foarte aproape da ft incet
                 currentHoodAngleDeg = 31.0;
             } else{
                 setHoodPose(closeHoodPose);
-                targetvelocity_compensate = 0;
+                targetvelocity_compensate = 25;
                 currentHoodAngleDeg = 38.7;
             }
         }
 
         // Base (stationary) velocity — also read by Turret for SOF angle+speed compensation
-        baseTargetVelocity = Math.pow(getDistance(), 0.4706919) * 189.0741 + targetvelocity_compensate;
+        baseTargetVelocity = Math.pow(getDistance(), 0.4901774) * 175.6296 + targetvelocity_compensate;
         targetVelocity = baseTargetVelocity;
 
         // Set requiredSpeed as fallback - SOF mode in Turret will override this with compensated value

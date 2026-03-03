@@ -168,7 +168,7 @@ public class BlueFarHuman extends CommandOpMode {
                 new IntakeDrive(follower, paths.Path1, intake, 400),
 
                 //3. Go shoot man
-                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, true),
+                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, true, 500),
 
 
                 //4. Go pick up from human man
@@ -176,7 +176,7 @@ public class BlueFarHuman extends CommandOpMode {
 
 
                 //5. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, true),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, true, 500),
 
 
                 //6. Go human player again man
@@ -184,7 +184,7 @@ public class BlueFarHuman extends CommandOpMode {
 
 
                 //7. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight, true),
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight, true, 500),
 
 
                 //8. leave launch zone man

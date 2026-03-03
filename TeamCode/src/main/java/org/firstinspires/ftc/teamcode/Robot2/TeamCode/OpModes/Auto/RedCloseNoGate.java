@@ -118,19 +118,19 @@ public class RedCloseNoGate extends CommandOpMode {
         buildPaths();
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-                new SpoolDriveShoot(follower, path1, launcher, turret, intake, limelight, true),
+                new SpoolDriveShoot(follower, path1, launcher, turret, intake, limelight, true,500),
 
                 new IntakeDrive(follower, path2, intake, 500),
 
-                new SpoolDriveShoot(follower, path3, launcher, turret, intake, limelight, true),
+                new SpoolDriveShoot(follower, path3, launcher, turret, intake, limelight, true,500),
 
                 new IntakeDrive(follower, path4, intake, 500),
 
-                new SpoolDriveShoot(follower, path5, launcher, turret, intake, limelight, true),
+                new SpoolDriveShoot(follower, path5, launcher, turret, intake, limelight, true,500),
 
                 new IntakeDrive(follower, path6, intake, 500),
 
-                new SpoolDriveShoot(follower, path7, launcher, turret, intake, limelight, true),
+                new SpoolDriveShoot(follower, path7, launcher, turret, intake, limelight, true,500),
 
                 new FollowPathCommand(follower, path8),
                 new SavePoseCommand(follower)
