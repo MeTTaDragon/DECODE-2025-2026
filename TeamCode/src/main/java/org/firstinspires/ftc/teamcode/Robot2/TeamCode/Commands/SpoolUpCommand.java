@@ -10,7 +10,6 @@ public class SpoolUpCommand extends SequentialCommandGroup {
     public SpoolUpCommand(Launcher launcher, LimelightSubsystem limelight) {
         addCommands(
                 new LauncherStateCommand(launcher, Launcher.LauncherState.SHOOTING),
-                new StopperPoseCommand(launcher, Launcher.stopperOpen),
                 new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET)
         );
     }

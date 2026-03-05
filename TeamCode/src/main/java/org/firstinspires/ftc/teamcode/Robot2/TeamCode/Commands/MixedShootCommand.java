@@ -22,13 +22,9 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
  * giving the clearest shot possible without adding a hard limelight-lock gate.
  */
 public class MixedShootCommand extends SequentialCommandGroup {
-    public MixedShootCommand(Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight) {
+    public MixedShootCommand(Launcher launcher, Turret turret, Intake intake) {
         addCommands(
-                new ParallelCommandGroup(
-                        new LauncherStateCommand(launcher, Launcher.LauncherState.SHOOTING),
-                        new TurretStateCommand(turret, Turret.TurretState.MIXED),
-                        new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET)
-                ),
+                new TurretStateCommand(turret, Turret.TurretState.MIXED),
                 new WaitUntilCommand(() -> launcher.isVelocityReached() && turret.isNearSetPoint()),
                 new StopperPoseCommand(launcher, Launcher.stopperOpen),
                 new IntakeStateCommand(intake, Intake.IntakeState.SHOOT)
