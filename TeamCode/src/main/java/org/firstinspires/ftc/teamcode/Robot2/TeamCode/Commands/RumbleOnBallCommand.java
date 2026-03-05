@@ -1,47 +1,48 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.ColorSensor;
-
+@Config
 public class RumbleOnBallCommand extends CommandBase {
     private final ColorSensor colorSensor;
     private final Gamepad gamepad;
 
-    // Adjust this value based on how close the ball needs to be
-    private final double DISTANCE_THRESHOLD_INCHES = 5.2;
+    // We highly recommend checking your telemetry and tuning this value!
+    public static double  DISTANCE_THRESHOLD_INCHES = 0.8;
 
-    // State variable to track if the ball is currently in the intake
     private boolean isDetecting = false;
 
-    /**
-     * @param colorSensor Your ColorSensor subsystem
-     * @param gamepad The gamepad you want to rumble (usually gamepad1 or gamepad2)
-     */
+    // Add a timer to refresh the rumble before the controller times out
+    private final ElapsedTime rumbleTimer;
+
     public RumbleOnBallCommand(ColorSensor colorSensor, Gamepad gamepad) {
         this.colorSensor = colorSensor;
         this.gamepad = gamepad;
-
-        // Note: We do NOT use addRequirements(colorSensor) here if we want
-        // this command to run constantly in the background without interrupting
-        // other commands that might also need to read the color sensor.
+        this.rumbleTimer = new ElapsedTime();
     }
 
     @Override
     public void execute() {
-        // Check if the distance is less than our threshold
         boolean ballDetected = colorSensor.distance(DistanceUnit.INCH) < DISTANCE_THRESHOLD_INCHES;
 
-        if (ballDetected && !isDetecting) {
-            // The ball just arrived! Tell the gamepad to rumble continuously
-            gamepad.rumble(0.5, 0.5, Gamepad.RUMBLE_DURATION_CONTINUOUS);
-            isDetecting = true;
-        } else if (!ballDetected && isDetecting) {
-            // The ball left the sensor's range! Stop the rumble immediately
-            gamepad.stopRumble();
-            isDetecting = false;
+        if (ballDetected) {
+            // If the ball just arrived, OR if 500ms have passed since the last rumble command
+            if (!isDetecting || rumbleTimer.milliseconds() > 100) {
+                gamepad.rumble(0.5, 0.5, 100); // Send a 500ms rumble
+                rumbleTimer.reset();           // Reset the timer
+                isDetecting = true;
+            }
+        } else {
+            // Ball left the intake
+            if (isDetecting) {
+                gamepad.stopRumble();
+                isDetecting = false;
+            }
         }
     }
 

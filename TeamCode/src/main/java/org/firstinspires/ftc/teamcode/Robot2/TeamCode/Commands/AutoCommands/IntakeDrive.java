@@ -1,14 +1,20 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands;
 
+import android.graphics.Color;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.CheckLoadCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.ColorSensor;
 
 /**
  * This command drives the robot along a specified path while running the intake.
@@ -24,13 +30,13 @@ public class IntakeDrive extends SequentialCommandGroup {
      * @param intake The intake subsystem.
      * @param waitTime The time to wait in milliseconds after reaching the destination before stopping the intake.
      */
-    public IntakeDrive(Follower follower, double maxSpeed,  PathChain path, Intake intake, long waitTime) {
+    public IntakeDrive(Follower follower, double maxSpeed, PathChain path, Intake intake, ColorSensor colorSensor, long waitTime) {
         addCommands(
                 new FollowPathCommand(follower, path, maxSpeed).alongWith(
                         new IntakeStateCommand(intake, Intake.IntakeState.INTAKE)
                 ),
                 new SavePoseCommand(follower),
-                new WaitCommand(waitTime),
+                new WaitCommand(waitTime).raceWith(new CheckLoadCommand(colorSensor)),
                 new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
     }
@@ -43,13 +49,13 @@ public class IntakeDrive extends SequentialCommandGroup {
      * @param intake The intake subsystem.
      * @param waitTime The time to wait in milliseconds after reaching the destination before stopping the intake.
      */
-    public IntakeDrive(Follower follower, PathChain path, Intake intake, long waitTime) {
+    public IntakeDrive(Follower follower, PathChain path, Intake intake,ColorSensor colorSensor, long waitTime) {
         addCommands(
                 new FollowPathCommand(follower, path).alongWith(
                         new IntakeStateCommand(intake, Intake.IntakeState.INTAKE)
                 ),
                 new SavePoseCommand(follower),
-                new WaitCommand(waitTime),
+                new WaitCommand(waitTime).raceWith(new CheckLoadCommand(colorSensor)),
                 new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
     }
