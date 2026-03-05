@@ -13,7 +13,7 @@ public class StopLaunchCommand extends SequentialCommandGroup {
     public StopLaunchCommand(Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight){
         addCommands(
                 new LauncherStateCommand(launcher, Launcher.LauncherState.IDLE),
-                new StopperPoseCommand(launcher, Launcher.stopperClose),
+                new StopperPoseCommand(launcher, Launcher.stopperOpen),
                 new TurretStateCommand(turret, Turret.TurretState.IDLE),
                 new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.PAUSE),
                 new IntakeStateCommand(intake, Intake.IntakeState.IDLE)

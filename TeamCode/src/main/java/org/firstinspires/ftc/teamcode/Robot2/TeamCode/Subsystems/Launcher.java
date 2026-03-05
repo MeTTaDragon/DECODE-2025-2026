@@ -36,8 +36,8 @@ public class Launcher extends SubsystemBase {
     public static double middle_Y = 60;
     public static double targetvelocity_compensate = 0;
 
-    public static double stopperClose = 0.53;
-    public static double stopperOpen = 0.68;
+    public static double stopperClose = 0;
+    public static double stopperOpen = 0.55;
 
 
 
@@ -195,7 +195,7 @@ public class Launcher extends SubsystemBase {
         setCurrentLauncherState(LauncherState.IDLE);
         //setCurrentStopperState(StopperState.AUTO);
         setHoodPose(farHoodPose);
-        setStopperPose(stopperClose);
+        setStopperPose(stopperOpen);
     }
 
     /**
