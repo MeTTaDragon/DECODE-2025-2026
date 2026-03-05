@@ -18,6 +18,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
@@ -170,7 +171,7 @@ public class TeleOpMain extends CommandOpMode {
 //        );
 
         rightTrigger.whileActiveOnce(
-                new ShootCommand(launcher, limelight, turret, intake, mixedAim)
+                new MixedShootCommand(launcher, turret, intake)
         ).whenInactive(
                 new StopLaunchCommand(launcher, turret, intake, limelight)
         );

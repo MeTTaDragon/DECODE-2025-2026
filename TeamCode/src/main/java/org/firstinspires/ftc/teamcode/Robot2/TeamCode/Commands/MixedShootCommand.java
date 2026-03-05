@@ -26,7 +26,7 @@ public class MixedShootCommand extends SequentialCommandGroup {
         addCommands(
                 new TurretStateCommand(turret, Turret.TurretState.MIXED),
                 new WaitUntilCommand(() -> launcher.isVelocityReached() && turret.isNearSetPoint()),
-                new StopperPoseCommand(launcher, Launcher.stopperOpen),
+                new StopperPoseCommand(launcher, Launcher.stopperClose),
                 new IntakeStateCommand(intake, Intake.IntakeState.SHOOT)
         );
     }
