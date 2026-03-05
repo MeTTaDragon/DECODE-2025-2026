@@ -58,6 +58,23 @@ public class IntakeDrive extends SequentialCommandGroup {
                 new WaitCommand(waitTime).raceWith(new CheckLoadCommand(colorSensor)),
                 new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
+    }/**
+     * Constructs an IntakeDrive command that follows a path, runs the intake, waits, and then stops the intake.
+     *
+     * @param follower The robot's path follower.
+     * @param path The path chain to follow.
+     * @param intake The intake subsystem.
+     * @param waitTime The time to wait in milliseconds after reaching the destination before stopping the intake.
+     */
+    public IntakeDrive(Follower follower, PathChain path, Intake intake, long waitTime) {
+        addCommands(
+                new FollowPathCommand(follower, path).alongWith(
+                        new IntakeStateCommand(intake, Intake.IntakeState.INTAKE)
+                ),
+                new SavePoseCommand(follower),
+                new WaitCommand(waitTime),
+                new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
+        );
     }
 
 

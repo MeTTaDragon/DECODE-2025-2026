@@ -45,8 +45,8 @@ public class Launcher extends SubsystemBase {
     // --- TUNING VARIABLES (Edit in FTC Dashboard) ---
     // F (Feedforward): Base power to hold speed. Start small (0.0001 - 0.0005)
     // P (Proportional): "Snap" power to fix errors.
-    public static double F = 0.0003;
-    public static double P = 0.01;
+    public static double F = 0.0004;
+    public static double P = 0.05;
     public static double D = 0;
     public static double I = 0;
 
@@ -251,6 +251,8 @@ public class Launcher extends SubsystemBase {
      */
     @Override
     public void periodic() {
+        launcherController.setPIDF(P, I, D, F);
+
         updateLauncherState();
 
         if (follower.getPose().getY() < middle_Y) {

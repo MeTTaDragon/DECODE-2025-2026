@@ -20,6 +20,7 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.IntakeDrive;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.SpoolDriveShoot;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.ColorSensor;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
@@ -106,6 +107,7 @@ public class BlueClose12ball extends CommandOpMode {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
 
+        ColorSensor colorSensor = new ColorSensor(hardwareMap, "intrare");
         turret = new Turret(hardwareMap, follower);
         launcher = new Launcher(hardwareMap, follower);
         intake = new Intake(hardwareMap);
@@ -118,11 +120,11 @@ public class BlueClose12ball extends CommandOpMode {
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
                 new SpoolDriveShoot(follower, path1, launcher, turret, intake, limelight, 500),
 
-                new IntakeDrive(follower, path2, intake, 500),
+                new IntakeDrive(follower, path2, intake, colorSensor, 500),
 
                 new SpoolDriveShoot(follower, path3, launcher, turret, intake, limelight, 500),
 
-                new IntakeDrive(follower, path4, intake, 500),
+                new IntakeDrive(follower, path4, intake, colorSensor, 500),
 
                 new FollowPathCommand(follower, path4_1),
                 new SavePoseCommand(follower),
@@ -130,7 +132,7 @@ public class BlueClose12ball extends CommandOpMode {
 
                 new SpoolDriveShoot(follower, path5, launcher, turret, intake, limelight, 500),
 
-                new IntakeDrive(follower, path6, intake, 500),
+                new IntakeDrive(follower, path6, intake, colorSensor, 500),
 
                 new SpoolDriveShoot(follower, path7, launcher, turret, intake, limelight, 500),
 

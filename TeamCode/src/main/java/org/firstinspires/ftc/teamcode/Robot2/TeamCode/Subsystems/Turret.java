@@ -179,6 +179,9 @@ public class Turret extends SubsystemBase {
 
                 // Secondary: limelight fine-trim (10%) on top — no state switch, just nudge
                 if (llta > 0) {
+                    if(lltx < 6){
+                        turretController.setPIDF(0,0,0,1);
+                    }
                     if (Math.abs(lltx) < LL_SOF_THRESHOLD_DEG) {
                         targetHeading += Math.toRadians(-lltx);
                     }

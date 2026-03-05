@@ -219,7 +219,6 @@ public class TeleOpMain extends CommandOpMode {
                 }
                 )
         );
-        // Inside your initialization method:
 
 
 // Pass in the sensor and the gamepad you want to vibrate (e.g., gamepad1)

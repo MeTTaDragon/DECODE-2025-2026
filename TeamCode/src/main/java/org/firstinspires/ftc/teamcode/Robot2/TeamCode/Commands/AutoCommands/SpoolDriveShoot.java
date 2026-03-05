@@ -65,5 +65,52 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                 new WaitCommand(waitBeforeStop),
                 new StopLaunchCommand(launcher, turret, intake, limelight)
         );
+    }/**
+     * Constructs a SpoolDriveShoot command with SOF.
+     *
+     * @param follower The follower to use for path following.
+     * @param path The path to follow.
+     * @param launcher The launcher subsystem.
+     * @param turret The turret subsystem.
+     * @param intake The intake subsystem.
+     * @param limelight The limelight subsystem.
+     * @param waitBeforeStop The time to wait in milliseconds after shooting before stopping the launcher and turret.
+     * @param SOF shoot on the fly mode - ONLY FOR AUTO START
+     */
+    public SpoolDriveShoot(Follower follower, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, long waitBeforeStop, boolean SOF){
+        addCommands(
+                new FollowPathCommand(follower, path).alongWith(
+                        new SpoolUpCommand(launcher, limelight)
+                ),
+                new SavePoseCommand(follower),
+                new MixedShootCommand(launcher, turret, intake),
+                new WaitCommand(waitBeforeStop),
+                new StopLaunchCommand(launcher, turret, intake, limelight)
+        );
+    }
+
+    /**
+     * Constructs a SpoolDriveShoot command with a specified maximum speed with SOF.
+     *
+     * @param follower The follower to use for path following.
+     * @param maxSpeed The maximum speed to follow the path at.
+     * @param path The path to follow.
+     * @param launcher The launcher subsystem.
+     * @param turret The turret subsystem.
+     * @param intake The intake subsystem.
+     * @param limelight The limelight subsystem.
+     * @param waitBeforeStop The time to wait in milliseconds after shooting before stopping the launcher and turret.
+     * @param SOF  shoot on the fly mode - ONLY FOR AUTO START
+     */
+    public SpoolDriveShoot(Follower follower, double maxSpeed, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, long waitBeforeStop, boolean SOF){
+        addCommands(
+                new FollowPathCommand(follower, path, maxSpeed).alongWith(
+                        new SpoolUpCommand(launcher, limelight)
+                ),
+                new SavePoseCommand(follower),
+                new MixedShootCommand(launcher, turret, intake),
+                new WaitCommand(waitBeforeStop),
+                new StopLaunchCommand(launcher, turret, intake, limelight)
+        );
     }
 }

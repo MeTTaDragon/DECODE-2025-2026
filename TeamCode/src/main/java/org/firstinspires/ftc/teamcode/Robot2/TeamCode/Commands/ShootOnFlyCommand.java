@@ -31,8 +31,8 @@ public class ShootOnFlyCommand extends SequentialCommandGroup {
                 ),
                 // Only wait for flywheel — turret continuously tracks while robot is moving.
                 // Limelight blend is applied automatically in SHOOT_ON_THE_FLY when llta > 0.
-                new WaitUntilCommand(launcher::isVelocityReached),
-                new StopperPoseCommand(launcher, Launcher.stopperOpen),
+                new WaitUntilCommand(() -> launcher.isVelocityReached() && turret.isNearSetPoint()),
+                new StopperPoseCommand(launcher, Launcher.stopperClose),
                 new WaitCommand(200),
                 new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
         );
