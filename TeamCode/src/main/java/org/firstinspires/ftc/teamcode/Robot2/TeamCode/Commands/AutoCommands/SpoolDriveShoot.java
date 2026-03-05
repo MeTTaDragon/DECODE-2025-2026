@@ -29,16 +29,15 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
      * @param turret The turret subsystem.
      * @param intake The intake subsystem.
      * @param limelight The limelight subsystem.
-     * @param mixedAim Whether to use mixed aiming.
      * @param waitBeforeStop The time to wait in milliseconds after shooting before stopping the launcher and turret.
      */
-    public SpoolDriveShoot(Follower follower, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, boolean mixedAim, long waitBeforeStop){
+    public SpoolDriveShoot(Follower follower, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, long waitBeforeStop){
         addCommands(
                 new FollowPathCommand(follower, path).alongWith(
                         new SpoolUpCommand(launcher, limelight)
                 ),
                 new SavePoseCommand(follower),
-                new ShootCommand(launcher, limelight, turret, intake, mixedAim),
+                new MixedShootCommand(launcher, turret, intake),
                 new WaitCommand(waitBeforeStop),
                 new StopLaunchCommand(launcher, turret, intake, limelight)
         );
@@ -54,16 +53,15 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
      * @param turret The turret subsystem.
      * @param intake The intake subsystem.
      * @param limelight The limelight subsystem.
-     * @param mixedAim Whether to use mixed aiming.
      * @param waitBeforeStop The time to wait in milliseconds after shooting before stopping the launcher and turret.
      */
-    public SpoolDriveShoot(Follower follower, double maxSpeed, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, boolean mixedAim, long waitBeforeStop){
+    public SpoolDriveShoot(Follower follower, double maxSpeed, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, long waitBeforeStop){
         addCommands(
                 new FollowPathCommand(follower, path, maxSpeed).alongWith(
                         new SpoolUpCommand(launcher, limelight)
                 ),
                 new SavePoseCommand(follower),
-                new ShootCommand(launcher, limelight, turret, intake, mixedAim),
+                new MixedShootCommand(launcher, turret, intake),
                 new WaitCommand(waitBeforeStop),
                 new StopLaunchCommand(launcher, turret, intake, limelight)
         );
