@@ -18,9 +18,11 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.RumbleOnBallCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.ColorSensor;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
@@ -96,7 +98,7 @@ public class TeleOpMain extends CommandOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         //telemetry.setMsTransmissionInterval(250);
-
+        ColorSensor myColorSensor = new ColorSensor(hardwareMap, "intrare");
         ledAlliance = hardwareMap.get(Servo.class, "ledAlliance");
         ledShooter = hardwareMap.get(Servo.class, "ledShooter");
         turret = new Turret(hardwareMap, follower);
@@ -216,6 +218,14 @@ public class TeleOpMain extends CommandOpMode {
                 }
                 )
         );
+        // Inside your initialization method:
+
+
+// Pass in the sensor and the gamepad you want to vibrate (e.g., gamepad1)
+        RumbleOnBallCommand rumbleCommand = new RumbleOnBallCommand(myColorSensor, gamepad1);
+
+// Schedule it so it starts running its execute() loop
+        rumbleCommand.schedule();
     }
 
     /**
