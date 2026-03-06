@@ -58,7 +58,7 @@ public class Red18 extends CommandOpMode {
 
                                     new Pose(85.000, 85.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
 

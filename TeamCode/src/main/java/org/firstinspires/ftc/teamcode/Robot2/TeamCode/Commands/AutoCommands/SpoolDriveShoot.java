@@ -78,15 +78,21 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
      * @param SOF shoot on the fly mode - ONLY FOR AUTO START
      */
     public SpoolDriveShoot(Follower follower, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, long waitBeforeStop, boolean SOF){
-        addCommands(
-                new FollowPathCommand(follower, path).alongWith(
-                        new SpoolUpCommand(launcher, limelight)
-                ),
-                new SavePoseCommand(follower),
-                new MixedShootCommand(launcher, turret, intake),
-                new WaitCommand(waitBeforeStop),
-                new StopLaunchCommand(launcher, turret, intake, limelight)
-        );
+        if(SOF){
+            addCommands(
+                    new FollowPathCommand(follower, path).alongWith(
+                            new SpoolUpCommand(launcher, limelight)
+                    ),
+                    new SavePoseCommand(follower),
+                    new MixedShootCommand(launcher, turret, intake),
+                    new WaitCommand(waitBeforeStop),
+                    new StopLaunchCommand(launcher, turret, intake, limelight)
+            );
+        }
+        else{
+            new SpoolDriveShoot(follower, path, launcher, turret, intake, limelight, waitBeforeStop);
+        }
+
     }
 
     /**
@@ -103,14 +109,19 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
      * @param SOF  shoot on the fly mode - ONLY FOR AUTO START
      */
     public SpoolDriveShoot(Follower follower, double maxSpeed, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, long waitBeforeStop, boolean SOF){
-        addCommands(
-                new FollowPathCommand(follower, path, maxSpeed).alongWith(
-                        new SpoolUpCommand(launcher, limelight)
-                ),
-                new SavePoseCommand(follower),
-                new MixedShootCommand(launcher, turret, intake),
-                new WaitCommand(waitBeforeStop),
-                new StopLaunchCommand(launcher, turret, intake, limelight)
-        );
+        if(SOF){
+            addCommands(
+                    new FollowPathCommand(follower, path, maxSpeed).alongWith(
+                            new SpoolUpCommand(launcher, limelight)
+                    ),
+                    new SavePoseCommand(follower),
+                    new MixedShootCommand(launcher, turret, intake),
+                    new WaitCommand(waitBeforeStop),
+                    new StopLaunchCommand(launcher, turret, intake, limelight)
+            );
+        }
+        else{
+            new SpoolDriveShoot(follower, maxSpeed, path, launcher, turret, intake, limelight, waitBeforeStop);
+        }
     }
 }
