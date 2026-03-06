@@ -9,6 +9,7 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootOnFlyCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
@@ -84,7 +85,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                             new SpoolUpCommand(launcher, limelight)
                     ),
                     new SavePoseCommand(follower),
-                    new MixedShootCommand(launcher, turret, intake),
+                    new ShootOnFlyCommand(launcher, turret, intake, limelight),
                     new WaitCommand(waitBeforeStop),
                     new StopLaunchCommand(launcher, turret, intake, limelight)
             );
@@ -115,7 +116,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                             new SpoolUpCommand(launcher, limelight)
                     ),
                     new SavePoseCommand(follower),
-                    new MixedShootCommand(launcher, turret, intake),
+                    new ShootOnFlyCommand(launcher, turret, intake, limelight),
                     new WaitCommand(waitBeforeStop),
                     new StopLaunchCommand(launcher, turret, intake, limelight)
             );
