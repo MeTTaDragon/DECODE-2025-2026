@@ -22,19 +22,15 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
  * the turret tracks a moving compensation target continuously while the robot drives.
  */
 public class ShootOnFlyCommand extends SequentialCommandGroup {
-    public ShootOnFlyCommand(Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight) {
+    public ShootOnFlyCommand(Launcher launcher, Turret turret, Intake intake) {
         addCommands(
-                new ParallelCommandGroup(
-                        new LauncherStateCommand(launcher, Launcher.LauncherState.SHOOTING),
-                        new TurretStateCommand(turret, Turret.TurretState.SHOOT_ON_THE_FLY),
-                        new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET)
-                ),
+                new TurretStateCommand(turret, Turret.TurretState.SHOOT_ON_THE_FLY),
                 // Only wait for flywheel — turret continuously tracks while robot is moving.
                 // Limelight blend is applied automatically in SHOOT_ON_THE_FLY when llta > 0.
                 new WaitUntilCommand(() -> launcher.isVelocityReached() && turret.isNearSetPoint()),
                 new StopperPoseCommand(launcher, Launcher.stopperClose),
                 new WaitCommand(200),
-                new IntakeStateCommand(intake, Intake.IntakeState.REVERSE)
+                new IntakeStateCommand(intake, Intake.IntakeState.SHOOT)
         );
     }
 }

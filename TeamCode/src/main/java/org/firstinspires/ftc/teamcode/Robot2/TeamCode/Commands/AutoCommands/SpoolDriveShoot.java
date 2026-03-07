@@ -85,7 +85,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                             new SpoolUpCommand(launcher, limelight)
                     ),
                     new SavePoseCommand(follower),
-                    new ShootOnFlyCommand(launcher, turret, intake, limelight),
+                    new ShootOnFlyCommand(launcher, turret, intake),
                     new WaitCommand(waitBeforeStop),
                     new StopLaunchCommand(launcher, turret, intake, limelight)
             );
@@ -116,7 +116,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                             new SpoolUpCommand(launcher, limelight)
                     ),
                     new SavePoseCommand(follower),
-                    new ShootOnFlyCommand(launcher, turret, intake, limelight),
+                    new ShootOnFlyCommand(launcher, turret, intake),
                     new WaitCommand(waitBeforeStop),
                     new StopLaunchCommand(launcher, turret, intake, limelight)
             );
