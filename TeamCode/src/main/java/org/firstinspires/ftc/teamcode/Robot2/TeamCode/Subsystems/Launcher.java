@@ -36,7 +36,7 @@ public class Launcher extends SubsystemBase {
     public static double middle_Y = 60;
     public static double targetvelocity_compensate = 0;
 
-    public static double stopperClose = 0;
+    public static double stopperClose = 0.2;
     public static double stopperOpen = 0.55;
 
 
@@ -45,8 +45,8 @@ public class Launcher extends SubsystemBase {
     // --- TUNING VARIABLES (Edit in FTC Dashboard) ---
     // F (Feedforward): Base power to hold speed. Start small (0.0001 - 0.0005)
     // P (Proportional): "Snap" power to fix errors.
-    public static double F = 0.0004;
-    public static double P = 0.05;
+    public static double F = 0.00036;
+    public static double P = 0.01;
     public static double D = 0;
     public static double I = 0;
 
