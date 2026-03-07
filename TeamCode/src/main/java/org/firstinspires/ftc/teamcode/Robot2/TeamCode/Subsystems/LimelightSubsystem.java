@@ -10,6 +10,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -140,12 +141,13 @@ public class LimelightSubsystem extends SubsystemBase {
                 llRy = llPose.getY() + 72;
 
                 // Automatic relocalization with rate limit
-//                if(llRx > 0 && llRx < 144 && llRy > 0 && llRy < 144) {
-//                    if(relocalizationCooldown.seconds() > 2) {
+//                if(Range.clip(llRx, 67, 77) != llRx && Range.clip(llRy, 67, 77) != llRy){
+//                    if(relocalizationCooldown.seconds() > 0.5) {
 //                        follower.setPose(new Pose(llRx, llRy, follower.getHeading()));
 //                        relocalizationCooldown.reset();
 //                    }
 //                }
+
             }
         }
     }

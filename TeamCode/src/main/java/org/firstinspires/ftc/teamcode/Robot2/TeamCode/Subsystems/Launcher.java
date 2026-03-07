@@ -272,6 +272,9 @@ public class Launcher extends SubsystemBase {
             }
         }
 
+        //if(llta != 0){
+            //TODO: function to calculate target velocity based on distance using limelight data (llta or llty)
+        //}
         // Base (stationary) velocity — also read by Turret for SOF angle+speed compensation
         baseTargetVelocity = Math.pow(getDistance(), 0.4901774) * 175.6296 + targetvelocity_compensate;
         targetVelocity = baseTargetVelocity;

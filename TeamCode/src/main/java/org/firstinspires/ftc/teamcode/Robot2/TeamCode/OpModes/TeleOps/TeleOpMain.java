@@ -118,9 +118,18 @@ public class TeleOpMain extends CommandOpMode {
         launcher.init();
 
 
-        // SQUARE: toggle shoot-on-the-fly mode (vector compensation for moving shots)
+
+//        controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+//                new InstantCommand(() -> shootOnFly = !shootOnFly)
+//        );
         controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> shootOnFly = !shootOnFly)
+                new InstantCommand(() -> {
+                    if (alliance == Alliance.RED) {
+                        follower.setPose(new Pose(128, 67, Math.toRadians(0)));
+                    } else {
+                        follower.setPose(new Pose(16, 67, Math.toRadians(180)));
+                    }
+                } )
         );
         controller.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
             new InstantCommand(() -> mixedAim = !mixedAim)
