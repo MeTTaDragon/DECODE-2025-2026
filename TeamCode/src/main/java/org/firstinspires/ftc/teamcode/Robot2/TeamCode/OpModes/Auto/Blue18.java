@@ -59,7 +59,7 @@ public class Blue18 extends CommandOpMode {
                                     new Pose(16.500, 114.500),
                                     new Pose(60.000, 85.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
 
             IntakeMid = follower.pathBuilder().addPath(

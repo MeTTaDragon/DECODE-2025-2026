@@ -4,14 +4,18 @@ import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.Alliance;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.alliance;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
+import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
@@ -25,7 +29,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
-
+@Config
 @Autonomous(name="red 18")
 public class Red18 extends CommandOpMode {
 
@@ -34,7 +38,6 @@ public class Red18 extends CommandOpMode {
     Turret turret;
     LimelightSubsystem limelight;
     ColorSensor colorSensor;
-
     private Follower follower;
 
     private final Pose startPose = new Pose(128.5, 114.5, Math.toRadians(0));
@@ -59,6 +62,7 @@ public class Red18 extends CommandOpMode {
                                     new Pose(85.000, 85.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setVelocityConstraint(0.4)
 
                     .build();
 
@@ -66,10 +70,10 @@ public class Red18 extends CommandOpMode {
                             new BezierCurve(
                                     new Pose(85.000, 85.000),
                                     new Pose(89.622, 39.512),
-                                    new Pose(133.000, 60.000)
+                                    new Pose(134.000, 62.5)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(35))
-
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(25))
+                    .setVelocityConstraint(0.4)
                     .build();
 
             Launch2 = follower.pathBuilder().addPath(
@@ -78,18 +82,18 @@ public class Red18 extends CommandOpMode {
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(25))
+                    .setVelocityConstraint(0.4)
                     .build();
 
             Recycle1 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(87.000, 78.000),
 
-                                    new Pose(133.000, 60.000)
+                                    new Pose(134.000, 62.5)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(25))
+                    .setVelocityConstraint(0.4)
                     .build();
 
             Launch3 = follower.pathBuilder().addPath(
@@ -98,18 +102,18 @@ public class Red18 extends CommandOpMode {
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(25))
+                    .setVelocityConstraint(0.4)
                     .build();
 
             Recycle2 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(87.000, 78.000),
 
-                                    new Pose(133.000, 60.000)
+                                    new Pose(134.000, 62.5)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(25))
+                    .setVelocityConstraint(0.4)
                     .build();
 
             Launch4 = follower.pathBuilder().addPath(
@@ -118,18 +122,18 @@ public class Red18 extends CommandOpMode {
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(25))
+                    .setVelocityConstraint(0.4)
                     .build();
 
             Recycle3 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(87.000, 78.000),
 
-                                    new Pose(133.000, 60.000)
+                                    new Pose(134.000, 62.5)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(25))
+                    .setVelocityConstraint(0.4)
                     .build();
 
             Launch5 = follower.pathBuilder().addPath(
@@ -138,8 +142,8 @@ public class Red18 extends CommandOpMode {
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(25))
+                    .setVelocityConstraint(0.4)
                     .build();
 
             CloseLine = follower.pathBuilder().addPath(
@@ -148,8 +152,8 @@ public class Red18 extends CommandOpMode {
                                     new Pose(102.902, 84.122),
                                     new Pose(127.000, 84.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(35), Math.toRadians(0))
-
+                    ).setLinearHeadingInterpolation(Math.toRadians(25), Math.toRadians(0))
+                    .setVelocityConstraint(0.4)
                     .build();
 
             Launch6 = follower.pathBuilder().addPath(
@@ -160,6 +164,7 @@ public class Red18 extends CommandOpMode {
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
+                    .setVelocityConstraint(0.4)
                     .build();
         }
     }
@@ -187,6 +192,7 @@ public class Red18 extends CommandOpMode {
         Paths paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
+
                 new SpoolDriveShoot(follower, paths.Launch1, launcher, turret, intake, limelight, 500),
 
                 new IntakeDrive(follower, paths.IntakeMid, intake, colorSensor,100),
@@ -230,6 +236,9 @@ public class Red18 extends CommandOpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Busy", follower.isBusy());
+        telemetry.addData("Target Vel", launcher.getTargetVelocity());
+        telemetry.addData("Current Vel", launcher.getVelocity());
+
         telemetry.update();
     }
 }
