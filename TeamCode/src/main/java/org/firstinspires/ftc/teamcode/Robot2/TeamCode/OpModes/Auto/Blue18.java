@@ -26,8 +26,8 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsys
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 
-@Autonomous(name="red 18")
-public class Red18 extends CommandOpMode {
+@Autonomous(name="Blue 18")
+public class Blue18 extends CommandOpMode {
 
     Intake intake;
     Launcher launcher;
@@ -37,7 +37,9 @@ public class Red18 extends CommandOpMode {
 
     private Follower follower;
 
-    private final Pose startPose = new Pose(128.5, 114.5, Math.toRadians(0));
+    // Updated to match the start of Launch1 and the blue heading
+    private final Pose startPose = new Pose(16.500, 114.500, Math.toRadians(180));
+
     public static class Paths {
         public PathChain Launch1;
         public PathChain IntakeMid;
@@ -54,123 +56,103 @@ public class Red18 extends CommandOpMode {
         public Paths(Follower follower) {
             Launch1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(128.500, 114.500),
-
-                                    new Pose(85.000, 85.000)
+                                    new Pose(16.500, 114.500),
+                                    new Pose(60.000, 85.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
-
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             IntakeMid = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(85.000, 85.000),
-                                    new Pose(89.622, 39.512),
-                                    new Pose(133.000, 60.000)
+                                    new Pose(60.000, 85.000),
+                                    new Pose(55.500, 48.000),
+                                    new Pose(12.000, 60.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(35))
-
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(145))
                     .build();
 
             Launch2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(133.000, 60.000),
-
-                                    new Pose(87.000, 78.000)
+                                    new Pose(12.000, 60.000),
+                                    new Pose(65.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(145))
                     .build();
 
             Recycle1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(87.000, 78.000),
-
-                                    new Pose(133.000, 60.000)
+                                    new Pose(65.000, 78.000),
+                                    new Pose(12.000, 60.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(145))
                     .build();
 
             Launch3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(133.000, 60.000),
-
-                                    new Pose(87.000, 78.000)
+                                    new Pose(12.000, 60.000),
+                                    new Pose(65.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(145))
                     .build();
 
             Recycle2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(87.000, 78.000),
-
-                                    new Pose(133.000, 60.000)
+                                    new Pose(65.000, 78.000),
+                                    new Pose(12.000, 60.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(145))
                     .build();
 
             Launch4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(133.000, 60.000),
-
-                                    new Pose(87.000, 78.000)
+                                    new Pose(12.000, 60.000),
+                                    new Pose(65.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(145))
                     .build();
 
             Recycle3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(87.000, 78.000),
-
-                                    new Pose(133.000, 60.000)
+                                    new Pose(65.000, 78.000),
+                                    new Pose(12.000, 60.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(145))
                     .build();
 
             Launch5 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(133.000, 60.000),
-
-                                    new Pose(87.000, 78.000)
+                                    new Pose(12.000, 60.000),
+                                    new Pose(65.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(145))
                     .build();
 
             CloseLine = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(87.000, 78.000),
-                                    new Pose(102.902, 84.122),
-                                    new Pose(127.000, 84.000)
+                                    new Pose(65.000, 78.000),
+                                    new Pose(46.000, 85.000),
+                                    new Pose(16.000, 84.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(35), Math.toRadians(0))
-
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             Launch6 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(127.000, 84.000),
-
-                                    new Pose(87.146, 108.171)
+                                    new Pose(16.000, 84.000),
+                                    new Pose(53.000, 95.000)
                             )
                     ).setTangentHeadingInterpolation()
-                    .setReversed()
+                    .setReversed( )
                     .build();
         }
     }
-
-
 
     @Override
     public void initialize() {
         super.reset();
 
-        alliance = Alliance.RED;
+        // Updated Alliance to BLUE
+        alliance = Alliance.BLUE;
 
         // Initialize Follower and Subsystems
         follower = Constants.createFollower(hardwareMap);
@@ -187,38 +169,28 @@ public class Red18 extends CommandOpMode {
         Paths paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-                new SpoolDriveShoot(follower, paths.Launch1, launcher, turret, intake, limelight, 500),
-
-                new IntakeDrive(follower, paths.IntakeMid, intake, colorSensor,100),
-
+                new SpoolDriveShoot(follower, paths.Launch1, launcher, turret, intake, limelight, 500, true),
+                new IntakeDrive(follower, paths.IntakeMid, intake, colorSensor, 100),
                 new SpoolDriveShoot(follower, paths.Launch2, launcher, turret, intake, limelight, 500),
-
-                new IntakeDrive(follower, paths.Recycle1, intake, colorSensor,1000),
-
+                new IntakeDrive(follower, paths.Recycle1, intake, colorSensor, 1000),
                 new SpoolDriveShoot(follower, paths.Launch3, launcher, turret, intake, limelight, 500),
-
-                new IntakeDrive(follower, paths.Recycle2, intake, colorSensor,1000),
-
+                new IntakeDrive(follower, paths.Recycle2, intake, colorSensor, 1000),
                 new SpoolDriveShoot(follower, paths.Launch4, launcher, turret, intake, limelight, 500),
-
-                new IntakeDrive(follower, paths.Recycle3, intake, colorSensor,1000),
-
+                new IntakeDrive(follower, paths.Recycle3, intake, colorSensor, 1000),
                 new SpoolDriveShoot(follower, paths.Launch5, launcher, turret, intake, limelight, 500),
-
-                new IntakeDrive(follower, paths.CloseLine, intake, colorSensor,500),
-
+                new IntakeDrive(follower, paths.CloseLine, intake, colorSensor, 500),
                 new SpoolDriveShoot(follower, paths.Launch6, launcher, turret, intake, limelight, 500)
         );
 
         schedule(autonomousSequence);
     }
+
     @Override
     public void initialize_loop(){
         telemetry.addLine(
                 "OpMode selected"
         );
     }
-
 
     @Override
     public void run() {

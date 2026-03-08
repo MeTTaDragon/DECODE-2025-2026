@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Robot2.Utils.SelectableOpMode;
 public class AUTOCONFIG extends SelectableOpMode {
 
     public AUTOCONFIG() {
-        super("Select a Tuning OpMode", s -> {
+        super("Select an autonomous mode", s -> {
             s.folder("Blue", l -> {
                 l.add("Close 12 bile", BlueClose12ball::new);
                 l.add("Close 12 bile, gate dupa preload", BlueClose12BallOpenGateAfterPreload::new);
