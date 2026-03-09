@@ -50,8 +50,8 @@ public class Turret extends SubsystemBase {
     // Note: Since we are using Radians, the error is small (e.g., 0.5 rads).
     // You might need a higher P than 0.35 if it's sluggish.
     // Try P = 0.8 or higher if it doesn't move fast enough.
-    public static double P = 0.09, secondP = 2, I = 0, D = 0.001, F = 0.8;
-    public static double ll_P = 0.09, ll_I = 0, ll_D = 0, ll_F = 0.8;
+    public static double P = 0.5, secondP = 1, I = 0, D = 0, F = 5;
+    public static double ll_P = 1, ll_I = 0, ll_D = 0, ll_F = 0;
     public static double PREDICTION_LOOKAHEAD_S = 0.030;  // 30ms control hub latency compensation
     public static double SOF_TURRET_TOLERANCE_DEG = 5.0;  // "close enough" threshold for isNearSetPoint
     public static double LL_SOF_THRESHOLD_DEG = 25.0;    // only blend when |lltx| is under this (degrees)
@@ -104,7 +104,7 @@ public class Turret extends SubsystemBase {
 
         switch (currentTurretState){
             case IDLE:
-                turretController.setPIDF(0.8, 0, 0.003, 0);
+                turretController.setPIDF(2, I, D, F);
                 lltx = 0;
                 llty = 0;
                 llta = 0;

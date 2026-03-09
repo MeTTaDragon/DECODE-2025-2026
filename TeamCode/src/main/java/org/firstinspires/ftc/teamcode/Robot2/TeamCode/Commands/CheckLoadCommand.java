@@ -47,9 +47,6 @@ public class CheckLoadCommand extends CommandBase {
             // 3. No ball is here, or the ball just left. Reset the timer and states!
             isDetecting = false;
             loadFull = false;
-
-
-
         }
     }
 

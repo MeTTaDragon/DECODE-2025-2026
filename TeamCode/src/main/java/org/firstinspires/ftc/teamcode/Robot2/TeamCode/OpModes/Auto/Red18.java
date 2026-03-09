@@ -63,7 +63,6 @@ public class Red18 extends CommandOpMode {
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
                     .setVelocityConstraint(0.4)
-
                     .build();
 
             IntakeMid = follower.pathBuilder().addPath(
@@ -193,27 +192,27 @@ public class Red18 extends CommandOpMode {
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
 
-                new SpoolDriveShoot(follower, paths.Launch1, launcher, turret, intake, limelight, 500),
+                new SpoolDriveShoot(follower, paths.Launch1, launcher, turret, intake, limelight, 1000),
 
                 new IntakeDrive(follower, paths.IntakeMid, intake, colorSensor,100),
 
-                new SpoolDriveShoot(follower, paths.Launch2, launcher, turret, intake, limelight, 500),
+                new SpoolDriveShoot(follower, paths.Launch2, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, paths.Recycle1, intake, colorSensor,1000),
+                new IntakeDrive(follower, 0.6, paths.Recycle1, intake, colorSensor,1000),
 
-                new SpoolDriveShoot(follower, paths.Launch3, launcher, turret, intake, limelight, 500),
+                new SpoolDriveShoot(follower, paths.Launch3, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, paths.Recycle2, intake, colorSensor,1000),
+                new IntakeDrive(follower, 0.6, paths.Recycle2, intake, colorSensor,1000),
 
-                new SpoolDriveShoot(follower, paths.Launch4, launcher, turret, intake, limelight, 500),
+                new SpoolDriveShoot(follower, paths.Launch4, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, paths.Recycle3, intake, colorSensor,1000),
+                new IntakeDrive(follower, 0.6, paths.Recycle3, intake, colorSensor,1000),
 
-                new SpoolDriveShoot(follower, paths.Launch5, launcher, turret, intake, limelight, 500),
+                new SpoolDriveShoot(follower, paths.Launch5, launcher, turret, intake, limelight, 1000),
 
                 new IntakeDrive(follower, paths.CloseLine, intake, colorSensor,500),
 
-                new SpoolDriveShoot(follower, paths.Launch6, launcher, turret, intake, limelight, 500)
+                new SpoolDriveShoot(follower, paths.Launch6, launcher, turret, intake, limelight, 1000)
         );
 
         schedule(autonomousSequence);
