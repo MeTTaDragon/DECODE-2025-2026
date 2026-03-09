@@ -50,7 +50,7 @@ public class Turret extends SubsystemBase {
     // Note: Since we are using Radians, the error is small (e.g., 0.5 rads).
     // You might need a higher P than 0.35 if it's sluggish.
     // Try P = 0.8 or higher if it doesn't move fast enough.
-    public static double P = 0.09, I = 0, D = 0.001, F = 0.8;
+    public static double P = 0.09, secondP = 2, I = 0, D = 0.001, F = 0.8;
     public static double ll_P = 0.09, ll_I = 0, ll_D = 0, ll_F = 0.8;
     public static double PREDICTION_LOOKAHEAD_S = 0.030;  // 30ms control hub latency compensation
     public static double SOF_TURRET_TOLERANCE_DEG = 5.0;  // "close enough" threshold for isNearSetPoint
@@ -58,7 +58,7 @@ public class Turret extends SubsystemBase {
     public static double LIMELIGHT_LATENCY_S  = 0.050;  // Limelight 3A hardware latency to predict forward
     public static double LOOP_TIME_S          = 0.020;  // assumed loop period for lltx derivative (seconds)
     // Hardware Constants
-    double gearRatio = 5.75;
+    double gearRatio = 5.30;
     double TicksPerRev = 145.1; // Motor internal PPR
 
     public enum TurretState {
@@ -180,7 +180,7 @@ public class Turret extends SubsystemBase {
                 // Secondary: limelight fine-trim (10%) on top — no state switch, just nudge
                 if (llta > 0) {
                     if(lltx < 6){
-                        turretController.setPIDF(0,0,0,1);
+                        turretController.setPIDF(ll_P, ll_I, ll_D, ll_F);
                     }
                     if (Math.abs(lltx) < LL_SOF_THRESHOLD_DEG) {
                         targetHeading += Math.toRadians(-lltx);
@@ -188,6 +188,11 @@ public class Turret extends SubsystemBase {
                 }
 
                 double mixedError = angleWrap(targetHeading - getTurretHeading());
+
+                if(mixedError < 5 && llta == 0){
+                    turretController.setPIDF(secondP, I, D, F);
+                }
+
                 power = turretController.calculate(0, mixedError);
                 motorTureta.setPower(power);
                 break;
