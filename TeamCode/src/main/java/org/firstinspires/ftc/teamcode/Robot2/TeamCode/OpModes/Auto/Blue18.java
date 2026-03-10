@@ -169,7 +169,7 @@ public class Blue18 extends CommandOpMode {
         Paths paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-                new SpoolDriveShoot(follower, paths.Launch1, launcher, turret, intake, limelight, 500, true),
+                new SpoolDriveShoot(follower, paths.Launch1, launcher, turret, intake, limelight, 500),
                 new IntakeDrive(follower, paths.IntakeMid, intake, colorSensor, 100),
                 new SpoolDriveShoot(follower, paths.Launch2, launcher, turret, intake, limelight, 500),
                 new IntakeDrive(follower, paths.Recycle1, intake, colorSensor, 1000),

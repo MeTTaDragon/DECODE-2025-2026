@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.OpModes.Auto;
 
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.Alliance;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.alliance;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -40,10 +40,11 @@ public class Red18 extends CommandOpMode {
     ColorSensor colorSensor;
     private Follower follower;
 
-    private final Pose startPose = new Pose(128.5, 114.5, Math.toRadians(0));
+    private final Pose startPose = new Pose(115.8, 128.2, Math.toRadians(0));
     public static class Paths {
         public PathChain Launch1;
         public PathChain IntakeMid;
+        public PathChain OpenGate;
         public PathChain Launch2;
         public PathChain Recycle1;
         public PathChain Launch3;
@@ -57,92 +58,102 @@ public class Red18 extends CommandOpMode {
         public Paths(Follower follower) {
             Launch1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(128.500, 114.500),
+                                    new Pose(115.8, 128.2),
 
                                     new Pose(85.000, 85.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setVelocityConstraint(0.4)
+                    .setVelocityConstraint(0.4).setGlobalDeceleration(brakingpower)
                     .build();
 
             IntakeMid = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     new Pose(85.000, 85.000),
                                     new Pose(89.622, 39.512),
-                                    new Pose(134.000, 62.5)
+                                    new Pose(130.000, 60)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(25))
-                    .setVelocityConstraint(0.4)
+                    .setGlobalDeceleration(brakingpower)
+                    .build();
+
+            Recycle1 = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(130, 60),
+
+                                    new Pose(131.000, 62.2)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(25))
+                    .setGlobalDeceleration(0.2)
                     .build();
 
             Launch2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(133.000, 60.000),
+                                    new Pose(131.000, 62.2),
 
                                     new Pose(87.000, 78.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(25))
-                    .setVelocityConstraint(0.4)
+                    .setGlobalDeceleration(brakingpower)
                     .build();
 
             Recycle1 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(87.000, 78.000),
 
-                                    new Pose(134.000, 62.5)
+                                    new Pose(131.000, 62.2)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(25))
-                    .setVelocityConstraint(0.4)
+                    ).setLinearHeadingInterpolation(Math.toRadians(25), Math.toRadians(33.5))
+                    .setGlobalDeceleration(0.1)
                     .build();
 
             Launch3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(133.000, 60.000),
+                                    new Pose(131, 62.2),
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(25))
-                    .setVelocityConstraint(0.4)
+                    ).setLinearHeadingInterpolation(Math.toRadians(33.5), Math.toRadians(25))
+                    .setGlobalDeceleration(brakingpower)
                     .build();
 
             Recycle2 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(87.000, 78.000),
 
-                                    new Pose(134.000, 62.5)
+                                    new Pose(131, 62.2)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(25))
-                    .setVelocityConstraint(0.4)
+                    ).setLinearHeadingInterpolation(Math.toRadians(25), Math.toRadians(33.5))
+                    .setGlobalDeceleration(0.2)
                     .build();
 
             Launch4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(133.000, 60.000),
+                                    new Pose(131, 62.2),
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(25))
-                    .setVelocityConstraint(0.4)
+                    ).setLinearHeadingInterpolation(Math.toRadians(33.5), Math.toRadians(25))
+                    .setGlobalDeceleration(brakingpower)
                     .build();
 
             Recycle3 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(87.000, 78.000),
 
-                                    new Pose(134.000, 62.5)
+                                    new Pose(131, 62.2)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(25))
-                    .setVelocityConstraint(0.4)
+                    ).setLinearHeadingInterpolation(Math.toRadians(25), Math.toRadians(33.5))
+                    .setGlobalDeceleration(0.1)
                     .build();
 
             Launch5 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(133.000, 60.000),
+                                    new Pose(129, 62.2),
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(25))
-                    .setVelocityConstraint(0.4)
+                    ).setLinearHeadingInterpolation(Math.toRadians(33.5), Math.toRadians(25))
+                    .setGlobalDeceleration(brakingpower)
                     .build();
 
             CloseLine = follower.pathBuilder().addPath(
@@ -152,7 +163,7 @@ public class Red18 extends CommandOpMode {
                                     new Pose(127.000, 84.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(25), Math.toRadians(0))
-                    .setVelocityConstraint(0.4)
+                    .setGlobalDeceleration(brakingpower)
                     .build();
 
             Launch6 = follower.pathBuilder().addPath(
@@ -163,7 +174,7 @@ public class Red18 extends CommandOpMode {
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
-                    .setVelocityConstraint(0.4)
+                    .setGlobalDeceleration(brakingpower)
                     .build();
         }
     }
