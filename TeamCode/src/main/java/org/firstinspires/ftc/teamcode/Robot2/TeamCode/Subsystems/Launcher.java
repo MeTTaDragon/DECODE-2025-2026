@@ -37,7 +37,7 @@ public class Launcher extends SubsystemBase {
     public static double targetvelocity_compensate = 0;
 
     public static double stopperClose = 0.1;
-    public static double stopperOpen = 0.55;
+    public static double stopperOpen = 0.6;
 
 
 
