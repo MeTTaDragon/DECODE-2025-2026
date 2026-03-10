@@ -38,6 +38,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                         new SpoolUpCommand(launcher, limelight)
                 ),
                 new SavePoseCommand(follower),
+                new WaitCommand(200),
                 new MixedShootCommand(launcher, turret, intake),
                 new WaitCommand(waitBeforeStop),
                 new StopLaunchCommand(launcher, turret, intake, limelight)
@@ -62,6 +63,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                         new SpoolUpCommand(launcher, limelight)
                 ),
                 new SavePoseCommand(follower),
+                new WaitCommand(200),
                 new MixedShootCommand(launcher, turret, intake),
                 new WaitCommand(waitBeforeStop),
                 new StopLaunchCommand(launcher, turret, intake, limelight)
@@ -85,6 +87,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                             new SpoolUpCommand(launcher, limelight)
                     ),
                     new SavePoseCommand(follower),
+                    new WaitCommand(200),
                     new ShootOnFlyCommand(launcher, turret, intake),
                     new WaitCommand(waitBeforeStop),
                     new StopLaunchCommand(launcher, turret, intake, limelight)
@@ -116,6 +119,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                             new SpoolUpCommand(launcher, limelight)
                     ),
                     new SavePoseCommand(follower),
+                    new WaitCommand(200),
                     new ShootOnFlyCommand(launcher, turret, intake),
                     new WaitCommand(waitBeforeStop),
                     new StopLaunchCommand(launcher, turret, intake, limelight)
