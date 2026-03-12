@@ -38,7 +38,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                         new SpoolUpCommand(launcher, limelight)
                 ),
                 new SavePoseCommand(follower),
-                new WaitCommand(200),
+                new WaitCommand(400),
                 new AutoMixedShootCommand(launcher, turret, intake),
                 new WaitCommand(waitBeforeStop),
                 new AutoStopLaunchCommand(launcher, turret, intake, limelight)

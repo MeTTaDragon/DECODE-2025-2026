@@ -26,6 +26,6 @@ public class Globals {
     public static Alliance alliance = Alliance.RED;
     public static Pose lastAutoPose = new Pose(72, 7.5, Math.toRadians(90));
 
-    public static Pose blueGoalPose = new Pose(2, 142, Math.toRadians(0));
-    public static Pose redGoalPose = new Pose(142, 142, Math.toRadians(0));
+    public static Pose blueGoalPose = new Pose(2, 143, Math.toRadians(0));
+    public static Pose redGoalPose = new Pose(143, 143, Math.toRadians(0));
 }

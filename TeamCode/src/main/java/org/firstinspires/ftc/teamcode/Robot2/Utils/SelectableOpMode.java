@@ -84,7 +84,7 @@ public abstract class SelectableOpMode extends OpMode {
     @Override
     public final void start() {
         if (selectedOpMode == null) throw new RuntimeException("No OpMode selected!");
-        selectedOpMode.run();
+        selectedOpMode.run(); // This calls the CommandOpMode's run() — the main phase
     }
 
     @Override

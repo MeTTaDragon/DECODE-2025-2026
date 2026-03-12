@@ -55,8 +55,7 @@ public class Launcher extends SubsystemBase {
     public static double lastPower = 0.0;
 
     public static boolean useLimelight = true;
-    public static double add_comp = 0;
-
+    public static double add_comp = -10;
     // --- SHOOT-ON-THE-FLY CONSTANTS ---
     // GoBILDA 5000 series 6000RPM, 28 ticks/rev, 72mm flywheel, 0.45 transfer efficiency
     // K_LAUNCHER = 0.45 × π × 0.072m × 39.37in/m / 28 ticks/rev ≈ 0.1431 (in/s per tick/s) transforma getvelocity in viteza mingi de iesire totala
@@ -257,7 +256,7 @@ public class Launcher extends SubsystemBase {
 
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
-            targetvelocity_compensate = 0 + add_comp;
+            targetvelocity_compensate = 0  + add_comp;
             currentHoodAngleDeg = 47.0;
         } else {
             if(getDistance() <= 58 )
@@ -267,7 +266,7 @@ public class Launcher extends SubsystemBase {
                 currentHoodAngleDeg = 31.0;
             } else{
                 setHoodPose(closeHoodPose);
-                targetvelocity_compensate = 0 + add_comp;
+                targetvelocity_compensate = -50 + add_comp;
                 currentHoodAngleDeg = 38.7;
             }
         }

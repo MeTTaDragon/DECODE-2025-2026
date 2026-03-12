@@ -23,6 +23,7 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.IntakeDrive;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.AutoCommands.SpoolDriveShoot;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.TurretStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.ColorSensor;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
@@ -229,6 +230,7 @@ public class Red18 extends CommandOpMode {
         Paths paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
+                new TurretStateCommand(turret, Turret.TurretState.MIXED),
 
                 new SpoolDriveShoot(follower, paths.Launch1, launcher, turret, intake, limelight, 1000),
 
@@ -236,7 +238,7 @@ public class Red18 extends CommandOpMode {
 
                 new SpoolDriveShoot(follower, paths.Launch2, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,1000),
+                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,3000),
 
                 new SpoolDriveShoot(follower, paths.Launch3, launcher, turret, intake, limelight, 1000),
 
@@ -244,11 +246,11 @@ public class Red18 extends CommandOpMode {
 
                 new SpoolDriveShoot(follower, paths.Launch4, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,1000),
+                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,3000),
 
                 new SpoolDriveShoot(follower, paths.Launch5, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,1000),
+                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,3000),
 
                 new SpoolDriveShoot(follower, paths.Launch6, launcher, turret, intake, limelight, 1000)
         );

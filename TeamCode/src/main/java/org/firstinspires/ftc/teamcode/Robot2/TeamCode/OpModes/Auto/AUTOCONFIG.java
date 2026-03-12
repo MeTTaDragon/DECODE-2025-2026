@@ -14,14 +14,14 @@ public class AUTOCONFIG extends SelectableOpMode {
                 l.add("Close 12 bile, gate dupa preload", BlueClose12BallOpenGateAfterPreload::new);
                 l.add("Far 6 bile", BlueCloseNoGate::new);
                 l.add("Far bile human", BlueFarHuman::new);
-                l.add("Far bile human", BlueFarSpikeAndHuman::new);
+                l.add("Far bile human+spike", BlueFarSpikeAndHuman::new);
             });
             s.folder("Red", a -> {
                 a.add("Close 12 bile", RedClose12ball::new);
                 a.add("Close 12 bile, gate dupa preload", RedClose12BallOpenGateAfterPreload::new);
                 a.add("Far 6 bile", RedCloseNoGate::new);
                 a.add("Far bile human", RedFarHuman::new);
-                a.add("Far bile human", RedFarSpikeAndHuman::new);
+                a.add("Far bile human+spike", RedFarSpikeAndHuman::new);
             });
 
         });
