@@ -46,7 +46,7 @@ public class Red18 extends CommandOpMode {
         public PathChain IntakeMid;
         public PathChain OpenGate;
         public PathChain Launch2;
-        public PathChain Recycle1;
+        public PathChain Recycle;
         public PathChain Launch3;
         public PathChain Recycle2;
         public PathChain Launch4;
@@ -94,22 +94,23 @@ public class Red18 extends CommandOpMode {
                     .setGlobalDeceleration(brakingpower)
                     .build();
 
-            Recycle1 = follower.pathBuilder().addPath(
-                            new BezierLine(
+            Recycle = follower.pathBuilder().addPath(
+                            new BezierCurve(
                                     new Pose(87.000, 78.000),
+                                    new Pose(104, 63.5),
 
-                                    new Pose(128.000, 70.000)
+                                    new Pose(128.000, 68.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(25), Math.toRadians(90))
                     .addPath(
                             new BezierCurve(
-                                    new Pose(128.000, 70.000),
+                                    new Pose(128.000, 68.000),
                                     new Pose(122, 57),
-                                    new Pose(130.000, 48.000)
+                                    new Pose(130.500, 48.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(45))
                     .setVelocityConstraint(0.9)
-                    .setGlobalDeceleration(0.3)
+                    .setGlobalDeceleration(0.4)
                     .build();
 
             Launch3 = follower.pathBuilder().addPath(
@@ -235,7 +236,7 @@ public class Red18 extends CommandOpMode {
 
                 new SpoolDriveShoot(follower, paths.Launch2, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, 1, paths.Recycle1, intake, colorSensor,1000),
+                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,1000),
 
                 new SpoolDriveShoot(follower, paths.Launch3, launcher, turret, intake, limelight, 1000),
 
@@ -243,10 +244,11 @@ public class Red18 extends CommandOpMode {
 
                 new SpoolDriveShoot(follower, paths.Launch4, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, 1, paths.Recycle2, intake, colorSensor,1000),
+                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,1000),
 
                 new SpoolDriveShoot(follower, paths.Launch5, launcher, turret, intake, limelight, 1000),
-                new IntakeDrive(follower, 1, paths.Recycle3, intake, colorSensor,1000),
+
+                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,1000),
 
                 new SpoolDriveShoot(follower, paths.Launch6, launcher, turret, intake, limelight, 1000)
         );

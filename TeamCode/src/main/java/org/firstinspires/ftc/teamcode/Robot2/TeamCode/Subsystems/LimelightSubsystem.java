@@ -89,10 +89,10 @@ public class LimelightSubsystem extends SubsystemBase {
                 break;
             case BASKET:
                 if (alliance == Alliance.RED) {
-                    limelight.pipelineSwitch(1);
+                    limelight.pipelineSwitch(4);
                     limelight.start();
                 } else {
-                    limelight.pipelineSwitch(2);
+                    limelight.pipelineSwitch(5);
                     limelight.start();
                 }
                 break;

@@ -263,11 +263,11 @@ public class Launcher extends SubsystemBase {
             if(getDistance() <= 58 )
             {
                 setHoodPose(veryCloseHoodPose);
-                targetvelocity_compensate = 0;//cand e foarte aproape da ft incet
+                targetvelocity_compensate = 0 + add_comp;//cand e foarte aproape da ft incet
                 currentHoodAngleDeg = 31.0;
             } else{
                 setHoodPose(closeHoodPose);
-                targetvelocity_compensate = 25;
+                targetvelocity_compensate = 0 + add_comp;
                 currentHoodAngleDeg = 38.7;
             }
         }
@@ -276,7 +276,7 @@ public class Launcher extends SubsystemBase {
             //TODO: function to calculate target velocity based on distance using limelight data (llta or llty)
         //}
         // Base (stationary) velocity — also read by Turret for SOF angle+speed compensation
-        baseTargetVelocity = Math.pow(getDistance(), 0.4901774) * 175.6296 + targetvelocity_compensate;
+        baseTargetVelocity = Math.pow(getDistance(), 0.4760475) * 188.83 + targetvelocity_compensate;
         targetVelocity = baseTargetVelocity;
 
         // Set requiredSpeed as fallback - SOF mode in Turret will override this with compensated value

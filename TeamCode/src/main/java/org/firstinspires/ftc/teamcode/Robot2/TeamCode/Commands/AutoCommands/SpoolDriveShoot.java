@@ -39,9 +39,9 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                 ),
                 new SavePoseCommand(follower),
                 new WaitCommand(200),
-                new MixedShootCommand(launcher, turret, intake),
+                new AutoMixedShootCommand(launcher, turret, intake),
                 new WaitCommand(waitBeforeStop),
-                new StopLaunchCommand(launcher, turret, intake, limelight)
+                new AutoStopLaunchCommand(launcher, turret, intake, limelight)
         );
     }
 
@@ -64,9 +64,9 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                 ),
                 new SavePoseCommand(follower),
                 new WaitCommand(200),
-                new MixedShootCommand(launcher, turret, intake),
+                new AutoMixedShootCommand(launcher, turret, intake),
                 new WaitCommand(waitBeforeStop),
-                new StopLaunchCommand(launcher, turret, intake, limelight)
+                new AutoStopLaunchCommand(launcher, turret, intake, limelight)
         );
     }/**
      * Constructs a SpoolDriveShoot command with SOF.
@@ -90,7 +90,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                     new WaitCommand(200),
                     new ShootOnFlyCommand(launcher, turret, intake),
                     new WaitCommand(waitBeforeStop),
-                    new StopLaunchCommand(launcher, turret, intake, limelight)
+                    new AutoStopLaunchCommand(launcher, turret, intake, limelight)
             );
         }
         else{
@@ -122,7 +122,7 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
                     new WaitCommand(200),
                     new ShootOnFlyCommand(launcher, turret, intake),
                     new WaitCommand(waitBeforeStop),
-                    new StopLaunchCommand(launcher, turret, intake, limelight)
+                    new AutoStopLaunchCommand(launcher, turret, intake, limelight)
             );
         }
         else{

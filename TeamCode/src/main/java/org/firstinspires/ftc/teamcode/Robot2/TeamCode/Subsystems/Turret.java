@@ -50,8 +50,8 @@ public class Turret extends SubsystemBase {
     // Note: Since we are using Radians, the error is small (e.g., 0.5 rads).
     // You might need a higher P than 0.35 if it's sluggish.
     // Try P = 0.8 or higher if it doesn't move fast enough.
-    public static double P = 0.5, secondP = 1, I = 0, D = 0, F = 5;
-    public static double ll_P = 1, ll_I = 0, ll_D = 0, ll_F = 0;
+    public static double P = 0.5, secondP = 1, I = 0, D = 0.05, F = 1.16;
+    public static double ll_P = 0, ll_I = 0, ll_D = 0, ll_F = 1.5;
     public static double PREDICTION_LOOKAHEAD_S = 0.030;  // 30ms control hub latency compensation
     public static double SOF_TURRET_TOLERANCE_DEG = 5.0;  // "close enough" threshold for isNearSetPoint
     public static double LL_SOF_THRESHOLD_DEG = 25.0;    // only blend when |lltx| is under this (degrees)
@@ -186,12 +186,11 @@ public class Turret extends SubsystemBase {
                         targetHeading += Math.toRadians(-lltx);
                     }
                 }
+                if(targetHeading>Math.toRadians(90)){targetHeading -= 2*Math.PI;}
+                if(targetHeading<Math.toRadians(-270)){targetHeading += 2*Math.PI;}
 
-                double mixedError = angleWrap(targetHeading - getTurretHeading());
+                double mixedError = targetHeading - getTurretHeading();
 
-                if(mixedError < 5 && llta == 0){
-                    turretController.setPIDF(secondP, I, D, F);
-                }
 
                 power = turretController.calculate(0, mixedError);
                 motorTureta.setPower(power);
@@ -270,11 +269,9 @@ public class Turret extends SubsystemBase {
     private double angleWrap(double angle) {
         while (angle > Math.PI) {
             angle -= 2 * Math.PI;
-            isChoking = true;
         }
         while (angle < -Math.PI) {
             angle += 2 * Math.PI;
-            isChoking = true;
         }
         return angle;
     }
@@ -290,24 +287,6 @@ public class Turret extends SubsystemBase {
     @Override
     public void periodic() {
         robotAngle = follower.getPose().getHeading();
-        
-//         if (Math.abs(Math.toDegrees(getTurretHeading())) > 170 && !isResetting) {
-//            stateBeforeReset = getCurrentTurretState();
-//            setTurretState(TurretState.IDLE);
-//            //basically wait command 500 ms
-//            resetStartTime = System.currentTimeMillis();
-//            isResetting = true;
-//        }
-//
-//
-//        // Check if the "wait" is over
-//        if (isResetting) {
-//            // Wait for 500ms (0.5 seconds) - adjust as needed for cable safety
-//            if (System.currentTimeMillis() - resetStartTime > 500) {
-//                setTurretState(stateBeforeReset);
-//                isResetting = false; // Reset the flag
-//            }
-//        }
 
         update();
     }

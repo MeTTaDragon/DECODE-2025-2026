@@ -18,6 +18,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightModeCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.RumbleOnBallCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
@@ -132,7 +133,10 @@ public class TeleOpMain extends CommandOpMode {
                 } )
         );
         controller.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-            new InstantCommand(() -> mixedAim = !mixedAim)
+            new InstantCommand(() -> {
+                new LimelightModeCommand(limelight, LimelightSubsystem.LimelightMode.BASKET);
+                follower.setPose(new Pose(llRx, llRy, follower.getHeading()));
+            })
         );
 
         controller.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
