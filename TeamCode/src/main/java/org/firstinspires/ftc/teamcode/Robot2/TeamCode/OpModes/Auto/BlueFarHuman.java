@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.lastAutoPos
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.TurretStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
@@ -68,72 +70,81 @@ public class BlueFarHuman extends CommandOpMode {
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(63, 7.5),
+                                    new Pose(61, 7.5),
 
-                                    new Pose(10, 8.500)
+                                    new Pose(12.000, 8.5)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setConstantHeadingInterpolation( Math.toRadians(180))
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(10, 8.500),
+                                    new Pose(12.000, 8.500),
 
-                                    new Pose(54, 10)
+                                    new Pose(56, 10)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setConstantHeadingInterpolation( Math.toRadians(180))
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path3 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(54, 10),
+                            new BezierCurve(
+                                    new Pose(56, 10),
+                                    new Pose(40, 30.5),
 
-                                    new Pose(10, 8.500)
+                                    new Pose(12.000, 28)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setConstantHeadingInterpolation( Math.toRadians(180))
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(10, 8.500),
+                                    new Pose(12.000, 28),
 
-                                    new Pose(54, 10)
+                                    new Pose(56, 10)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setConstantHeadingInterpolation( Math.toRadians(180))
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path5 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(54, 10),
+                            new BezierCurve(
+                                    new Pose(56, 10),
+                                    new Pose(40, 30.5),
 
-                                    new Pose(10, 8.500)
+                                    new Pose(12.000, 28)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setConstantHeadingInterpolation( Math.toRadians(180))
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path6 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(10, 8.500),
+                                    new Pose(12.000, 28),
 
-                                    new Pose(54, 10)
+                                    new Pose(56, 10)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setConstantHeadingInterpolation( Math.toRadians(180))
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path7 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(54, 10),
+                            new BezierCurve(
+                                    new Pose(56, 10),
+                                    new Pose(40, 30.5),
 
-                                    new Pose(39.000, 17.000)
+                                    new Pose(12.000, 28)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+                    ).setConstantHeadingInterpolation( Math.toRadians(180))
+                    .setBrakingStrength(0.5)
                     .build();
         }
     }
@@ -159,6 +170,9 @@ public class BlueFarHuman extends CommandOpMode {
         paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
+
+                new TurretStateCommand(turret, Turret.TurretState.MIXED),
+                new SavePoseCommand(follower),
                 // 1. Launch Preload immediately on start
                 new SpoolUpCommand(launcher, limelight),
                 new WaitCommand(1000),
@@ -167,26 +181,35 @@ public class BlueFarHuman extends CommandOpMode {
                 new StopLaunchCommand(launcher, turret, intake, limelight),
 
                 // 2. Go to pickup spike
-                new IntakeDrive(follower, paths.Path1, intake, 400),
+                new IntakeDrive(follower, paths.Path1, intake, 300),
 
                 //3. Go shoot man
                 new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, 500),
 
 
                 //4. Go pick up from human man
-                new IntakeDrive(follower, paths.Path3, intake, 400),
+                new IntakeDrive(follower, paths.Path3, intake, 300),
 
 
                 //5. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, 500),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),
 
 
                 //6. Go human player again man
-                new IntakeDrive(follower, paths.Path5, intake, 400),
+                new IntakeDrive(follower, paths.Path5, intake, 300),
 
 
                 //7. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,  500),
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
+
+                new IntakeDrive(follower, paths.Path5, intake, 300),
+
+                //7. Go shoot again man
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
+                new IntakeDrive(follower, paths.Path5, intake, 300),
+
+                //7. Go shoot again man
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
 
 
                 //8. leave launch zone man

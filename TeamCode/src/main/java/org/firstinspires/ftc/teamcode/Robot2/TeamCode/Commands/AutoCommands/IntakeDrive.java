@@ -37,6 +37,8 @@ public class IntakeDrive extends SequentialCommandGroup {
                 ),
                 new SavePoseCommand(follower),
                 new WaitCommand(waitTime).raceWith(new CheckLoadCommand(colorSensor)),
+                new IntakeStateCommand(intake, Intake.IntakeState.REVERSE),
+                new WaitCommand(20),
                 new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
     }
@@ -56,6 +58,8 @@ public class IntakeDrive extends SequentialCommandGroup {
                 ),
                 new SavePoseCommand(follower),
                 new WaitCommand(waitTime).raceWith(new CheckLoadCommand(colorSensor)),
+                new IntakeStateCommand(intake, Intake.IntakeState.REVERSE),
+                new WaitCommand(20),
                 new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
     }/**
@@ -73,6 +77,8 @@ public class IntakeDrive extends SequentialCommandGroup {
                 ),
                 new SavePoseCommand(follower),
                 new WaitCommand(waitTime),
+                new IntakeStateCommand(intake, Intake.IntakeState.REVERSE),
+                new WaitCommand(20),
                 new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
     }/**
@@ -91,6 +97,8 @@ public class IntakeDrive extends SequentialCommandGroup {
                 ),
                 new SavePoseCommand(follower),
                 new WaitCommand(waitTime),
+                new IntakeStateCommand(intake, Intake.IntakeState.REVERSE),
+                new WaitCommand(20),
                 new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
     }

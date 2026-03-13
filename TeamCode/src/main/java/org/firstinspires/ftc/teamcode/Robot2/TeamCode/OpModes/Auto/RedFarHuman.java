@@ -73,7 +73,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(132.000, 8.5)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(1)
+                    .setBrakingStrength(0.5)
 
                     .build();
 
@@ -81,66 +81,68 @@ public class RedFarHuman extends CommandOpMode {
                             new BezierLine(
                                     new Pose(132.000, 8.500),
 
-                                    new Pose(89, 10)
+                                    new Pose(88, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(1)
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path3 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(89, 10),
+                            new BezierCurve(
+                                    new Pose(88, 10),
+                                    new Pose(104, 30.5),
 
-                                    new Pose(132.000, 8.500)
+                                    new Pose(132.000, 28)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(1)
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.000, 8.500),
+                                    new Pose(132.000, 28),
 
-                                    new Pose(89, 10)
+                                    new Pose(88, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(1)
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path5 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(89, 10),
+                            new BezierCurve(
+                                    new Pose(88, 10),
+                                    new Pose(104, 30.5),
 
-                                    new Pose(132.000, 8.500)
+                                    new Pose(132.000, 28)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(1)
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path6 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.000, 8.500),
+                                    new Pose(132.000, 28),
 
-                                    new Pose(89, 10)
+                                    new Pose(88, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(1)
+                    .setBrakingStrength(0.5)
 
                     .build();
 
             Path7 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(89, 10),
+                            new BezierCurve(
+                                    new Pose(88, 10),
+                                    new Pose(104, 30.5),
 
-                                    new Pose(105.000, 17.000)
+                                    new Pose(132.000, 28)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
-                    .setBrakingStrength(1)
-
+                    .setBrakingStrength(0.5)
                     .build();
         }
     }
@@ -181,26 +183,35 @@ public class RedFarHuman extends CommandOpMode {
                 new StopLaunchCommand(launcher, turret, intake, limelight),
 
                 // 2. Go to pickup spike
-                new IntakeDrive(follower, paths.Path1, intake, 400),
+                new IntakeDrive(follower, paths.Path1, intake, 300),
 
                 //3. Go shoot man
-                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, 1300),
+                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, 500),
 
 
                 //4. Go pick up from human man
-                new IntakeDrive(follower, paths.Path3, intake, 400),
+                new IntakeDrive(follower, paths.Path3, intake, 300),
 
 
                 //5. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,1500),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),
 
 
                 //6. Go human player again man
-                new IntakeDrive(follower, paths.Path5, intake, 400),
+                new IntakeDrive(follower, paths.Path5, intake, 300),
 
 
                 //7. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,1500),
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
+
+                new IntakeDrive(follower, paths.Path5, intake, 300),
+
+                //7. Go shoot again man
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
+                new IntakeDrive(follower, paths.Path5, intake, 300),
+
+                //7. Go shoot again man
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
 
 
                 //8. leave launch zone man
