@@ -18,10 +18,12 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LauncherStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightModeCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.RumbleOnBallCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolStopper;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.ColorSensor;
@@ -40,6 +42,7 @@ import java.util.List;
 @TeleOp(name = "TeleOp Main", group = "Main")
 public class TeleOpMain extends CommandOpMode {
     GamepadEx controller;
+    GamepadEx spooler;
 
     // --- Robot Dimensions & LED Constants ---
     private final double ROBOT_WIDTH = 17.32;
@@ -88,6 +91,7 @@ public class TeleOpMain extends CommandOpMode {
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         controller = new GamepadEx(gamepad1);
+        spooler = new GamepadEx(gamepad2);
 
         customRumbleEffect = new Gamepad.RumbleEffect.Builder()
                 .addStep(0.0, 1.0, 100)
@@ -114,8 +118,9 @@ public class TeleOpMain extends CommandOpMode {
 
         follower.startTeleopDrive(true);
 
-        turret.setTurretState(Turret.TurretState.IDLE);
+        turret.setTurretState(Turret.TurretState.MIXED);
         limelight.init();
+        limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
         launcher.init();
 
 
@@ -158,11 +163,20 @@ public class TeleOpMain extends CommandOpMode {
         Trigger rightTrigger = new Trigger(() -> gamepad1.right_trigger > 0.1);
         Trigger leftTrigger = new Trigger(() -> gamepad1.left_trigger > 0.1);
 
+        Trigger rightspoolerTrigger = new Trigger(() -> gamepad2.right_trigger > 0.1);
+        Trigger leftspoolerTrigger = new Trigger(() -> gamepad2.left_trigger > 0.1);
+
         // Left trigger: full shoot sequence (SOF or MIXED depending on SQUARE toggle)
         leftTrigger.whileActiveOnce(
                 new SpoolUpCommand(launcher, limelight)
         ).whenInactive(
-                new StopLaunchCommand(launcher, turret, intake, limelight)
+                new SpoolStopper(launcher, intake)
+        );
+
+        leftspoolerTrigger.whileActiveOnce(
+                new SpoolUpCommand(launcher, limelight)
+        ).whenInactive(
+                new SpoolStopper(launcher, intake)
         );
 
         // Right trigger: aim only — turret tracks goal + limelight, no spool/shoot
@@ -235,7 +249,7 @@ public class TeleOpMain extends CommandOpMode {
 
 
 // Pass in the sensor and the gamepad you want to vibrate (e.g., gamepad1)
-        RumbleOnBallCommand rumbleCommand = new RumbleOnBallCommand(myColorSensor, gamepad1);
+        RumbleOnBallCommand rumbleCommand = new RumbleOnBallCommand(myColorSensor, gamepad1, gamepad2);
 
 // Schedule it so it starts running its execute() loop
         rumbleCommand.schedule();

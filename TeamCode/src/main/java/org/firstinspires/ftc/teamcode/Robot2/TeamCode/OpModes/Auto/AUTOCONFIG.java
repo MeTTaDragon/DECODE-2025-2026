@@ -17,7 +17,7 @@ public class AUTOCONFIG extends SelectableOpMode {
                 l.add("Far bile human+spike", BlueFarSpikeAndHuman::new);
             });
             s.folder("Red", a -> {
-                a.add("Close 12 bile", RedClose12ball::new);
+                a.add("Red 15", Red18::new);
                 a.add("Close 12 bile, gate dupa preload", RedClose12BallOpenGateAfterPreload::new);
                 a.add("Far 6 bile", RedCloseNoGate::new);
                 a.add("Far bile human", RedFarHuman::new);

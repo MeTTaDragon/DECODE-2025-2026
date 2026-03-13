@@ -28,11 +28,14 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SpoolUpCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.StopLaunchCommand;
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.TurretStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
+
+@Autonomous(group = "redfar", name = "red far")
 
 public class RedFarHuman extends CommandOpMode {
     Intake intake;
@@ -70,6 +73,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(132.000, 8.5)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setBrakingStrength(1)
 
                     .build();
 
@@ -80,6 +84,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(89, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setBrakingStrength(1)
 
                     .build();
 
@@ -90,6 +95,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(132.000, 8.500)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setBrakingStrength(1)
 
                     .build();
 
@@ -100,6 +106,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(89, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setBrakingStrength(1)
 
                     .build();
 
@@ -110,6 +117,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(132.000, 8.500)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setBrakingStrength(1)
 
                     .build();
 
@@ -120,6 +128,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(89, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setBrakingStrength(1)
 
                     .build();
 
@@ -130,6 +139,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(105.000, 17.000)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
+                    .setBrakingStrength(1)
 
                     .build();
         }
@@ -161,6 +171,7 @@ public class RedFarHuman extends CommandOpMode {
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
 
+                new TurretStateCommand(turret, Turret.TurretState.MIXED),
                 new SavePoseCommand(follower),
                 // 1. Launch Preload immediately on start
                 new SpoolUpCommand(launcher, limelight),
@@ -173,7 +184,7 @@ public class RedFarHuman extends CommandOpMode {
                 new IntakeDrive(follower, paths.Path1, intake, 400),
 
                 //3. Go shoot man
-                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, 500),
+                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, 1300),
 
 
                 //4. Go pick up from human man
@@ -181,7 +192,7 @@ public class RedFarHuman extends CommandOpMode {
 
 
                 //5. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,1500),
 
 
                 //6. Go human player again man
@@ -189,7 +200,7 @@ public class RedFarHuman extends CommandOpMode {
 
 
                 //7. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,1500),
 
 
                 //8. leave launch zone man

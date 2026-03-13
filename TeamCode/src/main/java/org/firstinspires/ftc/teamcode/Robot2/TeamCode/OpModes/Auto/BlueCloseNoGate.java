@@ -27,6 +27,8 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
+@Autonomous(group = "blueclose",name="blue close no gate")
+
 public class BlueCloseNoGate extends CommandOpMode {
     Intake intake;
     Launcher launcher;

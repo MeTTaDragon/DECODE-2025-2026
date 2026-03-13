@@ -2,15 +2,18 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.OpModes.Auto;
 
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.Alliance;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.alliance;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.brakingpower;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.lastAutoPose;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -34,6 +37,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsys
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 
+@Autonomous(group = "bluefar",name="blue far human + spike")
 public class BlueFarSpikeAndHuman extends CommandOpMode {
     Intake intake;
     Launcher launcher;
@@ -71,7 +75,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
                                     new Pose(21.700, 35.700)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path2 = follower.pathBuilder().addPath(
@@ -81,47 +85,47 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
                                     new Pose(57, 11)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path3 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(57, 11),
 
-                                    new Pose(10, 8.500)
+                                    new Pose(12, 8.500)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(10, 8.500),
+                                    new Pose(12, 8.500),
 
                                     new Pose(54, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path5 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(54, 10),
 
-                                    new Pose(10, 8.500)
+                                    new Pose(12, 8.500)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path6 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(10, 8.500),
+                                    new Pose(12, 8.500),
 
                                     new Pose(54, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path7 = follower.pathBuilder().addPath(
@@ -131,7 +135,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
                                     new Pose(39.000, 17.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
         }
     }
@@ -154,6 +158,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
         limelight = new LimelightSubsystem(hardwareMap, follower);
 
         register(turret, launcher, intake, limelight);
+        turret.setTurretState(Turret.TurretState.MIXED);
 
         // Initialize the Paths object
         paths = new Paths(follower);
@@ -184,6 +189,11 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
 
                 //6. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight, 500),
+                //3. Go pick up from human man
+                new IntakeDrive(follower, paths.Path3, intake, 400),
+
+                //4. Go shoot again man
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, 500),
 
                 //7. leave launch zone man
                 new FollowPathCommand(follower, paths.Path7),
@@ -198,6 +208,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
         telemetry.addLine(
                 "OpMode selected"
         );
+
     }
 
     @Override

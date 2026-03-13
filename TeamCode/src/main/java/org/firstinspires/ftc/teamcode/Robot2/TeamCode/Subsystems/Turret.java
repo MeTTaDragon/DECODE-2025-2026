@@ -186,9 +186,12 @@ public class Turret extends SubsystemBase {
                         targetHeading += Math.toRadians(-lltx);
                     }
                 }
+
+                //angle wrapping custom for mechanical limitation
                 if(targetHeading>Math.toRadians(90)){targetHeading -= 2*Math.PI;}
                 if(targetHeading<Math.toRadians(-270)){targetHeading += 2*Math.PI;}
 
+                // pid controller handles antistrangulation byitself (no extra logic needed)
                 double mixedError = targetHeading - getTurretHeading();
 
 
@@ -214,7 +217,7 @@ public class Turret extends SubsystemBase {
 
                 // Ball horizontal exit speed (in/s): K × flywheelTicks/s × cos(hoodAngle)
                 double cosHood = Math.cos(Math.toRadians(Launcher.currentHoodAngleDeg));
-                double vBallH = Launcher.K_LAUNCHER * Launcher.baseTargetVelocity * cosHood;//this is the 2d plane orizontal ball exit velocity
+                double vBallH = Launcher.K_LAUNCHER * Launcher.baseTargetVelocity * cosHood;//this is the 2d plane horizontal ball exit velocity
 
                 // Compensated shot vector: ball must exit at this field-centric velocity
                 // so that (V_shot_robot + V_robot) = V_ideal_to_goal
@@ -224,22 +227,40 @@ public class Turret extends SubsystemBase {
                 // New turret heading: field-centric angle → local (robot-relative), radians
                 double sofFieldHeading = Math.atan2(sofShotY, sofShotX);
                 targetHeading = sofFieldHeading - sofPose.getHeading();
-
                 // --- Limelight blend (10%) with latency prediction ---
                 // SOF handles 90% (motion compensation). Limelight trims the remaining 10%
                 // once it locks onto the target, accounting for Limelight 3A hardware latency.
-                if (llta > 0) {  // llta > 0 = limelight actively sees the target
+                if (llta > 0) {
+                    // The physical goal direction in field frame
+                    double physicalFieldHeading = Math.atan2(sofDY, sofDX);
+
+                    // Lead angle: how far the digital goal is offset from the physical goal
+                    // This is the angular offset Limelight *should* see when perfectly aimed
+                    double leadAngle = sofFieldHeading - physicalFieldHeading;  // radians
+
+                    // Convert lead angle to degrees — this is the ideal lltx, not zero
+                    double idealLltx = Math.toDegrees(leadAngle);
+
                     double dlltxPerSec = (lltx - prevLltx) / LOOP_TIME_S;
-                    dlltxPerSec = Math.max(-500, Math.min(500, dlltxPerSec));  // clamp derivative
+                    dlltxPerSec = Math.max(-500, Math.min(500, dlltxPerSec));
                     double lltxPredicted = lltx + dlltxPerSec * LIMELIGHT_LATENCY_S;
-                    if (Math.abs(lltxPredicted) < LL_SOF_THRESHOLD_DEG) {
-                        // positive lltx = target right of camera → turret must rotate left
-                        targetHeading += Math.toRadians(-lltxPredicted);
+
+                    // Error = how far Limelight is from where it *should* be pointing
+                    double llError = lltxPredicted - idealLltx;
+
+                    if (Math.abs(llError) < LL_SOF_THRESHOLD_DEG) {
+                        // positive llError = turret is right of digital goal → rotate left
+                        targetHeading += Math.toRadians(-llError);
                     }
                 }
                 prevLltx = lltx;  // always update for next loop
 
-                double sofError = angleWrap(targetHeading - getTurretHeading());
+                //angle wrapping custom for mechanical limitation
+                if(targetHeading>Math.toRadians(90)){targetHeading -= 2*Math.PI;}
+                if(targetHeading<Math.toRadians(-270)){targetHeading += 2*Math.PI;}
+
+                // pid controller handles antistrangulation byitself (no extra logic needed)
+                double sofError = targetHeading - getTurretHeading();
 
                 power = turretController.calculate(0, sofError);
                 motorTureta.setPower(power);

@@ -11,6 +11,7 @@ import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
+import com.pedropathing.paths.PathBuilder;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -31,7 +32,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsys
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 @Config
-@Autonomous(name="red 18")
+@Autonomous(group = "redfar",name="red 18")
 public class Red18 extends CommandOpMode {
 
     Intake intake;
@@ -64,7 +65,7 @@ public class Red18 extends CommandOpMode {
                                     new Pose(85.000, 85.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setVelocityConstraint(0.9).setGlobalDeceleration(brakingpower)
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             IntakeMid = follower.pathBuilder().addPath(
@@ -78,9 +79,10 @@ public class Red18 extends CommandOpMode {
                             new BezierCurve(
                                     new Pose(130.000, 60.000),
                                     new Pose(115.622, 64.476),
-                                    new Pose(127.293, 69.488)
+                                    new Pose(127.3, 69.5)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
 
@@ -90,9 +92,8 @@ public class Red18 extends CommandOpMode {
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0),Math.toRadians(25))
-                    .setVelocityConstraint(0.9)
-                    .setGlobalDeceleration(brakingpower)
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Recycle = follower.pathBuilder().addPath(
@@ -100,9 +101,10 @@ public class Red18 extends CommandOpMode {
                                     new Pose(87.000, 78.000),
                                     new Pose(104, 63.5),
 
-                                    new Pose(128.000, 68.000)
+                                    new Pose(127.000, 68.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(25), Math.toRadians(90))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
+                    .addParametricCallback(1, () -> new WaitCommand(300))
                     .addPath(
                             new BezierCurve(
                                     new Pose(128.000, 68.000),
@@ -110,67 +112,30 @@ public class Red18 extends CommandOpMode {
                                     new Pose(130.500, 48.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(45))
-                    .setVelocityConstraint(0.9)
-                    .setGlobalDeceleration(0.4)
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Launch3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(130, 48),
+                                    new Pose(130.5, 48),
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(25))
-                    .setVelocityConstraint(0.9)
-                    .setGlobalDeceleration(brakingpower)
+                    ).setConstantHeadingInterpolation(Math.toRadians(45))
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
-            Recycle2 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(87.000, 78.000),
-
-                                    new Pose(128.000, 70.000)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(25), Math.toRadians(90))
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(128.000, 70.000),
-                                    new Pose(122, 57),
-                                    new Pose(130.000, 48.000)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(45))
-                    .setVelocityConstraint(0.9)
-                    .setGlobalDeceleration(0.3)
-                    .build();
 
             Launch4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(130, 48),
+                                    new Pose(127, 84),
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(25))
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
                     .setVelocityConstraint(0.9)
-                    .setGlobalDeceleration(brakingpower)
                     .build();
 
-            Recycle3 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(87.000, 78.000),
-
-                                    new Pose(128.000, 70.000)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(25), Math.toRadians(90))
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(128.000, 70.000),
-                                    new Pose(122, 57),
-                                    new Pose(130.000, 48.000)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(45))
-                    .setVelocityConstraint(0.9)
-                    .setGlobalDeceleration(0.3)
-                    .build();
 
             Launch5 = follower.pathBuilder().addPath(
                             new BezierLine(
@@ -178,9 +143,8 @@ public class Red18 extends CommandOpMode {
 
                                     new Pose(87.000, 78.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(25))
-                    .setVelocityConstraint(0.9)
-                    .setGlobalDeceleration(brakingpower)
+                    ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             CloseLine = follower.pathBuilder().addPath(
@@ -189,9 +153,8 @@ public class Red18 extends CommandOpMode {
                                     new Pose(102.902, 84.122),
                                     new Pose(127.000, 84.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(25), Math.toRadians(0))
-                    .setGlobalDeceleration(brakingpower)
-                    .setVelocityConstraint(0.9)
+                    ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Launch6 = follower.pathBuilder().addPath(
@@ -202,7 +165,7 @@ public class Red18 extends CommandOpMode {
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
-                    .setGlobalDeceleration(brakingpower)
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
         }
     }
@@ -238,7 +201,7 @@ public class Red18 extends CommandOpMode {
 
                 new SpoolDriveShoot(follower, paths.Launch2, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,3000),
+                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,1000),
 
                 new SpoolDriveShoot(follower, paths.Launch3, launcher, turret, intake, limelight, 1000),
 
@@ -246,11 +209,11 @@ public class Red18 extends CommandOpMode {
 
                 new SpoolDriveShoot(follower, paths.Launch4, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,3000),
+                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,1000),
 
                 new SpoolDriveShoot(follower, paths.Launch5, launcher, turret, intake, limelight, 1000),
 
-                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,3000),
+                new IntakeDrive(follower, paths.Recycle, intake, colorSensor,1000),
 
                 new SpoolDriveShoot(follower, paths.Launch6, launcher, turret, intake, limelight, 1000)
         );

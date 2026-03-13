@@ -72,7 +72,8 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     public void init() {
-        setMode(LimelightMode.PAUSE);
+        setMode(LimelightMode.BASKET);
+        limelight.start();
         relocalizationCooldown.reset();
     }
 
@@ -81,23 +82,23 @@ public class LimelightSubsystem extends SubsystemBase {
         switch (currentMode) {
             case READ_PATTERN:
                 limelight.pipelineSwitch(0);
-                limelight.start();
+                //limelight.start();
                 break;
             case TRACK_ARTIFACT:
                 limelight.pipelineSwitch(3);
-                limelight.start();
+                //limelight.start();
                 break;
             case BASKET:
                 if (alliance == Alliance.RED) {
                     limelight.pipelineSwitch(4);
-                    limelight.start();
+                    //limelight.start();
                 } else {
                     limelight.pipelineSwitch(5);
-                    limelight.start();
+                    //limelight.start();
                 }
                 break;
             case PAUSE:
-                limelight.pause();
+                //limelight.pause();
                 lltx = 0;
                 llty = 0;
                 llta = 0;

@@ -6,6 +6,7 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.MixedShootCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.SavePoseCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.ShootCommand;
@@ -35,7 +36,8 @@ public class SpoolDriveShoot extends SequentialCommandGroup {
     public SpoolDriveShoot(Follower follower, PathChain path, Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight, long waitBeforeStop){
         addCommands(
                 new FollowPathCommand(follower, path).alongWith(
-                        new SpoolUpCommand(launcher, limelight)
+                        new SpoolUpCommand(launcher, limelight),
+                        new IntakeStateCommand(intake, Intake.IntakeState.INTAKE)
                 ),
                 new SavePoseCommand(follower),
                 new WaitCommand(400),

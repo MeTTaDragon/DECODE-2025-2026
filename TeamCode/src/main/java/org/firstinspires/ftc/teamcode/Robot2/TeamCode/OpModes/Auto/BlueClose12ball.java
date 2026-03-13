@@ -29,6 +29,8 @@ import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 
 
+@Autonomous(group = "blueclose",name="blue close 12 ball")
+
 public class BlueClose12ball extends CommandOpMode {
     Intake intake;
     Launcher launcher;

@@ -28,6 +28,8 @@ import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher.stopperOpen;
 
+@Autonomous(group = "redclose", name = "red close gate after preload")
+
 public class RedClose12BallOpenGateAfterPreload extends CommandOpMode {
     Intake intake;
     Launcher launcher;

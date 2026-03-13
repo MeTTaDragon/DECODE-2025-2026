@@ -9,11 +9,10 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 
-public class StopLaunchCommand extends SequentialCommandGroup {
-    public StopLaunchCommand(Launcher launcher, Turret turret, Intake intake, LimelightSubsystem limelight){
+public class SpoolStopper extends SequentialCommandGroup {
+    public SpoolStopper(Launcher launcher, Intake intake){
         addCommands(
-                new StopperPoseCommand(launcher, Launcher.stopperOpen),
-                //new TurretStateCommand(turret, Turret.TurretState.IDLE),
+                new LauncherStateCommand(launcher, Launcher.LauncherState.IDLE),
                 new IntakeStateCommand(intake, Intake.IntakeState.IDLE)
         );
     }

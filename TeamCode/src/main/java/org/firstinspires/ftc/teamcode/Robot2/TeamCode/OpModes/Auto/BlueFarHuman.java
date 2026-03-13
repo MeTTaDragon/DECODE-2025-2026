@@ -34,6 +34,8 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsys
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
 
+@Autonomous(group = "bluefar",name="blue far human")
+
 public class BlueFarHuman extends CommandOpMode {
     Intake intake;
     Launcher launcher;

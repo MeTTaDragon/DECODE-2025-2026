@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Robot2.TeamCode.OpModes.Auto;
 
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.Alliance;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.alliance;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.brakingpower;
 import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.lastAutoPose;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -35,7 +36,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Robot2.pedroPathing.Constants;
-@Autonomous(group = "red", name = "red far + spike")
+@Autonomous(group = "redfar", name = "red far + spike")
 public class RedFarSpikeAndHuman extends CommandOpMode {
     Intake intake;
     Launcher launcher;
@@ -72,57 +73,57 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                                     new Pose(127.000, 36)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path2 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(127.000, 36.0),
 
-                                    new Pose(89, 10)
+                                    new Pose(88, 10)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(89, 10),
+                                    new Pose(88, 10),
 
                                     new Pose(132.000, 8.500)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path4 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(132.000, 8.500),
 
-                                    new Pose(89, 10)
+                                    new Pose(88, 10)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path5 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(89, 10),
+                                    new Pose(88, 10),
 
                                     new Pose(132.000, 8.500)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path6 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(132.000, 8.500),
 
-                                    new Pose(89, 10.000)
+                                    new Pose(89, 10)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
             Path7 = follower.pathBuilder().addPath(
@@ -132,7 +133,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                                     new Pose(105.000, 17.000)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
-
+                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
         }
     }
@@ -155,37 +156,47 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
         limelight = new LimelightSubsystem(hardwareMap, follower);
 
         register(turret, launcher, intake, limelight);
+        turret.setTurretState(Turret.TurretState.MIXED);
 
         // Initialize the Paths object
         paths = new Paths(follower);
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
                 // 1. Launch Preload immediately on start
+                new TurretStateCommand(turret, Turret.TurretState.MIXED),
                 new SpoolUpCommand(launcher, limelight),
                 new WaitCommand(1000),
                 new MixedShootCommand(launcher, turret, intake),
                 new WaitCommand(800),
                 new StopLaunchCommand(launcher, turret, intake, limelight),
-                new TurretStateCommand(turret, Turret.TurretState.MIXED),
 
 
                 // 2. Go to pickup spike
-                new IntakeDrive(follower, paths.Path1, intake, 400),
+                new IntakeDrive(follower, paths.Path1, intake),
+                new WaitCommand(500),
 
                 //3. Go shoot man
-                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight,1000),
+                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight,1300),
 
                 //3. Go pick up from human man
-                new IntakeDrive(follower, paths.Path3, intake, 400),
+                new IntakeDrive(follower, paths.Path3, intake),
+                new WaitCommand(500),
 
                 //4. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,1000),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,1500),
 
                 //5. Go human player again man
-                new IntakeDrive(follower, paths.Path5, intake, 400),
+                new IntakeDrive(follower, paths.Path5, intake),
+                new WaitCommand(500),
 
                 //6. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,1000),
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,1500),
+                //3. Go pick up from human man
+                new IntakeDrive(follower, paths.Path3, intake),
+                new WaitCommand(500),
+
+                //4. Go shoot again man
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,1500),
 
                 //7. leave launch zone man
                 new FollowPathCommand(follower, paths.Path7),

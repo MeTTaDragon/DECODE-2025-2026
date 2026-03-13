@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems.Turret;
 public class MixedShootCommand extends SequentialCommandGroup {
     public MixedShootCommand(Launcher launcher, Turret turret, Intake intake) {
         addCommands(
-                new TurretStateCommand(turret, Turret.TurretState.MIXED),
+                //new TurretStateCommand(turret, Turret.TurretState.MIXED),
                 new WaitUntilCommand(() -> launcher.isVelocityReached() && turret.isNearSetPoint()),
                 new StopperPoseCommand(launcher, Launcher.stopperClose),
                 new IntakeStateCommand(intake, Intake.IntakeState.SHOOT)
