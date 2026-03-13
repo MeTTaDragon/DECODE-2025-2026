@@ -30,8 +30,8 @@ public class Launcher extends SubsystemBase {
     private final Servo hoodServo;
     private final Servo stopper1;
     private final Servo stopper2;
-    public static double farHoodPose = 0.25;
-    public static double closeHoodPose = 0.28;
+    public static double farHoodPose = 0.1;
+    public static double closeHoodPose = 0.22;
     public static double veryCloseHoodPose = 0.55;
     public static double middle_Y = 60;
     public static double targetvelocity_compensate = 0;
@@ -222,7 +222,7 @@ public class Launcher extends SubsystemBase {
      * Returns the current velocity strictly from the MASTER motor (motorDreapta).
      */
     public double getVelocity() {
-        return masterMotor.getVelocity();
+        return followerMotor.getVelocity();
     }
     public void setHoodPose(double pos) {
         hoodServo.setPosition(pos);
@@ -256,7 +256,7 @@ public class Launcher extends SubsystemBase {
 
         if (follower.getPose().getY() < middle_Y) {
             setHoodPose(farHoodPose);
-            targetvelocity_compensate = -25  + add_comp;
+            targetvelocity_compensate = 50  + add_comp;
             currentHoodAngleDeg = 47.0;
         } else {
             if(getDistance() <= 58 )
@@ -266,7 +266,7 @@ public class Launcher extends SubsystemBase {
                 currentHoodAngleDeg = 31.0;
             } else{
                 setHoodPose(closeHoodPose);
-                targetvelocity_compensate = -100 + add_comp;
+                targetvelocity_compensate = -25 + add_comp;
                 currentHoodAngleDeg = 38.7;
             }
         }

@@ -195,6 +195,10 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
                 //4. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, 500),
 
+                new IntakeDrive(follower, paths.Path3, intake, 400),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight, 500),
+
+
                 //7. leave launch zone man
                 new FollowPathCommand(follower, paths.Path7),
                 new SavePoseCommand(follower)

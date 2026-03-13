@@ -131,9 +131,9 @@ public class TeleOpMain extends CommandOpMode {
         controller.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> {
                     if (alliance == Alliance.RED) {
-                        follower.setPose(new Pose(128, 67, Math.toRadians(0)));
+                        follower.setPose(new Pose(128, 79, Math.toRadians(0)));
                     } else {
-                        follower.setPose(new Pose(16, 67, Math.toRadians(180)));
+                        follower.setPose(new Pose(16, 79, Math.toRadians(180)));
                     }
                 } )
         );

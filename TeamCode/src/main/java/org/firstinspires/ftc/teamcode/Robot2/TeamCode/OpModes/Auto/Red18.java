@@ -112,7 +112,7 @@ public class Red18 extends CommandOpMode {
                                     new Pose(130.500, 48.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(45))
-                    .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
+                    .setGlobalDeceleration(brakingpower)
                     .build();
 
             Launch3 = follower.pathBuilder().addPath(

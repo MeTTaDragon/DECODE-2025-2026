@@ -90,7 +90,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                             new BezierLine(
                                     new Pose(88, 10),
 
-                                    new Pose(132.000, 8.500)
+                                    new Pose(132.000, 8.5)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
                     .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
@@ -98,7 +98,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
 
             Path4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.000, 8.500),
+                                    new Pose(132.000, 8.5),
 
                                     new Pose(88, 10)
                             )
@@ -107,10 +107,11 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                     .build();
 
             Path5 = follower.pathBuilder().addPath(
-                            new BezierLine(
+                            new BezierCurve(
                                     new Pose(88, 10),
+                                    new Pose(104, 30.5),
 
-                                    new Pose(132.000, 8.500)
+                                    new Pose(132.000, 28)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
                     .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
@@ -118,7 +119,7 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
 
             Path6 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.000, 8.500),
+                                    new Pose(132.000, 28),
 
                                     new Pose(89, 10)
                             )
@@ -127,10 +128,11 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
                     .build();
 
             Path7 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(89, 10),
+                            new BezierCurve(
+                                    new Pose(88, 10),
+                                    new Pose(104, 30.5),
 
-                                    new Pose(105.000, 17.000)
+                                    new Pose(132.000, 28)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
                     .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
@@ -172,31 +174,32 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
 
 
                 // 2. Go to pickup spike
-                new IntakeDrive(follower, paths.Path1, intake),
-                new WaitCommand(500),
+                new IntakeDrive(follower, paths.Path1, intake, 300),
 
                 //3. Go shoot man
-                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight,1300),
+                new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight,500),
 
                 //3. Go pick up from human man
-                new IntakeDrive(follower, paths.Path3, intake),
-                new WaitCommand(500),
+                new IntakeDrive(follower, paths.Path3, intake, 300),
 
                 //4. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,1500),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),
 
                 //5. Go human player again man
-                new IntakeDrive(follower, paths.Path5, intake),
-                new WaitCommand(500),
+                new IntakeDrive(follower, paths.Path5, intake, 300),
 
                 //6. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,1500),
+                new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
                 //3. Go pick up from human man
-                new IntakeDrive(follower, paths.Path3, intake),
-                new WaitCommand(500),
+                new IntakeDrive(follower, paths.Path3, intake, 300),
 
                 //4. Go shoot again man
-                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,1500),
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),
+
+                new IntakeDrive(follower, paths.Path3, intake, 300),
+
+                //4. Go shoot again man
+                new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),
 
                 //7. leave launch zone man
                 new FollowPathCommand(follower, paths.Path7),

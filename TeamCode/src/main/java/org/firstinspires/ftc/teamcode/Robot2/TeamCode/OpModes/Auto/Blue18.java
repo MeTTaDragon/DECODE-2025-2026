@@ -89,7 +89,7 @@ public class Blue18 extends CommandOpMode {
                             new BezierLine(
                                     new Pose(16.7, 69.5),
 
-                                    new Pose(57, 78.000)
+                                    new Pose(47, 87.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
@@ -97,8 +97,8 @@ public class Blue18 extends CommandOpMode {
 
             Recycle = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(57, 78.000),
-                                    new Pose(40, 63.5),
+                                    new Pose(47, 87.000),
+                                    new Pose(51, 62.5),
 
                                     new Pose(17, 68.000)
                             )
@@ -106,7 +106,7 @@ public class Blue18 extends CommandOpMode {
                     .addParametricCallback(1, () -> new WaitCommand(300))
                     .addPath(
                             new BezierCurve(
-                                    new Pose(16, 68.000),
+                                    new Pose(17, 68.000),
                                     new Pose(22, 57),
                                     new Pose(13, 48.000)
                             )
@@ -115,54 +115,56 @@ public class Blue18 extends CommandOpMode {
                     .build();
 
             Launch3 = follower.pathBuilder().addPath(
-                            new BezierLine(
+                            new BezierCurve(
                                     new Pose(13, 48),
+                                    new Pose(44.7, 56.8),
 
-                                    new Pose(57, 78.000)
+                                    new Pose(47, 87.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .setBrakingStrength(Constants.pathConstraints.getBrakingStrength()).setBrakingStart(Constants.pathConstraints.getBrakingStart()).setGlobalDeceleration(brakingpower)
                     .build();
 
+            CloseLine = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(47, 87.000),
+                                    new Pose(17, 84.000)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    .setGlobalDeceleration(brakingpower)
+                    .setVelocityConstraint(0.9)
+                    .build();
 
             Launch4 = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(17, 84),
 
-                                    new Pose(57, 78.000)
+                                    new Pose(47, 87.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .setVelocityConstraint(0.9)
+                    .setGlobalDeceleration(brakingpower)
                     .build();
 
 
             Launch5 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(14, 48),
+                                    new Pose(13, 48),
 
-                                    new Pose(57, 78.000)
+                                    new Pose(54, 111.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .setVelocityConstraint(0.9)
                     .setGlobalDeceleration(brakingpower)
                     .build();
 
-            CloseLine = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(57, 78.000),
-                                    new Pose(41.098, 84.122),
-                                    new Pose(17, 84.000)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-                    .setGlobalDeceleration(brakingpower)
-                    .setVelocityConstraint(0.9)
-                    .build();
+
 
             Launch6 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(14, 48),
+                                    new Pose(13, 48),
 
-                                    new Pose(56.854, 108.171)
+                                    new Pose(47, 87)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .setGlobalDeceleration(brakingpower)
