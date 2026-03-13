@@ -188,8 +188,8 @@ public class Turret extends SubsystemBase {
                 }
 
                 //angle wrapping custom for mechanical limitation
-                if(targetHeading>Math.toRadians(90)){targetHeading -= 2*Math.PI;}
-                if(targetHeading<Math.toRadians(-270)){targetHeading += 2*Math.PI;}
+                if(targetHeading>Math.toRadians(95)){targetHeading -= 2*Math.PI;}
+                if(targetHeading<Math.toRadians(-275)){targetHeading += 2*Math.PI;}
 
                 // pid controller handles antistrangulation byitself (no extra logic needed)
                 double mixedError = targetHeading - getTurretHeading();
