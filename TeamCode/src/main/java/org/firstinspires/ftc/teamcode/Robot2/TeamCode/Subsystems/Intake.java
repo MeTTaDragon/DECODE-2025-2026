@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
@@ -16,9 +17,11 @@ public class Intake extends SubsystemBase {
     // P (Proportional): "Snap" power to fix errors.
 
     private double targetVelocity = 0.0;
+    public static double servoPosDown = 0;
+    public static double servoPosUp = 0.4;
 
     private DcMotorEx intakeMotor;
-
+    private Servo intakeHold;
     /**
      * Defines the possible operational states for the Intake subsystem.
      */
@@ -39,12 +42,21 @@ public class Intake extends SubsystemBase {
     public Intake(HardwareMap hwMap) {
         // 1. Hardware Mapping
         this.intakeMotor = hwMap.get(DcMotorEx.class, "intakeMotor");
+        this.intakeHold = hwMap.get(Servo.class, "intakeHold");
 
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // 3. Float behavior (optional, allows free spin when 0 power) or BRAKE
         intakeMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
+    }
+
+    public void init(){
+        setintakePos(servoPosUp);
+    }
+
+    public void setintakePos(double pos){
+        intakeHold.setPosition(pos);
     }
 
     /**

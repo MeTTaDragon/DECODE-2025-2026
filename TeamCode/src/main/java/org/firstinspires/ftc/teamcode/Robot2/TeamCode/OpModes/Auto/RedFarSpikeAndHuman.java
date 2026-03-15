@@ -174,29 +174,29 @@ public class RedFarSpikeAndHuman extends CommandOpMode {
 
 
                 // 2. Go to pickup spike
-                new IntakeDrive(follower, paths.Path1, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path1, intake, 300),
 
                 //3. Go shoot man
                 new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight,500),
 
                 //3. Go pick up from human man
-                new IntakeDrive(follower, paths.Path3, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path3, intake, 300),
 
                 //4. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),
 
                 //5. Go human player again man
-                new IntakeDrive(follower, paths.Path5, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path5, intake, 300),
 
                 //6. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
                 //3. Go pick up from human man
-                new IntakeDrive(follower, paths.Path3, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path3, intake, 300),
 
                 //4. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),
 
-                new IntakeDrive(follower, paths.Path3, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path3, intake, 300),
 
                 //4. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),

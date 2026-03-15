@@ -17,6 +17,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.IntakeStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LauncherStateCommand;
 import org.firstinspires.ftc.teamcode.Robot2.TeamCode.Commands.LimelightModeCommand;
@@ -72,6 +73,8 @@ public class TeleOpMain extends CommandOpMode {
     Intake intake;
     LimelightSubsystem limelight;
 
+    ColorSensor myColorSensor;
+
     List<LynxModule> allHubs;
     ElapsedTime timer;
     Gamepad.RumbleEffect customRumbleEffect;
@@ -80,6 +83,11 @@ public class TeleOpMain extends CommandOpMode {
     private static double loops = 0;
     boolean shootOnFly = false;
     boolean mixedAim = true;
+    public double DISTANCE_THRESHOLD_INCHES = 0.8;
+    boolean isDetecting;
+    boolean ballDetected;
+
+    private ElapsedTime checkTimer;
 
     @Override
     public void initialize() {
@@ -89,6 +97,8 @@ public class TeleOpMain extends CommandOpMode {
         }
 
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        checkTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
 
         controller = new GamepadEx(gamepad1);
         spooler = new GamepadEx(gamepad2);
@@ -104,7 +114,7 @@ public class TeleOpMain extends CommandOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         //telemetry.setMsTransmissionInterval(250);
-        ColorSensor myColorSensor = new ColorSensor(hardwareMap, "intrare");
+        myColorSensor = new ColorSensor(hardwareMap, "intrare");
         ledAlliance = hardwareMap.get(Servo.class, "ledAlliance");
         ledShooter = hardwareMap.get(Servo.class, "ledShooter");
         turret = new Turret(hardwareMap, follower);
@@ -122,6 +132,7 @@ public class TeleOpMain extends CommandOpMode {
         limelight.init();
         limelight.setMode(LimelightSubsystem.LimelightMode.BASKET);
         launcher.init();
+        intake.init();
 
 
 
@@ -314,7 +325,22 @@ public class TeleOpMain extends CommandOpMode {
             gamepad1.runRumbleEffect(customRumbleEffect);
         }
 
+//        ballDetected = myColorSensor.distance(DistanceUnit.INCH) < DISTANCE_THRESHOLD_INCHES;
+//
+//        if (ballDetected) {
+//            if (!isDetecting) {
+//                // 1. The ball JUST arrived! Start the timer.
+//                checkTimer.reset();
+//                isDetecting = true;
+//            } else if (checkTimer.milliseconds() > 150) {
+//                intake.setintakePos(Intake.servoPosUp);
+//            }
+//        } else {
+//            // 3. No ball is here, or the ball just left. Reset the timer and states!
+//            isDetecting = false;
+//        }
 
+        telemetry.addData("ball detected", ballDetected);
         telemetry.addData("Current velocity", launcher.getVelocity());
         telemetry.addData("Target velocity", launcher.getTargetVelocity());
         telemetry.addData("Robot X", follower.getPose().getX());

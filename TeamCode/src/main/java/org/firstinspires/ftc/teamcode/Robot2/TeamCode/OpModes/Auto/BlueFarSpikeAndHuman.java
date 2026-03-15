@@ -71,7 +71,7 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(61, 7.5),
+                                    new Pose(63, 7.5),
                                     new Pose(71.751, 35.325),
                                     new Pose(17.000, 36)
                             )
@@ -177,29 +177,29 @@ public class BlueFarSpikeAndHuman extends CommandOpMode {
 
 
                 // 2. Go to pickup spike
-                new IntakeDrive(follower, paths.Path1, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path1, intake, 300),
 
                 //3. Go shoot man
                 new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight,500),
 
                 //3. Go pick up from human man
-                new IntakeDrive(follower, paths.Path3, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path3, intake, 300),
 
                 //4. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),
 
                 //5. Go human player again man
-                new IntakeDrive(follower, paths.Path5, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path5, intake, 300),
 
                 //6. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
                 //3. Go pick up from human man
-                new IntakeDrive(follower, paths.Path3, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path3, intake, 300),
 
                 //4. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),
 
-                new IntakeDrive(follower, paths.Path3, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path3, intake, 300),
 
                 //4. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path4, launcher, turret, intake, limelight,500),

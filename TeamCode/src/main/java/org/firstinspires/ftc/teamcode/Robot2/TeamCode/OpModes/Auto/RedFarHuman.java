@@ -73,7 +73,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(132.000, 8.5)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(0.5)
+                    .setGlobalDeceleration(0.5)
 
                     .build();
 
@@ -84,7 +84,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(88, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(0.5)
+                    .setGlobalDeceleration(0.5)
 
                     .build();
 
@@ -96,7 +96,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(132.000, 28)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(0.5)
+                    .setGlobalDeceleration(0.5)
 
                     .build();
 
@@ -107,8 +107,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(88, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(0.5)
-
+                    .setGlobalDeceleration(0.5)
                     .build();
 
             Path5 = follower.pathBuilder().addPath(
@@ -119,7 +118,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(132.000, 28)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(0.5)
+                    .setGlobalDeceleration(0.5)
 
                     .build();
 
@@ -130,7 +129,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(88, 10)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-                    .setBrakingStrength(0.5)
+                    .setGlobalDeceleration(0.5)
 
                     .build();
 
@@ -142,7 +141,7 @@ public class RedFarHuman extends CommandOpMode {
                                     new Pose(132.000, 28)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
-                    .setBrakingStrength(0.5)
+                    .setGlobalDeceleration(0.5)
                     .build();
         }
     }
@@ -183,14 +182,14 @@ public class RedFarHuman extends CommandOpMode {
                 new StopLaunchCommand(launcher, turret, intake, limelight),
 
                 // 2. Go to pickup spike
-                new IntakeDrive(follower, paths.Path1, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path1, intake, 800),
 
                 //3. Go shoot man
                 new SpoolDriveShoot(follower, paths.Path2, launcher, turret, intake, limelight, 500),
 
 
                 //4. Go pick up from human man
-                new IntakeDrive(follower, paths.Path3, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path3, intake, 500),
 
 
                 //5. Go shoot again man
@@ -198,17 +197,17 @@ public class RedFarHuman extends CommandOpMode {
 
 
                 //6. Go human player again man
-                new IntakeDrive(follower, paths.Path5, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path5, intake, 500),
 
 
                 //7. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
 
-                new IntakeDrive(follower, paths.Path5, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path5, intake, 500),
 
                 //7. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),
-                new IntakeDrive(follower, paths.Path5, intake, 300),
+                new IntakeDrive(follower, 0.8, paths.Path5, intake, 500),
 
                 //7. Go shoot again man
                 new SpoolDriveShoot(follower, paths.Path6, launcher, turret, intake, limelight,500),

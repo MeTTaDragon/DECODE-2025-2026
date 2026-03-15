@@ -17,5 +17,11 @@ public class IntakeStateCommand extends InstantCommand {
     @Override
     public void initialize() {
         intake.setIntakeState(state);
+        if(state == Intake.IntakeState.INTAKE){
+            intake.setintakePos(Intake.servoPosDown);
+        }
+        else if(state == Intake.IntakeState.IDLE){
+            intake.setintakePos(Intake.servoPosUp);
+        }
     }
 }

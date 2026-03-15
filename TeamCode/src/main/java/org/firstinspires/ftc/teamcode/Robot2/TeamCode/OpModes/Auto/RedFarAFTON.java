@@ -102,9 +102,9 @@ public class RedFarAFTON extends CommandOpMode {
 
             Path7 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(89, 10),
+                                    new Pose(83, 7.5),
 
-                                    new Pose(105.000, 17.000)
+                                    new Pose(110.000, 10.000)
                             )
                     ).setConstantHeadingInterpolation( Math.toRadians(0))
                     .setGlobalDeceleration(brakingpower)
@@ -139,9 +139,6 @@ public class RedFarAFTON extends CommandOpMode {
         timer = new ElapsedTime();
 
         SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-
-                new InstantCommand(() -> timer.reset()),
-
                 new TurretStateCommand(turret, Turret.TurretState.MIXED),
                 new SavePoseCommand(follower),
                 // 1. Launch Preload immediately on start
@@ -152,23 +149,6 @@ public class RedFarAFTON extends CommandOpMode {
                 new StopLaunchCommand(launcher, turret, intake, limelight),
                 new LauncherStateCommand(launcher, Launcher.LauncherState.IDLE),
 
-                new WaitUntilCommand(() -> timer.seconds() > 10),
-
-                // 2. Go to pickup spike
-                new IntakeDrive(follower, 0.7, paths.Path1, intake, 400),
-
-                new FollowPathCommand(follower, paths.Path2),
-
-                new WaitUntilCommand(() -> timer.seconds() > 31),
-
-                new SpoolUpCommand(launcher, limelight),
-                new WaitCommand(1000),
-                new MixedShootCommand(launcher, turret, intake),
-                new WaitCommand(800),
-                new StopLaunchCommand(launcher, turret, intake, limelight),
-                new LauncherStateCommand(launcher, Launcher.LauncherState.IDLE),
-
-                //8. leave launch zone man
                 new FollowPathCommand(follower, paths.Path7),
                 new SavePoseCommand(follower)
         );
