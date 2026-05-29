@@ -58,7 +58,7 @@ dependencies {
     implementation "com.acmerobotics.dashboard:dashboard:0.4.17" // FTC Dashboard
 
     // Pedro Pathing
-    implementation 'com.pedropathing:ftc:2.0.1'
+    implementation 'com.pedropathing:ftc:2.1.0'
     implementation 'com.pedropathing:telemetry:0.0.6'
 
     // Panels Dashboard

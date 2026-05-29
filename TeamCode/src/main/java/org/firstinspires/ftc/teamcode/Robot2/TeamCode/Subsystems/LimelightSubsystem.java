@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot2.TeamCode.Subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.FTCCoordinates;
 import com.pedropathing.geometry.PedroCoordinates;
@@ -21,7 +22,11 @@ import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+@Config
 public class LimelightSubsystem extends SubsystemBase {
+    public static int BALL_SCAN_PIPELINE = 2;
+    // Pipeline index for color-threshold ball detection. Configure matching pipeline
+    // in Limelight Manager on the hardware (HSV thresholds for the game's ball color).
     private Telemetry telemetry;
     private Limelight3A limelight;
     private IMU imu;
@@ -49,7 +54,8 @@ public class LimelightSubsystem extends SubsystemBase {
         READ_PATTERN,
         TRACK_ARTIFACT,
         BASKET,
-        PAUSE
+        PAUSE,
+        BALL_SCAN
     }
     private static LimelightMode currentMode;
 
@@ -102,6 +108,9 @@ public class LimelightSubsystem extends SubsystemBase {
                 lltx = 0;
                 llty = 0;
                 llta = 0;
+                break;
+            case BALL_SCAN:
+                limelight.pipelineSwitch(BALL_SCAN_PIPELINE);
                 break;
         }
     }
