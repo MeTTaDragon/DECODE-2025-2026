@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Robot2.pedroPathing;
 
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
+import com.pedropathing.control.PredictiveBrakingCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
@@ -15,45 +16,47 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(12.6)
-            .forwardZeroPowerAcceleration(-33.39114264788226)
-            .lateralZeroPowerAcceleration(-69.4294335109412)
-            .useSecondaryDrivePIDF(false)
-            .useSecondaryHeadingPIDF(false)
-            .useSecondaryTranslationalPIDF(false)
-            .translationalPIDFCoefficients(new PIDFCoefficients(
-                    0.1,
-                    0,
-                    0.02,
-                    0.13
-            ))
-            .translationalPIDFSwitch(4)
+            .predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.05, 0.06492, 0.002))
+            //.forwardZeroPowerAcceleration(-33.39114264788226)
+            //.lateralZeroPowerAcceleration(-69.4294335109412)
+//            .useSecondaryDrivePIDF(false)
+//            .useSecondaryHeadingPIDF(false)
+//            .useSecondaryTranslationalPIDF(false)
+//            .translationalPIDFCoefficients(new PIDFCoefficients(
+//                    0.1,
+//                    0,
+//                    0.02,
+//                    0.13
+//            ))
+//            .translationalPIDFSwitch(4)
+            .useSecondaryHeadingPIDF(true)
             .headingPIDFCoefficients(new PIDFCoefficients(
-                    0.35,
+                    1.5,
                     0,
-                    0.06,
-                    0.15
+                    0.1,
+                    0.025
             ))
             .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(
-                    0.7,
+                    1,
                     0,
-                    0,
-                    0
+                    0.05,
+                    0.02
             ))
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(
-                    0.065,
-                    0,
-                    0,
-                    0
-            ))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(
-                    0.2,
-                    0,
-                    0.0025,
-                    0.5,
-                    0.15
-            ))
-            .drivePIDFSwitch(15)
-            .centripetalScaling(0.0005);
+//            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(
+//                    0.065,
+//                    0,
+//                    0,
+//                    0
+//            ))
+//            .drivePIDFCoefficients(new FilteredPIDFCoefficients(
+//                    0.2,
+//                    0,
+//                    0.0025,
+//                    0.5,
+//                    0.15
+//            ))
+//            .drivePIDFSwitch(15)
+            .centripetalScaling(0);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .leftFrontMotorName("frontLeft")
@@ -83,7 +86,7 @@ public class Constants {
      */
 
     public static PathConstraints pathConstraints = new PathConstraints(
-            0.995,
+            0.97,
             0.1,
             0.1,
             0.009,
