@@ -15,7 +15,7 @@ import com.seattlesolvers.solverslib.geometry.Translation2d;
 import com.seattlesolvers.solverslib.geometry.Vector2d;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.GlobalsFRI.*;
 
 import androidx.core.view.VelocityTrackerCompat;
 
@@ -57,6 +57,13 @@ public class Turret extends SubsystemBase {
     public static double LL_SOF_THRESHOLD_DEG = 25.0;    // only blend when |lltx| is under this (degrees)
     public static double LIMELIGHT_LATENCY_S  = 0.050;  // Limelight 3A hardware latency to predict forward
     public static double LOOP_TIME_S          = 0.020;  // assumed loop period for lltx derivative (seconds)
+
+    // --- MECHANICAL ROTATION LIMITS (cable anti-tangle) ---
+    // Measured physically: turret can safely rotate from -270° to +190° (0 = front of robot,
+    // positive = counter-clockwise). Total travel ~460°, i.e. more than one full turn, thanks
+    // to cable slack — but going past either end will strain/tangle the cables.
+    public static double TURRET_MIN_DEG = -270.0;
+    public static double TURRET_MAX_DEG = 190.0;
     // Hardware Constants
     double gearRatio = 5.30;
     double TicksPerRev = 145.1; // Motor internal PPR
@@ -150,10 +157,12 @@ public class Turret extends SubsystemBase {
                 // 4. Get "Current Local Heading" from Encoder
                 double currentLocalHeading = getTurretHeading(); // returns Radians
 
-                // 5. Calculate the Error (Shortest Path)
-                // This helper function handles the -180 to 180 wrap automatically.
-                // If the error is 350 degrees, it converts it to -10 degrees.
-                double error = angleWrap(targetHeading - currentLocalHeading);
+                // 5. Find the reachable absolute heading (within mechanical limits) closest to
+                // the turret's current position, among all headings equivalent to targetHeading
+                // (targetHeading + k*360°). This replaces the naive angleWrap "shortest path"
+                // approach, which could command a path that goes past the cable limit.
+                double constrainedTarget = constrainToMechanicalLimits(targetHeading, currentLocalHeading);
+                double error = constrainedTarget - currentLocalHeading;
 
 
 
@@ -187,13 +196,11 @@ public class Turret extends SubsystemBase {
                     }
                 }
 
-                //angle wrapping custom for mechanical limitation
-                if(targetHeading>Math.toRadians(90)){targetHeading -= 2*Math.PI;}
-                if(targetHeading<Math.toRadians(-280)){targetHeading += 2*Math.PI;}
-
-                // pid controller handles antistrangulation byitself (no extra logic needed)
-                double mixedError = targetHeading - getTurretHeading();
-
+                // pid controller anti-tangle: pick the closest reachable heading within
+                // the turret's mechanical rotation limits (same logic as FULL_PINPOINT)
+                double currentMixedHeading = getTurretHeading();
+                double mixedConstrainedTarget = constrainToMechanicalLimits(targetHeading, currentMixedHeading);
+                double mixedError = mixedConstrainedTarget - currentMixedHeading;
 
                 power = turretController.calculate(0, mixedError);
                 motorTureta.setPower(power);
@@ -296,6 +303,47 @@ public class Turret extends SubsystemBase {
         }
         return angle;
     }
+
+    /**
+     * Anti-tangle: given a desired (unbounded) heading and the turret's current absolute
+     * position (from the encoder), finds the closest reachable absolute heading — among all
+     * angles equivalent to targetHeading (targetHeading + k*360°) — that stays within the
+     * turret's mechanical rotation limits [TURRET_MIN_DEG, TURRET_MAX_DEG].
+     *
+     * This replaces plain angleWrap()'s "mathematically shortest path" with a "shortest path
+     * that won't strain the cables" — if the shortest path would exceed the limit, this picks
+     * the next valid wrap-around instead, or clamps to the nearest limit if truly none exist.
+     */
+    private double constrainToMechanicalLimits(double targetHeading, double currentLocalHeading) {
+        double minRad = Math.toRadians(TURRET_MIN_DEG);
+        double maxRad = Math.toRadians(TURRET_MAX_DEG);
+
+        double normalizedTarget = angleWrap(targetHeading); // bring into [-PI, PI] first
+
+        double best = Double.NaN;
+        double bestDist = Double.MAX_VALUE;
+
+        // Check a handful of full-turn offsets — enough to cover a >360° travel range.
+        for (int k = -2; k <= 2; k++) {
+            double candidate = normalizedTarget + k * 2 * Math.PI;
+            if (candidate >= minRad && candidate <= maxRad) {
+                double dist = Math.abs(candidate - currentLocalHeading);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    best = candidate;
+                }
+            }
+        }
+
+        if (Double.isNaN(best)) {
+            // No equivalent angle falls inside the allowed range (shouldn't normally happen
+            // given a >360° range) — fall back to clamping the raw target to the nearest limit.
+            best = Math.max(minRad, Math.min(maxRad, normalizedTarget));
+        }
+
+        return best;
+    }
+
     public double getTargetHeading() {
         return targetHeading;
     }

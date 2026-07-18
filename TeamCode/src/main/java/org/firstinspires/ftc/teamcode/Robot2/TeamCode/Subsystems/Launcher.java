@@ -14,8 +14,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
+//import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.GlobalsFRI.alliance;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.GlobalsFRI.blueGoalPose;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.GlobalsFRI.redGoalPose;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.GlobalsFRI.*;
 import static java.lang.Math.abs;
+
+import org.firstinspires.ftc.teamcode.Robot2.TeamCode.GlobalsFRI;
 
 
 @Config
@@ -133,7 +139,12 @@ public class Launcher extends SubsystemBase {
 
         launcherController = new PIDFController(P, I, D, F);
 
-        goalPose = (alliance == Alliance.RED) ? redGoalPose : blueGoalPose;
+        goalPose = (alliance == GlobalsFRI.Alliance.RED) ? redGoalPose : blueGoalPose;
+
+
+
+
+
     }
 
 
@@ -254,21 +265,19 @@ public class Launcher extends SubsystemBase {
 
         updateLauncherState();
 
-        if (follower.getPose().getY() < middle_Y) {
+        double dist = getDistance();
+        if (dist > 130) {              // prag de discutat/calibrat — orice distanță mare, simetric
             setHoodPose(farHoodPose);
-            targetvelocity_compensate = 50  + add_comp;
+            targetvelocity_compensate = 50 + add_comp;
             currentHoodAngleDeg = 47.0;
+        } else if (dist <= 58) {
+            setHoodPose(veryCloseHoodPose);
+            targetvelocity_compensate = 0 + add_comp;
+            currentHoodAngleDeg = 31.0;
         } else {
-            if(getDistance() <= 58 )
-            {
-                setHoodPose(veryCloseHoodPose);
-                targetvelocity_compensate = 0 + add_comp;//cand e foarte aproape da ft incet
-                currentHoodAngleDeg = 31.0;
-            } else{
-                setHoodPose(closeHoodPose);
-                targetvelocity_compensate = -25 + add_comp;
-                currentHoodAngleDeg = 38.7;
-            }
+            setHoodPose(closeHoodPose);
+            targetvelocity_compensate = -25 + add_comp;
+            currentHoodAngleDeg = 38.7;
         }
 
         //if(llta != 0){

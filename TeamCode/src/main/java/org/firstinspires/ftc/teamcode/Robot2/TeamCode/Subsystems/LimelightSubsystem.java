@@ -16,7 +16,7 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.Globals.*;
+import static org.firstinspires.ftc.teamcode.Robot2.TeamCode.GlobalsFRI.*;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -49,6 +49,7 @@ public class LimelightSubsystem extends SubsystemBase {
         READ_PATTERN,
         TRACK_ARTIFACT,
         BASKET,
+        FAR_GOAL,
         PAUSE
     }
     private static LimelightMode currentMode;
@@ -96,6 +97,10 @@ public class LimelightSubsystem extends SubsystemBase {
                     limelight.pipelineSwitch(2);
                     //limelight.start();
                 }
+                break;
+            case FAR_GOAL:
+                // Purple pipeline — shared far goal, ID18/ID19, same for both alliances
+                limelight.pipelineSwitch(3);
                 break;
             case PAUSE:
                 //limelight.pause();
@@ -153,6 +158,12 @@ public class LimelightSubsystem extends SubsystemBase {
         }
     }
 
+    /**
+     * MegaTag2: uses the robot's current odometry heading as an extra anchor when solving
+     * pose from AprilTags. More stable than plain MegaTag (MT1) when tags are seen at varying
+     * angles/distances — e.g. the shared far goal's ID18/ID19, which sit ~30° apart and are
+     * rarely both seen with equal confidence. Works fine off a single visible tag.
+     */
     public void MegaTag2D() {
         // Added safety check for IMU
         if (follower == null) return;
@@ -172,7 +183,10 @@ public class LimelightSubsystem extends SubsystemBase {
                 llRy = llPose.getY();
 
                 if(llRx > 0 && llRx < 144 && llRy > 0 && llRy < 144){
-                    follower.setPose(new Pose(llRx, llRy, follower.getHeading()));
+                    if(relocalizationCooldown.seconds() > 0.5) {
+                        follower.setPose(new Pose(llRx, llRy, follower.getHeading()));
+                        relocalizationCooldown.reset();
+                    }
                 }
             }
         }
@@ -215,8 +229,9 @@ public class LimelightSubsystem extends SubsystemBase {
         // 2. IMPORTANT: Actually update the variables so getTx() isn't 0
         getBasicResults();
 
-        // 3. Update pose if needed (Optional, only if IMU is active)
-        Megatag();
+        // 3. Update pose if needed — MegaTag2 (more stable across varying tag angles/distances
+        // than plain MegaTag, and works fine with only one of the far-goal tags visible)
+        MegaTag2D();
 
         if(telemetry != null) telemetry.addData("limelight reset pose timer", relocalizationCooldown.seconds());
 
